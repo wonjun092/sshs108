@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1-8 전자플랫폼</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+        .apply-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .form-grid label {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="date"],
+        input[type="text"],
+        select {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button[type="submit"] {
+            padding: 15px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #3367d6;
+        }
+
+        .info-box {
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #1967d2;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+          <button class="dropdown-btn active">📁 게시판 모음
+            <span style="float: right; margin-right: 20px;">&#9660;</span>
+          </button>
+
+          <div class="dropdown-container" style="display: block;">
+            <a href="/notice">📢 공지 게시판</a>
+            {% if user != 'Teacher' %}
+            <a href="/free">💬 자유 게시판</a>
+            <a href="/anonymous">👻 익명 게시판</a>
+            {% endif %}
+          </div>
+          {% if user == 'admin' %}
+          <a href="/admin_dashboard">👑 회원가입 신청</a>
+          {% endif %}
+          {% if user != 'Teacher' %}
+          <a href="https://diep.io/" target="_blank">🔍 Diep.io</a>
+          {% endif %}
+          <a href="https://sshs.app/school/food" target="_blank">🍔 급식 및 간식</a>
+          <a href="/english">📖영어 단어 시험</a>
+          <a href="/quiz">🧪 주기율표 퀴즈</a>
+          <hr>
+            <a href="/outing" style="color: #4285F4;">📍 이석 현황/신청</a>
+            <a href='/continuous_outing'>🔄 연속 이석 신청</a>
+            <a href="/google_login" style="font-size: 12px; color: #bbb;">🔑 학교 Google 로그인</a>
+        </div>
+
+    <div class="header">
+        <div style="display: flex; align-items: center;">
+            <span class="hamburger" onclick="openNav()">&#9776;</span>
+            <span>📍 연속 이석 신청 (월~목)</span>
+        </div>
+        <div class="header-menu">
+            <a href="/mypage">마이페이지</a>
+            <a href="/logout">로그아웃</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <p style="margin-top: 20px;">현재 사용자: <strong>{{ user }}</strong></p>
+
+        <div class="info-box">
+            💡 <strong>안내:</strong> 설정한 기간 중 <strong>월, 화, 수, 목요일</strong>에만 자동으로 예약이 접수됩니다.<br>
+            금요일과 주말은 이석 예약에서 제외됩니다.
+        </div>
+
+        <div class="apply-card">
+            <form method="POST" action="/continuous_outing">
+                <div class="form-grid">
+
+                    <div style="display: flex; gap: 10px;">
+                        <div class="input-box" style="flex: 1;">
+                            <label>시작 날짜</label>
+                            <input type="date" name="start_date" id="start_date" required>
+                        </div>
+                        <div class="input-box" style="flex: 1;">
+                            <label>종료 날짜</label>
+                            <input type="date" name="end_date" id="end_date" required>
+                        </div>
+                    </div>
+
+                    <div class="input-box">
+                        <label>학번</label>
+                        <input type="text" name="student_id" placeholder="예: 1801" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label>이름 (본인 확인용)</label>
+                        <input type="text" name="name" placeholder="이름 입력" required>
+                    </div>
+
+                    <div class="input-box">
+                        <label>교시 선택</label>
+                        <select name="period" required>
+                            <option value="1교시">1교시 (19:00~20:50)</option>
+                            <option value="2교시">2교시 (21:30~23:00)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-box">
+                        <label>장소 선택</label>
+                        <select name="location" required>
+                            <option value="" disabled selected>신청 장소 선택</option>
+                            <option value="1학년공강실">1학년공강실</option>
+                            <option value="2학년공강실">2학년공강실</option>
+                            <option value="3학년공강실">3학년공강실</option>
+                            <option value="(기숙사)">(기숙사)</option>
+                            <option value="지구과학강의실1">지구과학강의실1</option>
+                            <option value="지구과학강의실2">지구과학강의실2</option>
+                            <option value="물리강의실2">물리강의실2</option>
+                            <option value="외국어강의실1">외국어강의실1</option>
+                            <option value="외국어강의실2">외국어강의실2</option>
+                            <option value="외국어강의실3">외국어강의실3</option>
+                            <option value="대회의실">대회의실</option>
+                            <option value="도서관">도서관</option>
+                            <option value="(기타장소)">(기타장소)</option>
+                            <option value="미디어부스1">미디어부스1</option>
+                            <option value="미디어부스2">미디어부스2</option>
+                            <option value="세미나실1">세미나실1</option>
+                            <option value="세미나실2">세미나실2</option>
+                            <option value="세미나실3">세미나실3</option>
+                            <option value="세미나실4">세미나실4</option>
+                            <option value="심층">심층</option>
+                            <option value="특교">특교</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">기간 내 일괄 예약하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+        function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+
+        // 페이지 로드 시 시작/종료 날짜 기본값을 오늘로 설정
+        const today = new Date().toISOString().substring(0, 10);
+        document.getElementById('start_date').value = today;
+        document.getElementById('end_date').value = today;
+
+        var dropdown = document.getElementsByClassName("dropdown-btn");
+        for (var i = 0; i < dropdown.length; i++) {
+            dropdown[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                content.style.display = (content.style.display === "block") ? "none" : "block";
+            });
+        }
+    </script>
+</body>
+
+</html>

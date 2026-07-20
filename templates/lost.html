@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ board_title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+  <button class="dropdown-btn active">📁 게시판 모음
+    <span style="float: right; margin-right: 20px;">&#9660;</span>
+  </button>
+  <div class="dropdown-container" style="display: block;">
+    <a href="/notice">📢 공지 게시판</a>
+    {% if user != 'Teacher' %}
+    <a href="/free">💬 자유 게시판</a>
+    <a href="/anonymous">👻 익명 게시판</a>
+    {% endif %}
+  </div>
+
+  <button class="dropdown-btn active">🎒 분실물 신고하기
+    <span style="float: right; margin-right: 20px;">&#9660;</span>
+  </button>
+  <div class="dropdown-container" style="display: block;">
+    <a href="/lost/owner">주인을 찾습니다</a>
+    <a href="/lost/item">물건을 찾습니다</a>
+  </div>
+
+  {% if user == 'admin' %}
+  <a href="/admin_dashboard">👑 회원가입 신청</a>
+  {% endif %}
+  {% if user != 'Teacher' %}
+  <a href="https://diep.io/" target="_blank">🔍 Diep.io</a>
+  {% endif %}
+  <a href="https://sshs.app/school/food" target="_blank">🍔 급식 및 간식</a>
+  <a href="/english">📖영어 단어 시험</a>
+  <a href="/quiz">🧪 주기율표 퀴즈</a>
+  <hr>
+  <a href="/outing" style="color: #4285F4;">📍 이석 현황/신청</a>
+  <a href='/continuous_outing'>🔄 연속 이석 신청</a>
+  <a href="/google_login" style="font-size: 12px; color: #bbb;">🔑 학교 Google 로그인</a>
+</div>
+
+<div class="header">
+    <div style="display: flex; align-items: center;">
+        <span class="hamburger" onclick="openNav()">&#9776;</span>
+        <span>🎒 {{ board_title }}</span>
+    </div>
+    <div class="header-menu">
+        <a href="/mypage">마이페이지</a>
+        <a href="/logout">로그아웃</a>
+    </div>
+</div>
+
+<div class="container">
+    <p style="margin-top: 20px;">현재 사용자: <strong>{{ user }}</strong></p>
+
+    <div class="card lost-write-card">
+        <span class="lost-badge">{{ board_title }}</span>
+        <p class="lost-description">{{ board_description }}</p>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="lost-title-row">
+                <input name="title" placeholder="제목" required>
+                <select name="location" required>
+                    <option value="" disabled selected>잃어버린 장소</option>
+                    {% for loc in locations %}
+                    <option value="{{ loc }}">{{ location_labels.get(loc, loc) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <textarea name="content" placeholder="내용을 입력하세요" required style="width: 100%; height: 100px; padding: 8px; margin: 5px;"></textarea>
+            <input type="file" name="file" style="margin: 5px; padding: 5px;">
+            <button type="submit">글 올리기</button>
+        </form>
+    </div>
+
+    <div class="lost-filter-bar">
+        <a class="lost-filter {% if not selected_location %}active{% endif %}" href="/lost/{{ board_type }}">전체</a>
+        {% for loc in locations %}
+        <a class="lost-filter {% if selected_location == loc %}active{% endif %}" href="/lost/{{ board_type }}?location={{ loc|urlencode }}">{{ location_labels.get(loc, loc) }}</a>
+        {% endfor %}
+    </div>
+
+    {% for p in posts %}
+    <div class="card">
+        <a href="/lost/{{ board_type }}/{{ loop.index0 }}{% if selected_location %}?location={{ selected_location|urlencode }}{% endif %}">
+            <h3 style="margin-bottom: 5px;">[{{ location_labels.get(p.get('location', '모름/기타'), p.get('location', '기타장소')) }}] {{ p.title }}</h3>
+        </a>
+        <p style="color: gray; font-size: 14px;">
+            <span class="lost-badge">{{ board_title }}</span>
+            <span class="lost-location-badge">{{ location_labels.get(p.get('location', '모름/기타'), p.get('location', '기타장소')) }}</span>
+            ✍️ 작성자: {{ p.author }} | 👀 조회수: {{ p.get('views', 0) }} | 💬 댓글: {{ p.get('comments', []) | length }}
+        </p>
+        {% if user == p.author or user == 'admin' %}
+        <div style="margin-top: 10px;">
+            <a href="/lost/{{ board_type }}/delete/{{ loop.index0 }}{% if selected_location %}?location={{ selected_location|urlencode }}{% endif %}" style="color: #e74c3c;" onclick="return confirm('정말 삭제할까요?');">삭제</a>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="card">
+        <p>아직 올라온 글이 없습니다.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+</script>
+<script>
+var dropdown = document.getElementsByClassName("dropdown-btn");
+for (var i = 0; i < dropdown.length; i++) {
+  dropdown[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var dropdownContent = this.nextElementSibling;
+    if (dropdownContent.style.display === "block") {
+      dropdownContent.style.display = "none";
+    } else {
+      dropdownContent.style.display = "block";
+    }
+  });
+}
+</script>
+</body>
+</html>

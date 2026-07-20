@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>게시글 상세</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+        .comment-box { background: #f9f9f9; padding: 10px; margin-top: 10px; border-radius: 5px; }
+        .comment-writer { font-weight: bold; font-size: 14px; }
+        .comment-time { font-size: 12px; color: gray; margin-left: 10px; }
+        .comment-content { margin-top: 5px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div style="display: flex; align-items: center;">
+        <a href="/free" class="back-btn">&#8592;</a>
+        <span>💬 자유 게시글</span>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>{{notice.title}}</h2>
+        <p style="color: gray; font-size: 14px;">✍️ 작성자: {{notice.author}} | 작성일: {{notice.datetime}} | 👀 조회수: {{notice.get('views', 0)}}</p>
+        <hr>
+
+        {% if notice.file %}
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+                <img src="/static/uploads/{{notice.file}}" alt="첨부이미지" style="max-width: 100%; border-radius: 8px;">
+            </div>
+        {% endif %}
+
+        <p style="white-space: pre-wrap; font-size: 16px;">{{notice.content}}</p>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3>댓글</h3>
+        {% if notice.comments %}
+            {% for c in notice.comments %}
+                <div class="comment-box">
+                    <span class="comment-writer">{{c.writer}}</span>
+                    <span class="comment-time">{{c.time}}</span>
+                    <div class="comment-content">{{c.content}}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: gray; font-size: 14px;">아직 작성된 댓글이 없습니다.</p>
+        {% endif %}
+
+        <form method="POST" style="margin-top: 20px; display: flex; gap: 10px;">
+            <input name="comment" placeholder="댓글을 입력하세요..." required style="flex-grow: 1; padding: 10px;">
+            <button type="submit" style="padding: 10px 20px;">작성</button>
+        </form>
+    </div>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <button onclick="location.href='/free'">목록으로 돌아가기</button>
+    </div>
+</div>
+
+</body>
+</html>

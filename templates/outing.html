@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>설곽 1-8 전자플랫폼</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+
+
+        /* 헤더 및 내비게이션 스타일은 기존 style.css 유지 */
+        .container { padding: 20px; max-width: 1000px; margin: auto; }
+
+        .apply-card {
+            background: white; padding: 25px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px;
+        }
+        .apply-card h2 { margin-top: 0; color: #333; font-size: 1.2rem; border-left: 4px solid var(--main-color); padding-left: 10px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
+        input, select, button {
+            padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none;
+        }
+
+        .status-container { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: #f8f9fa; color: #666; font-weight: 600; padding: 15px; text-align: center; border-bottom: 2px solid #eee; }
+        td { padding: 12px 15px; text-align: center; border-bottom: 1px solid #eee; font-size: 14px; }
+
+        /* 강조 스타일 */
+        .badge-1 { background: #e8f0fe; color: #1967d2; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-2 { background: #fef7e0; color: #f29900; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+        .count-text { color: #888; font-size: 12px; margin-top: 4px; display: block; }
+        tr:hover { background-color: #fcfcfc; }
+    </style>
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+  <button class="dropdown-btn active">📁 게시판 모음
+    <span style="float: right; margin-right: 20px;">&#9660;</span>
+  </button>
+
+  <div class="dropdown-container" style="display: block;">
+    <a href="/notice">📢 공지 게시판</a>
+    {% if user != 'Teacher' %}
+    <a href="/free">💬 자유 게시판</a>
+    <a href="/anonymous">👻 익명 게시판</a>
+    {% endif %}
+  </div>
+  <button class="dropdown-btn">🎒 분실물 신고하기
+    <span style="float: right; margin-right: 20px;">&#9660;</span>
+  </button>
+  <div class="dropdown-container">
+    <a href="/lost/owner">주인을 찾습니다</a>
+    <a href="/lost/item">물건을 찾습니다</a>
+  </div>
+  {% if user == 'admin' %}
+  <a href="/admin_dashboard">👑 회원가입 신청</a>
+  {% endif %}
+  {% if user != 'Teacher' %}
+  <a href="https://diep.io/" target="_blank">🔍 Diep.io</a>
+  {% endif %}
+  <a href="https://sshs.app/school/food" target="_blank">🍔 급식 및 간식</a>
+  <a href="/english">📖영어 단어 시험</a>
+  <a href="/quiz">🧪 주기율표 퀴즈</a>
+  <hr>
+    <a href="/outing" style="color: #4285F4;">📍 이석 현황/신청</a>
+    <a href='/continuous_outing'>🔄 연속 이석 신청</a>
+    <a href="/google_login" style="font-size: 12px; color: #bbb;">🔑 학교 Google 로그인</a>
+</div>
+
+<div class="header">
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <div>
+            <span class="hamburger" onclick="openNav()" style="cursor:pointer; font-size:20px; margin-right:15px;">&#9776;</span>
+            <span style="font-weight: bold; font-size: 18px;">📍 이석 신청 및 현황</span>
+        </div>
+        <div class="header-menu">
+            <a href="/logout" style="text-decoration:none; color:#666; font-size:14px;">로그아웃</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="apply-card">
+        <h2>신청하기</h2>
+        <form method="POST">
+            <div class="form-grid">
+                <div style="display: flex; flex-direction: column;">
+                    <label style="font-size: 12px; color: #666; margin-bottom: 5px;">신청 날짜</label>
+                    <input type="date" name="target_date" id="res_date" required>
+                </div>
+                <input type="text" name="student_id" placeholder="학번 (예: 1101)" required>
+                <select name="period">
+                    <option value="1교시">1교시 (19:00~20:50)</option>
+                    <option value="2교시">2교시 (21:30~23:00)</option>
+                </select>
+
+                <select name="location" required>
+                    <option value="" disabled selected>신청 장소 선택</option>
+                    <option value="1학년공강실">1학년공강실</option>
+                    <option value="2학년공강실">2학년공강실</option>
+                    <option value="3학년공강실">3학년공강실</option>
+                    <option value="(기숙사)">(기숙사)</option>
+                    <option value="지구과학강의실1">지구과학강의실1</option>
+                    <option value="지구과학강의실2">지구과학강의실2</option>
+                    <option value="물리강의실2">물리강의실2</option>
+                    <option value="외국어강의실1">외국어강의실1</option>
+                    <option value="외국어강의실2">외국어강의실2</option>
+                    <option value="외국어강의실3">외국어강의실3</option>
+                    <option value="대회의실">대회의실</option>
+                    <option value="도서관">도서관</option>
+                    <option value="(기타장소)">(기타장소)</option>
+                    <option value="미디어부스1">미디어부스1</option>
+                    <option value="미디어부스2">미디어부스2</option>
+                    <option value="세미나실1">세미나실1</option>
+                    <option value="세미나실2">세미나실2</option>
+                    <option value="세미나실3">세미나실3</option>
+                    <option value="세미나실4">세미나실4</option>
+                    <option value="심층">심층</option>
+                    <option value="특교">특교</option>
+                </select>
+                <button>신청 전송</button>
+            </div>
+        </form>
+    </div>
+    <div class="card" style="margin-bottom: 20px; border-left: 5px solid #e74c3c;">
+    <h3 style="margin-top: 0; color: #e74c3c;">📅 {{ user }}님의 향후 예약 현황</h3>
+    {% if my_reservations %}
+        <ul style="list-style-type: none; padding-left: 0;">
+        {% for res in my_reservations %}
+            <li style="padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>{{ res[0] }}</strong> | {{ res[1] }} | {{ res[2] }}
+                </div>
+
+                <form method="POST" action="/delete_reservation" onsubmit="return confirm('정말 이 예약을 취소/삭제하시겠습니까?');" style="margin: 0;">
+                    <input type="hidden" name="date" value="{{ res[0] }}">
+                    <input type="hidden" name="period" value="{{ res[1] }}">
+                    <input type="hidden" name="location" value="{{ res[2] }}">
+                    <button type="submit" style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s;">
+                        삭제
+                    </button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color: #7f8c8d;">예정된 예약이 없습니다.</p>
+    {% endif %}
+</div>
+    <div class="card" style="margin-bottom: 20px; border-left: 5px solid #4285F4;">
+    <h3 style="margin-top: 0; color: #4285F4;">1-8반(1801~1816) 실시간 이석 명단</h3>
+    {% if class_1_8_rows %}
+
+        <div style="overflow-x: auto; white-space: nowrap;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 400px;">
+                <tr style="background-color: #f8f9fa; border-bottom: 2px solid #ddd;">
+                    <th style="padding: 10px;">학번</th>
+                    <th style="padding: 10px;">이름</th>
+                    <th style="padding: 10px;">1교시</th>
+                    <th style="padding: 10px;">2교시</th>
+                </tr>
+                {% for row in class_1_8_rows %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">{{ row[0] }}</td>
+                    <td style="padding: 10px;">{{ row[1] if row|length > 1 else '' }}</td>
+                    <td style="padding: 10px;">{{ row[4] if row|length > 4 else '-' }}</td>
+                    <td style="padding: 10px;">{{ row[7] if row|length > 7 else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div> {% else %}
+        <p style="color: #7f8c8d;">현재 1-8반 이석자가 없습니다.</p>
+    {% endif %}
+</div>
+    <div class="status-container">
+        <div style="padding: 20px; border-bottom: 1px solid #eee;">
+            <h2 style="margin:0; font-size: 1.1rem; color: #333;">📊 실시간 이석 명단</h2>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>학번</th>
+                        <th>이름</th>
+                        <th>1교시 신청 장소</th>
+                        <th>2교시 신청 장소</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    {% if row|length > 0 %}
+                    <tr>
+                        <td style="font-weight: bold; color: #555;">{{ row[0] }}</td>
+                        <td>{{ row[1] if row|length > 1 else '' }}</td>
+                        <td>
+                            <span class="badge-1">{{ row[4] if row|length > 4 else '-' }}</span>
+                            <span class="count-text">현재 {{ row[3] if row|length > 3 else '0' }}명</span>
+                        </td>
+                        <td>
+                            <span class="badge-2">{{ row[7] if row|length > 7 else '-' }}</span>
+                            <span class="count-text">현재 {{ row[6] if row|length > 6 else '0' }}명</span>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+</script>
+<script>
+    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+
+    // 드롭다운 스크립트
+    var dropdown = document.getElementsByClassName("dropdown-btn");
+    var i;
+    for (i = 0; i < dropdown.length; i++) {
+      dropdown[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var dropdownContent = this.nextElementSibling;
+        if (dropdownContent.style.display === "block") {
+          dropdownContent.style.display = "none";
+        } else {
+          dropdownContent.style.display = "block";
+        }
+      });
+    }
+</script>
+<script>
+    // 페이지 로드 시 날짜 칸의 기본값을 오늘로 설정하는 스크립트
+    document.getElementById('res_date').value = new Date().toISOString().substring(0, 10);
+</script>
+</body>
+</html>

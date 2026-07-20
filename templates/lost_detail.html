@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ notice.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+        .comment-box { background: #f9f9f9; padding: 10px; margin-top: 10px; border-radius: 5px; }
+        .comment-writer { font-weight: bold; font-size: 14px; }
+        .comment-time { font-size: 12px; color: gray; margin-left: 10px; }
+        .comment-content { margin-top: 5px; font-size: 14px; }
+        .back-btn { font-size: 24px; color: #2c3e50; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/lost/{{ board_type }}" class="back-btn">&#8592;</a>
+        <span>🎒 {{ board_title }}</span>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <span class="lost-badge">{{ board_title }}</span>
+            <span class="lost-location-badge">{{ location_label }}</span>
+            <h2>[{{ location_label }}] {{ notice.title }}</h2>
+            <p style="color: gray; font-size: 14px;">작성자: {{ notice.author }} | 작성일: {{ notice.datetime }} | 👀 조회수: {{ notice.get('views', 0) }}</p>
+
+            {% if notice.file %}
+                {% if is_image %}
+                <div style="margin: 15px 0;">
+                    <img src="/static/uploads/{{ notice.file }}" alt="첨부이미지" style="max-width: 100%; border-radius: 8px;">
+                </div>
+                {% else %}
+                <p><a href="/static/uploads/{{ notice.file }}" target="_blank">첨부파일 열기: {{ notice.file }}</a></p>
+                {% endif %}
+            {% endif %}
+
+            <p style="white-space: pre-wrap; font-size: 16px; min-height: 80px;">{{ notice.content }}</p>
+        </div>
+
+        <div class="card">
+            <h3>댓글</h3>
+            {% if notice.comments %}
+                {% for c in notice.comments %}
+                <div class="comment-box">
+                    <span class="comment-writer">{{ c.writer }}</span>
+                    <span class="comment-time">{{ c.time }}</span>
+                    <div class="comment-content">{{ c.content }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: gray;">아직 댓글이 없습니다.</p>
+            {% endif %}
+
+            <form method="POST" style="margin-top: 20px; display: flex; gap: 10px;">
+                <input name="comment" placeholder="댓글을 입력하세요..." required style="flex-grow: 1; padding: 10px;">
+                <button type="submit">등록</button>
+            </form>
+        </div>
+
+        <button onclick="location.href='/lost/{{ board_type }}'">목록으로 돌아가기</button>
+    </div>
+</body>
+</html>

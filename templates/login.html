@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>설곽 1-8 전자플랫폼</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+</head>
+<body>
+
+<div class="header" style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center;">
+        <span style="font-weight: bold; font-size: 18px;">SSHS108</span>
+    </div>
+
+    <div class="header-menu" style="display: flex; align-items: center; height: 100%;">
+        <span style="color: #ccc; font-size: 14px; margin-right: 15px;">v0.0.1</span>
+    </div>
+</div>
+
+<div class="login-container">
+    <div class="login-box">
+        <h2>로그인</h2>
+
+        <form method="POST">
+            <input name="id" placeholder="아이디">
+            <input name="pw" type="password" placeholder="비밀번호">
+            <button type="submit">로그인</button>
+        </form>
+
+        <div style="margin-top: 15px;">
+            <a href="/signup">
+                <button type="button" style="background-color: #4CAF50;">회원가입</button>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

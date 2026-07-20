@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>마이페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+        .mypage-box {
+            max-width: 400px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        .mypage-box input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        .mypage-box button {
+            width: 90%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span>👤 마이페이지</span>
+    <a href="/notice">목록으로</a>
+</div>
+
+<div class="container">
+    <div class="card mypage-box">
+        <h2>비밀번호 변경</h2>
+        <p>아이디: <strong>{{ user }}</strong></p>
+
+        <form method="POST">
+            <input type="password" name="current_pw" placeholder="현재 비밀번호" required>
+            <input type="password" name="new_pw" placeholder="새 비밀번호" required>
+            <input type="password" name="confirm_pw" placeholder="새 비밀번호 확인" required>
+            <button type="submit">비밀번호 변경하기</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

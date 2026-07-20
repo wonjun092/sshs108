@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>관리자 승인 페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; color: black; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .approve-btn { background: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+        .reject-btn { background: #f44336; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+    </style>
+</head>
+<body style="padding: 20px;">
+    <h2>👑 가입 승인 대기 목록</h2>
+
+    {% if pending_users %}
+    <table>
+        <tr>
+            <th>아이디</th>
+            <th>이름</th>
+            <th>교번</th>
+            <th>생일</th>
+            <th>관리</th>
+        </tr>
+        {% for uid, info in pending_users.items() %}
+        <tr>
+            <td>{{ uid }}</td>
+            <td>{{ info.name }}</td>
+            <td>{{ info.student_id }}</td>
+            <td>{{ info.birth }}</td>
+            <td>
+                <button class="approve-btn" onclick="location.href='/approve/{{ uid }}'">승인</button>
+                <button class="reject-btn" onclick="location.href='/reject/{{ uid }}'">거절</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>대기 중인 가입 신청이 없습니다.</p>
+    {% endif %}
+
+    <br>
+    <a href="/notice">메인화면으로 돌아가기</a>
+</body>
+</html>
