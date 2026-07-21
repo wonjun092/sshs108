@@ -5,7 +5,7 @@ import json
 import os
 
 app = Flask(__name__)
-app.secret_key = 'secret123'
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', '')
 
 # PythonAnywhere 배포 경로
 DATA_FILE = '/home/sshs108/mysite/notices.json'
@@ -46,7 +46,7 @@ def save_data(filename, data):
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-users = load_json(USER_DATA_FILE, {"admin": "admin!0101", "Teacher": "teacher123"})
+users = load_json(USER_DATA_FILE, {})
 notices = load_json(DATA_FILE, [])
 free_posts = load_json(FREE_DATA_FILE, [])
 anonymous_posts = load_json(ANONYMOUS_DATA_FILE, [])
@@ -61,10 +61,10 @@ import google_auth_oauthlib.flow
 from googleapiclient.discovery import build
 
 # Google API 설정
-CLIENT_ID = '956826108329-55vkfe2oj96bc5obp5pn329lgmkk98r6.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
+CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-SPREADSHEET_ID = '1pk3xJdqa2y9xDR2B7LcdvcmwCt-mlE95upEC6mIObwc'
+SPREADSHEET_ID = os.environ.get('GOOGLE_SPREADSHEET_ID', '')
 
 import sqlite3
 
