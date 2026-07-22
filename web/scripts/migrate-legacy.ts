@@ -54,7 +54,7 @@ function postDate(value?: string): Date {
 }
 
 async function main() {
-  const source = resolve(argument("--source") ?? "../legacy-data");
+  const source = resolve(argument("--source") ?? "..");
   const dryRun = process.argv.includes("--dry-run");
   const activeUsers = readJson<Record<string, string>>(source, "users.json", {});
   const pendingUsers = readJson<Record<string, PendingUser>>(source, "pending_users.json", {});
@@ -141,6 +141,7 @@ async function main() {
               authorId: userIds.get(comment.real_writer ?? comment.writer ?? "") ?? fallbackAuthorId,
               writer: board === "anonymous" ? "익명" : comment.writer ?? migrationOwner,
               content: comment.content ?? "",
+              legacyTime: comment.time,
             })),
           },
         },

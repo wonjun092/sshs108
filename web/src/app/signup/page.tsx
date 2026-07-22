@@ -1,11 +1,6 @@
+import Link from "next/link";
 import { AuthForm } from "@/components/AuthForm";
 
 export default function SignupPage() {
-  return (
-    <section className="narrow-page">
-      <h1>회원가입</h1>
-      <p>가입 후 관리자 승인이 필요합니다.</p>
-      <AuthForm mode="signup" />
-    </section>
-  );
+  return <><header className="header"><strong>SSHS108 회원가입</strong></header><div className="login-container"><div className="login-box"><h2>정보 입력</h2><AuthForm mode="signup" /><Link className="back-login" href="/login">로그인 화면으로 돌아가기</Link></div></div></>;
 }

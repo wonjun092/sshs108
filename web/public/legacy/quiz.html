@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>원소 주기율표 암기 프로그램</title>
+<style>
+  /* 🍔 햄버거 사이드바 스타일 */
+  .sidenav {
+      height: 100%; width: 0; position: fixed; z-index: 100; top: 0; left: 0;
+      background-color: #111; overflow-x: hidden; transition: 0.3s; padding-top: 60px;
+  }
+  .sidenav a {
+      padding: 10px 10px 10px 30px; text-decoration: none; font-size: 18px;
+      color: #818181; display: block; transition: 0.3s;
+  }
+  .sidenav a:hover { color: #f1f1f1; }
+  .sidenav .closebtn { position: absolute; top: 0; right: 20px; font-size: 36px; margin-left: 50px; }
+
+  /* 💡 퀴즈 화면은 배경이 밝으니 햄버거 버튼 색상을 검은색(#333)으로 설정! */
+  .hamburger { font-size: 24px; cursor: pointer; color: #333; margin-right: 15px; }
+
+  :root {
+    --bg: #f5f5f0;
+    --card: #ffffff;
+    --border: #e0deda;
+    --border2: #c8c5c0;
+    --text: #1a1a18;
+    --text2: #666660;
+    --text3: #999993;
+    --green-bg: #eaf3de;
+    --green-text: #3B6D11;
+    --green-border: #97c459;
+    --red-bg: #fcebeb;
+    --red-text: #A32D2D;
+    --red-border: #f09595;
+    --radius: 10px;
+    --radius-sm: 7px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  .app { max-width: 660px; margin: 0 auto; padding: 24px 16px 60px; }
+  h1 { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+
+  /* ── Settings panel ── */
+  .settings { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
+  .settings-title { font-size: 11px; font-weight: 600; color: var(--text3); margin-bottom: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .setting-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .setting-row:last-child { margin-bottom: 0; }
+  .setting-label { font-size: 13px; color: var(--text2); min-width: 72px; padding-top: 5px; flex-shrink: 0; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 5px; }
+  .pill { padding: 4px 12px; font-size: 12px; border: 1px solid var(--border2); border-radius: 20px; background: var(--card); color: var(--text2); cursor: pointer; transition: all .12s; white-space: nowrap; }
+  .pill:hover { background: var(--bg); }
+  .pill.on { background: var(--text); color: #fff; border-color: var(--text); }
+
+  /* range grid */
+  .range-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; }
+  .range-item { padding: 8px 10px; font-size: 12px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--card); color: var(--text2); cursor: pointer; transition: all .12s; text-align: left; line-height: 1.4; }
+  .range-item:hover { background: var(--bg); }
+  .range-item.on { background: var(--text); color: #fff; border-color: var(--text); }
+  .range-item .r-title { font-weight: 600; display: block; font-size: 13px; }
+  .range-item .r-sub { font-size: 11px; opacity: .65; display: block; margin-top: 2px; }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  /* ── Stats ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
+  .stat .num { font-size: 22px; font-weight: 600; display: block; }
+  .stat .lbl { font-size: 11px; color: var(--text3); margin-top: 2px; display: block; }
+  .stat.streak .num { color: #854F0B; }
+
+  /* ── Progress ── */
+  .progress-wrap { background: var(--border); border-radius: 3px; height: 5px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--text); border-radius: 3px; transition: width .3s; }
+
+  /* ── Question card ── */
+  .q-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 20px 22px; text-align: center; margin-bottom: 16px; }
+  .q-label { font-size: 11px; color: var(--text3); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 12px; }
+  .q-big { font-size: 64px; font-weight: 600; line-height: 1; margin-bottom: 6px; }
+  .q-big.md { font-size: 36px; margin-top: 8px; }
+  .q-big.sm { font-size: 24px; margin-top: 8px; }
+  .q-small { font-size: 14px; color: var(--text2); margin-bottom: 8px; }
+  .cat-tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; margin-top: 6px; }
+
+  /* ── Inputs ── */
+  .input-area { margin-bottom: 10px; }
+  .input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .input-row label { font-size: 13px; color: var(--text2); min-width: 36px; }
+  input[type=text], input[type=number] {
+    flex: 1; height: 44px; padding: 0 14px; font-size: 15px;
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    background: var(--card); color: var(--text); outline: none;
+    transition: border-color .15s;
+  }
+  input:focus { border-color: #888; }
+  input.ok { border-color: var(--green-border); background: var(--green-bg); }
+  input.ng { border-color: var(--red-border); background: var(--red-bg); }
+  .hint-text { font-size: 11px; color: var(--text3); text-align: center; margin-bottom: 8px; }
+
+  /* ── Buttons ── */
+  .btn-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .btn { flex: 1; height: 44px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--card); color: var(--text); font-size: 14px; cursor: pointer; transition: background .12s; }
+  .btn:hover:not(:disabled) { background: var(--bg); }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .btn.primary { background: var(--text); color: #fff; border-color: var(--text); }
+  .btn.primary:hover:not(:disabled) { opacity: .85; }
+
+  /* ── Feedback ── */
+  .fb { min-height: 22px; text-align: center; font-size: 13px; margin-bottom: 8px; color: var(--text3); }
+  .fb.ok { color: var(--green-text); font-weight: 600; }
+  .fb.ng { color: var(--red-text); font-weight: 500; }
+
+  /* ── Multiple choice ── */
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .opt-btn {
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    padding: 12px 10px; font-size: 14px; cursor: pointer; background: var(--card);
+    color: var(--text); text-align: left; line-height: 1.4; transition: background .1s;
+  }
+  .opt-btn:hover:not(:disabled) { background: var(--bg); }
+  .opt-btn.ok { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); font-weight: 500; }
+  .opt-btn.ng { background: var(--red-bg); border-color: var(--red-border); color: var(--red-text); }
+  .opt-btn:disabled { cursor: default; }
+
+  /* ── Result ── */
+  .result { text-align: center; padding: 32px 16px; }
+  .result .score { font-size: 56px; font-weight: 600; }
+  .result .grade { font-size: 18px; color: var(--text2); margin: 8px 0 24px; }
+  .result-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .result-btns .btn { flex: none; padding: 0 24px; }
+  .wrong-section { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px; text-align: left; }
+  .wrong-section h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text2); }
+  .wrong-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .wrong-table th { text-align: left; padding: 6px 8px; font-size: 11px; color: var(--text3); font-weight: 500; border-bottom: 1px solid var(--border); }
+  .wrong-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); }
+  .wrong-table tr:last-child td { border-bottom: none; }
+  .sym-cell { font-weight: 600; }
+
+  /* =========================================
+   📌 사이드바 드롭다운(아코디언) 메뉴 스타일
+   ========================================= */
+
+    .dropdown-btn {
+        padding: 10px 10px 10px 30px;
+        text-decoration: none;
+        font-size: 18px;
+        color: #818181;
+        display: block;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    /* 마우스 올렸을 때 색상 변화 */
+    .dropdown-btn:hover, .dropdown-btn.active {
+        color: #f1f1f1;
+    }
+
+    /* 펼쳐지는 컨테이너 (처음엔 숨겨둠) */
+    .dropdown-container {
+        display: none;
+        background-color: #262626;
+        padding-left: 15px;
+    }
+</style>
+</head>
+<link rel="icon" href="/logo.png">
+<body>
+<div class="app">
+  <body>
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+  <button class="dropdown-btn active">📁 게시판 모음
+    <span style="float: right; margin-right: 20px;">&#9660;</span>
+  </button>
+
+  <div class="dropdown-container" style="display: block;">
+    <a href="/notice">📢 공지 게시판</a>
+    
+    <a href="/free">💬 자유 게시판</a>
+    <a href="/anonymous">👻 익명 게시판</a>
+    
+  </div>
+  <button class="dropdown-btn">🎒 분실물 신고하기
+    <span style="float: right; margin-right: 20px;">&#9660;</span>
+  </button>
+  <div class="dropdown-container">
+    <a href="/lost/owner">주인을 찾습니다</a>
+    <a href="/lost/item">물건을 찾습니다</a>
+  </div>
+  
+  <a href="/admin_dashboard">👑 회원가입 신청</a>
+  
+  
+  <a href="https://diep.io/" target="_blank">🔍 Diep.io</a>
+  
+  <a href="https://sshs.app/school/food" target="_blank">🍔 급식 및 간식</a>
+  <a href="/english">📖영어 단어 시험</a>
+  <a href="/quiz">🧪 주기율표 퀴즈</a>
+  <hr>
+    <a href="/outing" style="color: #4285F4;">📍 이석 현황/신청</a>
+    <a href='/continuous_outing'>🔄 연속 이석 신청</a>
+    <a href="/google_login" style="font-size: 12px; color: #bbb;">🔑 학교 Google 로그인</a>
+</div>
+
+<div class="app">
+  <div style="margin-bottom: 20px; display: flex; align-items: center;">
+    <span class="hamburger" onclick="openNav()">&#9776;</span>
+    <h1 style="margin-bottom: 0;">원소 주기율표 암기</h1>
+  </div>
+
+  <div class="settings">
+    <div class="settings-title">출제 모드</div>
+    <div class="setting-row">
+      <span class="setting-label">문제 방향</span>
+      <div class="pill-group">
+        <button class="pill on" id="m-num2name" onclick="setMode('num2name')">번호 → 이름</button>
+        <button class="pill"    id="m-num2sym"  onclick="setMode('num2sym')">번호 → 기호</button>
+        <button class="pill"    id="m-num2both" onclick="setMode('num2both')">번호 → 이름+기호</button>
+        <button class="pill"    id="m-sym2num"  onclick="setMode('sym2num')">기호 → 번호</button>
+        <button class="pill"    id="m-name2num" onclick="setMode('name2num')">이름 → 번호</button>
+        <button class="pill"    id="m-mix"      onclick="setMode('mix')">전체 혼합</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">입력 방식</span>
+      <div class="pill-group">
+        <button class="pill on" id="t-type" onclick="setInput('type')">직접 입력</button>
+        <button class="pill"    id="t-mc"   onclick="setInput('mc')">4지선다</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <span class="setting-label">출제 순서</span>
+      <div class="pill-group">
+        <button class="pill on" id="t-rand" onclick="setOrder('random')">랜덤</button>
+        <button class="pill"    id="t-seq"  onclick="setOrder('seq')">번호 순서</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="settings-title">문제 범위</div>
+
+    <div class="range-grid">
+      <button class="range-item on" data-range="all"    onclick="setRange(this)"><span class="r-title">전체</span><span class="r-sub">1 ~ 118번 (118개)</span></button>
+
+      <button class="range-item" data-range="1-2"       onclick="setRange(this)"><span class="r-title">1주기</span><span class="r-sub">1 ~ 2번 (H, He)</span></button>
+      <button class="range-item" data-range="3-10"      onclick="setRange(this)"><span class="r-title">2주기</span><span class="r-sub">3 ~ 10번 (8개)</span></button>
+      <button class="range-item" data-range="11-18"     onclick="setRange(this)"><span class="r-title">3주기</span><span class="r-sub">11 ~ 18번 (8개)</span></button>
+      <button class="range-item" data-range="19-36"     onclick="setRange(this)"><span class="r-title">4주기</span><span class="r-sub">19 ~ 36번 (18개)</span></button>
+      <button class="range-item" data-range="37-54"     onclick="setRange(this)"><span class="r-title">5주기</span><span class="r-sub">37 ~ 54번 (18개)</span></button>
+      <button class="range-item" data-range="55-86"     onclick="setRange(this)"><span class="r-title">6주기</span><span class="r-sub">55 ~ 86번 (32개)</span></button>
+      <button class="range-item" data-range="87-118"    onclick="setRange(this)"><span class="r-title">7주기</span><span class="r-sub">87 ~ 118번 (32개)</span></button>
+
+      <button class="range-item" data-range="57-71"     onclick="setRange(this)"><span class="r-title">란타넘족</span><span class="r-sub">57 ~ 71번 (15개)</span></button>
+      <button class="range-item" data-range="89-103"    onclick="setRange(this)"><span class="r-title">악티늄족</span><span class="r-sub">89 ~ 103번 (15개)</span></button>
+
+      <button class="range-item" data-range="1-20"      onclick="setRange(this)"><span class="r-title">기초 20</span><span class="r-sub">1 ~ 20번</span></button>
+      <button class="range-item" data-range="1-36"      onclick="setRange(this)"><span class="r-title">3주기까지</span><span class="r-sub">1 ~ 36번</span></button>
+      <button class="range-item" data-range="1-54"      onclick="setRange(this)"><span class="r-title">5주기까지</span><span class="r-sub">1 ~ 54번</span></button>
+
+      <button class="range-item" data-range="alkali"    onclick="setRange(this)"><span class="r-title">알칼리금속</span><span class="r-sub">Li·Na·K·Rb·Cs·Fr</span></button>
+      <button class="range-item" data-range="alkaline"  onclick="setRange(this)"><span class="r-title">알칼리토금속</span><span class="r-sub">Be·Mg·Ca·Sr·Ba·Ra</span></button>
+      <button class="range-item" data-range="trans"     onclick="setRange(this)"><span class="r-title">전이금속</span><span class="r-sub">Sc~Zn, Y~Cd 등</span></button>
+      <button class="range-item" data-range="halogen"   onclick="setRange(this)"><span class="r-title">할로젠</span><span class="r-sub">F·Cl·Br·I·At·Ts</span></button>
+      <button class="range-item" data-range="noble"     onclick="setRange(this)"><span class="r-title">비활성기체</span><span class="r-sub">He·Ne·Ar·Kr·Xe·Rn·Og</span></button>
+      <button class="range-item" data-range="semimetal" onclick="setRange(this)"><span class="r-title">준금속</span><span class="r-sub">B·Si·Ge·As·Sb·Te·Po</span></button>
+
+      <button class="range-item" data-range="wrong"     onclick="setRange(this)" id="range-wrong"><span class="r-title">틀린 것만</span><span class="r-sub">오답 복습</span></button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><span class="num" id="s-cor">0</span><span class="lbl">정답</span></div>
+    <div class="stat"><span class="num" id="s-wrn">0</span><span class="lbl">오답</span></div>
+    <div class="stat"><span class="num" id="s-prog">0</span><span class="lbl">진행</span></div>
+    <div class="stat streak"><span class="num" id="s-streak">0</span><span class="lbl">연속정답</span></div>
+  </div>
+
+  <div class="progress-wrap"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+
+  <div id="qa"></div>
+</div>
+
+<script>
+const EL = [
+  {n:1,s:"H",kr:"수소",cat:"비금속"},
+  {n:2,s:"He",kr:"헬륨",cat:"비활성기체"},
+  {n:3,s:"Li",kr:"리튬",cat:"알칼리금속"},
+  {n:4,s:"Be",kr:"베릴륨",cat:"알칼리토금속"},
+  {n:5,s:"B",kr:"붕소",cat:"준금속"},
+  {n:6,s:"C",kr:"탄소",cat:"비금속"},
+  {n:7,s:"N",kr:"질소",cat:"비금속"},
+  {n:8,s:"O",kr:"산소",cat:"비금속"},
+  {n:9,s:"F",kr:"플루오린",cat:"할로젠"},
+  {n:10,s:"Ne",kr:"네온",cat:"비활성기체"},
+  {n:11,s:"Na",kr:"나트륨",cat:"알칼리금속"},
+  {n:12,s:"Mg",kr:"마그네슘",cat:"알칼리토금속"},
+  {n:13,s:"Al",kr:"알루미늄",cat:"금속"},
+  {n:14,s:"Si",kr:"규소",cat:"준금속"},
+  {n:15,s:"P",kr:"인",cat:"비금속"},
+  {n:16,s:"S",kr:"황",cat:"비금속"},
+  {n:17,s:"Cl",kr:"염소",cat:"할로젠"},
+  {n:18,s:"Ar",kr:"아르곤",cat:"비활성기체"},
+  {n:19,s:"K",kr:"칼륨",cat:"알칼리금속"},
+  {n:20,s:"Ca",kr:"칼슘",cat:"알칼리토금속"},
+  {n:21,s:"Sc",kr:"스칸듐",cat:"전이금속"},
+  {n:22,s:"Ti",kr:"타이타늄",cat:"전이금속"},
+  {n:23,s:"V",kr:"바나듐",cat:"전이금속"},
+  {n:24,s:"Cr",kr:"크로뮴",cat:"전이금속"},
+  {n:25,s:"Mn",kr:"망가니즈",cat:"전이금속"},
+  {n:26,s:"Fe",kr:"철",cat:"전이금속"},
+  {n:27,s:"Co",kr:"코발트",cat:"전이금속"},
+  {n:28,s:"Ni",kr:"니켈",cat:"전이금속"},
+  {n:29,s:"Cu",kr:"구리",cat:"전이금속"},
+  {n:30,s:"Zn",kr:"아연",cat:"전이금속"},
+  {n:31,s:"Ga",kr:"갈륨",cat:"금속"},
+  {n:32,s:"Ge",kr:"저마늄",cat:"준금속"},
+  {n:33,s:"As",kr:"비소",cat:"준금속"},
+  {n:34,s:"Se",kr:"셀레늄",cat:"비금속"},
+  {n:35,s:"Br",kr:"브로민",cat:"할로젠"},
+  {n:36,s:"Kr",kr:"크립톤",cat:"비활성기체"},
+  {n:37,s:"Rb",kr:"루비듐",cat:"알칼리금속"},
+  {n:38,s:"Sr",kr:"스트론튬",cat:"알칼리토금속"},
+  {n:39,s:"Y",kr:"이트륨",cat:"전이금속"},
+  {n:40,s:"Zr",kr:"지르코늄",cat:"전이금속"},
+  {n:41,s:"Nb",kr:"나이오븀",cat:"전이금속"},
+  {n:42,s:"Mo",kr:"몰리브데넘",cat:"전이금속"},
+  {n:43,s:"Tc",kr:"테크네튬",cat:"전이금속"},
+  {n:44,s:"Ru",kr:"루테늄",cat:"전이금속"},
+  {n:45,s:"Rh",kr:"로듐",cat:"전이금속"},
+  {n:46,s:"Pd",kr:"팔라듐",cat:"전이금속"},
+  {n:47,s:"Ag",kr:"은",cat:"전이금속"},
+  {n:48,s:"Cd",kr:"카드뮴",cat:"전이금속"},
+  {n:49,s:"In",kr:"인듐",cat:"금속"},
+  {n:50,s:"Sn",kr:"주석",cat:"금속"},
+  {n:51,s:"Sb",kr:"안티모니",cat:"준금속"},
+  {n:52,s:"Te",kr:"텔루륨",cat:"준금속"},
+  {n:53,s:"I",kr:"아이오딘",cat:"할로젠"},
+  {n:54,s:"Xe",kr:"제논",cat:"비활성기체"},
+  {n:55,s:"Cs",kr:"세슘",cat:"알칼리금속"},
+  {n:56,s:"Ba",kr:"바륨",cat:"알칼리토금속"},
+  {n:57,s:"La",kr:"란타넘",cat:"란타넘족"},
+  {n:58,s:"Ce",kr:"세륨",cat:"란타넘족"},
+  {n:59,s:"Pr",kr:"프라세오디뮴",cat:"란타넘족"},
+  {n:60,s:"Nd",kr:"네오디뮴",cat:"란타넘족"},
+  {n:61,s:"Pm",kr:"프로메튬",cat:"란타넘족"},
+  {n:62,s:"Sm",kr:"사마륨",cat:"란타넘족"},
+  {n:63,s:"Eu",kr:"유로퓸",cat:"란타넘족"},
+  {n:64,s:"Gd",kr:"가돌리늄",cat:"란타넘족"},
+  {n:65,s:"Tb",kr:"터븀",cat:"란타넘족"},
+  {n:66,s:"Dy",kr:"디스프로슘",cat:"란타넘족"},
+  {n:67,s:"Ho",kr:"홀뮴",cat:"란타넘족"},
+  {n:68,s:"Er",kr:"어븀",cat:"란타넘족"},
+  {n:69,s:"Tm",kr:"툴륨",cat:"란타넘족"},
+  {n:70,s:"Yb",kr:"이터븀",cat:"란타넘족"},
+  {n:71,s:"Lu",kr:"루테튬",cat:"란타넘족"},
+  {n:72,s:"Hf",kr:"하프늄",cat:"전이금속"},
+  {n:73,s:"Ta",kr:"탄탈럼",cat:"전이금속"},
+  {n:74,s:"W",kr:"텅스텐",cat:"전이금속"},
+  {n:75,s:"Re",kr:"레늄",cat:"전이금속"},
+  {n:76,s:"Os",kr:"오스뮴",cat:"전이금속"},
+  {n:77,s:"Ir",kr:"이리듐",cat:"전이금속"},
+  {n:78,s:"Pt",kr:"백금",cat:"전이금속"},
+  {n:79,s:"Au",kr:"금",cat:"전이금속"},
+  {n:80,s:"Hg",kr:"수은",cat:"전이금속"},
+  {n:81,s:"Tl",kr:"탈륨",cat:"금속"},
+  {n:82,s:"Pb",kr:"납",cat:"금속"},
+  {n:83,s:"Bi",kr:"비스무트",cat:"금속"},
+  {n:84,s:"Po",kr:"폴로늄",cat:"준금속"},
+  {n:85,s:"At",kr:"아스타틴",cat:"할로젠"},
+  {n:86,s:"Rn",kr:"라돈",cat:"비활성기체"},
+  {n:87,s:"Fr",kr:"프랑슘",cat:"알칼리금속"},
+  {n:88,s:"Ra",kr:"라듐",cat:"알칼리토금속"},
+  {n:89,s:"Ac",kr:"악티늄",cat:"악티늄족"},
+  {n:90,s:"Th",kr:"토륨",cat:"악티늄족"},
+  {n:91,s:"Pa",kr:"프로트악티늄",cat:"악티늄족"},
+  {n:92,s:"U",kr:"우라늄",cat:"악티늄족"},
+  {n:93,s:"Np",kr:"넵투늄",cat:"악티늄족"},
+  {n:94,s:"Pu",kr:"플루토늄",cat:"악티늄족"},
+  {n:95,s:"Am",kr:"아메리슘",cat:"악티늄족"},
+  {n:96,s:"Cm",kr:"퀴륨",cat:"악티늄족"},
+  {n:97,s:"Bk",kr:"버클륨",cat:"악티늄족"},
+  {n:98,s:"Cf",kr:"캘리포늄",cat:"악티늄족"},
+  {n:99,s:"Es",kr:"아인슈타이늄",cat:"악티늄족"},
+  {n:100,s:"Fm",kr:"페르뮴",cat:"악티늄족"},
+  {n:101,s:"Md",kr:"멘델레븀",cat:"악티늄족"},
+  {n:102,s:"No",kr:"노벨륨",cat:"악티늄족"},
+  {n:103,s:"Lr",kr:"로렌슘",cat:"악티늄족"},
+  {n:104,s:"Rf",kr:"러더포듐",cat:"전이금속"},
+  {n:105,s:"Db",kr:"더브늄",cat:"전이금속"},
+  {n:106,s:"Sg",kr:"시보귬",cat:"전이금속"},
+  {n:107,s:"Bh",kr:"보륨",cat:"전이금속"},
+  {n:108,s:"Hs",kr:"하슘",cat:"전이금속"},
+  {n:109,s:"Mt",kr:"마이트너륨",cat:"전이금속"},
+  {n:110,s:"Ds",kr:"다름슈타튬",cat:"전이금속"},
+  {n:111,s:"Rg",kr:"뢴트게늄",cat:"전이금속"},
+  {n:112,s:"Cn",kr:"코페르니슘",cat:"전이금속"},
+  {n:113,s:"Nh",kr:"니호늄",cat:"금속"},
+  {n:114,s:"Fl",kr:"플레로븀",cat:"금속"},
+  {n:115,s:"Mc",kr:"모스코븀",cat:"금속"},
+  {n:116,s:"Lv",kr:"리버모륨",cat:"금속"},
+  {n:117,s:"Ts",kr:"테네신",cat:"할로젠"},
+  {n:118,s:"Og",kr:"오가네손",cat:"비활성기체"}
+];
+
+const CAT_STYLE = {
+  "알칼리금속":  "background:#faeeda;color:#854F0B",
+  "알칼리토금속":"background:#faeeda;color:#633806",
+  "전이금속":    "background:#f1efe8;color:#5F5E5A",
+  "금속":        "background:#f1efe8;color:#444441",
+  "준금속":      "background:#eaf3de;color:#3B6D11",
+  "비금속":      "background:#e1f5ee;color:#0F6E56",
+  "할로젠":      "background:#eeedfe;color:#534AB7",
+  "비활성기체":  "background:#e6f1fb;color:#185FA5",
+  "란타넘족":    "background:#fbeaf0;color:#993556",
+  "악티늄족":    "background:#faece7;color:#993C1D"
+};
+
+const RANGES = {
+  "all":      e => true,
+  "1-2":      e => e.n <= 2,
+  "3-10":     e => e.n >= 3  && e.n <= 10,
+  "11-18":    e => e.n >= 11 && e.n <= 18,
+  "19-36":    e => e.n >= 19 && e.n <= 36,
+  "37-54":    e => e.n >= 37 && e.n <= 54,
+  "55-86":    e => e.n >= 55 && e.n <= 86,
+  "87-118":   e => e.n >= 87,
+  "57-71":    e => e.n >= 57 && e.n <= 71,
+  "89-103":   e => e.n >= 89 && e.n <= 103,
+  "1-20":     e => e.n <= 20,
+  "1-36":     e => e.n <= 36,
+  "1-54":     e => e.n <= 54,
+  "alkali":   e => e.cat === "알칼리금속",
+  "alkaline": e => e.cat === "알칼리토금속",
+  "trans":    e => e.cat === "전이금속",
+  "halogen":  e => e.cat === "할로젠",
+  "noble":    e => e.cat === "비활성기체",
+  "semimetal":e => e.cat === "준금속",
+  "wrong":    null
+};
+
+let mode = 'num2name', inputMode = 'type', orderMode = 'random', rangeKey = 'all';
+let pool = [], idx = 0, cor = 0, wrn = 0, streak = 0;
+let answered = false, wrongList = [], curSubMode = '';
+
+function shuffle(a) { return [...a].sort(() => Math.random() - .5); }
+
+function getBasePool() {
+  if (rangeKey === 'wrong') return wrongList.length > 0 ? [...wrongList] : [...EL];
+  const fn = RANGES[rangeKey];
+  return fn ? EL.filter(fn) : [...EL];
+}
+
+function getPool() {
+  const base = getBasePool();
+  return orderMode === 'random' ? shuffle(base) : [...base].sort((a,b) => a.n - b.n);
+}
+
+function setMode(m) {
+  mode = m;
+  ['num2name','num2sym','num2both','sym2num','name2num','mix'].forEach(k => {
+    document.getElementById('m-'+k).classList.toggle('on', k === m);
+  });
+  restart();
+}
+
+function setInput(v) {
+  inputMode = v;
+  document.getElementById('t-type').classList.toggle('on', v === 'type');
+  document.getElementById('t-mc').classList.toggle('on', v === 'mc');
+  restart();
+}
+
+function setOrder(v) {
+  orderMode = v;
+  document.getElementById('t-rand').classList.toggle('on', v === 'random');
+  document.getElementById('t-seq').classList.toggle('on', v === 'seq');
+  restart();
+}
+
+function setRange(btn) {
+  rangeKey = btn.dataset.range;
+  document.querySelectorAll('.range-item').forEach(b => b.classList.toggle('on', b === btn));
+  restart();
+}
+
+function restart() {
+  pool = getPool();
+  idx = 0; cor = 0; wrn = 0; streak = 0;
+  wrongList = [];
+  updateStats();
+  nextQ();
+}
+
+function retryWrong() {
+  if (wrongList.length === 0) { restart(); return; }
+  pool = orderMode === 'random' ? shuffle([...wrongList]) : [...wrongList].sort((a,b) => a.n - b.n);
+  idx = 0; cor = 0; wrn = 0; streak = 0;
+  updateStats();
+  nextQ();
+}
+
+function updateStats() {
+  document.getElementById('s-cor').textContent = cor;
+  document.getElementById('s-wrn').textContent = wrn;
+  document.getElementById('s-prog').textContent = idx + '/' + pool.length;
+  document.getElementById('s-streak').textContent = streak;
+  document.getElementById('pbar').style.width = pool.length ? Math.round(idx / pool.length * 100) + '%' : '0%';
+}
+
+function pickSubMode() {
+  if (mode === 'mix') {
+    const opts = ['num2name','num2sym','sym2num','name2num'];
+    return opts[Math.floor(Math.random() * opts.length)];
+  }
+  return mode;
+}
+
+function catTag(el) {
+  return `<span class="cat-tag" style="${CAT_STYLE[el.cat]||''}">${el.cat}</span>`;
+}
+
+function makeMCOpts(el, sub) {
+  const base = getBasePool().filter(e => e.n !== el.n);
+  const fallback = EL.filter(e => e.n !== el.n);
+  const distPool = base.length >= 3 ? base : fallback;
+  const all = shuffle([el, ...shuffle(distPool).slice(0,3)]);
+
+  return all.map(e => {
+    let label = '';
+    if (sub === 'num2name')      label = e.kr;
+    else if (sub === 'num2sym')  label = e.s;
+    else if (sub === 'num2both') label = `<strong>${e.s}</strong>&nbsp; ${e.kr}`;
+    else                         label = e.n + '번';
+    return `<button class="opt-btn" data-n="${e.n}" onclick="pickMC(this,${e.n})">${label}</button>`;
+  }).join('');
+}
+
+function nextQ() {
+  if (idx >= pool.length) { showResult(); return; }
+  answered = false;
+  const el = pool[idx];
+  curSubMode = pickSubMode();
+  const useMC = inputMode === 'mc';
+
+  let qContent = '';
+  if (curSubMode === 'num2name') {
+    qContent = `<div class="q-label">원자번호 → 원소 이름</div><div class="q-big">${el.n}</div>${catTag(el)}`;
+  } else if (curSubMode === 'num2sym') {
+    qContent = `<div class="q-label">원자번호 → 원소 기호</div><div class="q-big">${el.n}</div>${catTag(el)}`;
+  } else if (curSubMode === 'num2both') {
+    qContent = `<div class="q-label">원자번호 → 기호 + 이름</div><div class="q-big">${el.n}</div>${catTag(el)}`;
+  } else if (curSubMode === 'sym2num') {
+    qContent = `<div class="q-label">원소 기호 → 원자번호</div><div class="q-big">${el.s}</div><div class="q-small">${el.kr}</div>${catTag(el)}`;
+  } else {
+    qContent = `<div class="q-label">원소 이름 → 원자번호</div><div class="q-big ${el.kr.length > 5 ? 'sm' : 'md'}">${el.kr}</div>${catTag(el)}`;
+  }
+
+  let ansContent = '';
+  if (useMC) {
+    ansContent = `<div class="opts">${makeMCOpts(el, curSubMode)}</div>
+      <div class="fb" id="fb"></div>
+      <button class="btn" id="nb" onclick="nextQ()" style="display:none">다음 문제 →</button>`;
+  } else if (curSubMode === 'num2both') {
+    ansContent = `<div class="input-area">
+        <div class="input-row"><label>기호</label><input type="text" id="inp-s" placeholder="예: Na" autocomplete="off"/></div>
+        <div class="input-row"><label>이름</label><input type="text" id="inp-k" placeholder="예: 나트륨" autocomplete="off"/></div>
+      </div>
+      <div class="hint-text">Tab으로 다음 칸 · Enter로 확인</div>
+      <div class="fb" id="fb"></div>
+      <div class="btn-row">
+        <button class="btn primary" id="sbtn" onclick="checkTyped()">확인</button>
+        <button class="btn" onclick="skipQ()">모르겠어요</button>
+      </div>
+      <button class="btn" id="nb" onclick="nextQ()" style="display:none">다음 문제 →</button>`;
+  } else if (curSubMode === 'num2name') {
+    ansContent = `<div class="input-area">
+        <div class="input-row"><label>이름</label><input type="text" id="inp-k" placeholder="예: 나트륨" autocomplete="off"/></div>
+      </div>
+      <div class="hint-text">Enter로 확인</div>
+      <div class="fb" id="fb"></div>
+      <div class="btn-row">
+        <button class="btn primary" id="sbtn" onclick="checkTyped()">확인</button>
+        <button class="btn" onclick="skipQ()">모르겠어요</button>
+      </div>
+      <button class="btn" id="nb" onclick="nextQ()" style="display:none">다음 문제 →</button>`;
+  } else if (curSubMode === 'num2sym') {
+    ansContent = `<div class="input-area">
+        <div class="input-row"><label>기호</label><input type="text" id="inp-s" placeholder="예: Na" autocomplete="off"/></div>
+      </div>
+      <div class="hint-text">Enter로 확인</div>
+      <div class="fb" id="fb"></div>
+      <div class="btn-row">
+        <button class="btn primary" id="sbtn" onclick="checkTyped()">확인</button>
+        <button class="btn" onclick="skipQ()">모르겠어요</button>
+      </div>
+      <button class="btn" id="nb" onclick="nextQ()" style="display:none">다음 문제 →</button>`;
+  } else {
+    ansContent = `<div class="input-area">
+        <div class="input-row"><label>번호</label><input type="number" id="inp-n" placeholder="1 ~ 118" min="1" max="118" autocomplete="off"/></div>
+      </div>
+      <div class="hint-text">Enter로 확인</div>
+      <div class="fb" id="fb"></div>
+      <div class="btn-row">
+        <button class="btn primary" id="sbtn" onclick="checkTyped()">확인</button>
+        <button class="btn" onclick="skipQ()">모르겠어요</button>
+      </div>
+      <button class="btn" id="nb" onclick="nextQ()" style="display:none">다음 문제 →</button>`;
+  }
+
+  document.getElementById('qa').innerHTML = `<div class="q-card">${qContent}</div>${ansContent}`;
+
+  setTimeout(() => {
+    const first = document.getElementById('inp-s') || document.getElementById('inp-k') || document.getElementById('inp-n');
+    if (first) first.focus();
+    const inpS = document.getElementById('inp-s');
+    const inpK = document.getElementById('inp-k');
+    const inpN = document.getElementById('inp-n');
+    if (inpS && inpK) {
+      inpS.addEventListener('keydown', e => { if (e.key==='Tab'){e.preventDefault();inpK.focus();} if(e.key==='Enter')checkTyped(); });
+      inpK.addEventListener('keydown', e => { if(e.key==='Enter')checkTyped(); });
+    } else if (inpS) {
+      inpS.addEventListener('keydown', e => { if(e.key==='Enter')checkTyped(); });
+    } else if (inpK) {
+      inpK.addEventListener('keydown', e => { if(e.key==='Enter')checkTyped(); });
+    } else if (inpN) {
+      inpN.addEventListener('keydown', e => { if(e.key==='Enter')checkTyped(); });
+    }
+  }, 30);
+}
+
+function checkTyped() {
+  if (answered) return;
+  const el = pool[idx];
+  let ok = false;
+  if (curSubMode === 'num2both') {
+    const sv = (document.getElementById('inp-s').value||'').trim();
+    const kv = (document.getElementById('inp-k').value||'').trim();
+    const sOk = sv.toLowerCase() === el.s.toLowerCase();
+    const kOk = kv === el.kr;
+    ok = sOk && kOk;
+    document.getElementById('inp-s').classList.add(sOk?'ok':'ng');
+    document.getElementById('inp-k').classList.add(kOk?'ok':'ng');
+    if (!ok) showFb(false, `정답: ${el.s} / ${el.kr}`);
+    else showFb(true);
+  } else if (curSubMode === 'num2name') {
+    const kv = (document.getElementById('inp-k').value||'').trim();
+    ok = kv === el.kr;
+    document.getElementById('inp-k').classList.add(ok?'ok':'ng');
+    if (!ok) showFb(false, `정답: ${el.kr} (${el.s})`);
+    else showFb(true);
+  } else if (curSubMode === 'num2sym') {
+    const sv = (document.getElementById('inp-s').value||'').trim();
+    ok = sv.toLowerCase() === el.s.toLowerCase();
+    document.getElementById('inp-s').classList.add(ok?'ok':'ng');
+    if (!ok) showFb(false, `정답: ${el.s} (${el.kr})`);
+    else showFb(true);
+  } else {
+    const nv = parseInt(document.getElementById('inp-n').value);
+    ok = nv === el.n;
+    document.getElementById('inp-n').classList.add(ok?'ok':'ng');
+    if (!ok) showFb(false, `정답: ${el.n}번 (${el.s} / ${el.kr})`);
+    else showFb(true);
+  }
+  finalize(ok, el);
+}
+
+function pickMC(btn, n) {
+  if (answered) return;
+  const el = pool[idx];
+  const ok = n === el.n;
+  document.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (parseInt(b.dataset.n) === el.n) b.classList.add('ok');
+  });
+  if (!ok) { btn.classList.add('ng'); showFb(false, `정답: ${el.n}번 (${el.s} / ${el.kr})`); }
+  else showFb(true);
+  finalize(ok, el);
+}
+
+function skipQ() {
+  if (answered) return;
+  const el = pool[idx];
+  showFb(false, `정답: ${el.n}번 (${el.s} / ${el.kr})`);
+  ['inp-s','inp-k','inp-n'].forEach(id => { const i=document.getElementById(id); if(i)i.classList.add('ng'); });
+  finalize(false, el);
+}
+
+function showFb(ok, msg) {
+  const fb = document.getElementById('fb');
+  if (!fb) return;
+  fb.textContent = ok ? '정답!' : '오답 — ' + (msg||'');
+  fb.className = 'fb ' + (ok ? 'ok' : 'ng');
+}
+
+function finalize(ok, el) {
+  answered = true; idx++;
+  if (ok) { cor++; streak++; }
+  else { wrn++; streak = 0; if (!wrongList.find(e=>e.n===el.n)) wrongList.push(el); }
+  const sbtn = document.getElementById('sbtn');
+  if (sbtn) sbtn.disabled = true;
+  updateStats();
+  const nb = document.getElementById('nb');
+  if (nb) { nb.style.display='block'; setTimeout(()=>nb.focus(),30); }
+}
+
+function showResult() {
+  const total = cor + wrn;
+  const pct = total > 0 ? Math.round(cor/total*100) : 0;
+  const grade = pct===100 ? '완벽해요! 전체 마스터!' :
+                pct>=90  ? '훌륭해요!' :
+                pct>=70  ? '잘했어요!' :
+                pct>=50  ? '절반 이상 맞혔어요!' : '더 연습해봐요!';
+  let wrongHtml = '';
+  if (wrongList.length > 0) {
+    const rows = wrongList.map(e=>`<tr>
+      <td>${e.n}</td><td class="sym-cell">${e.s}</td><td>${e.kr}</td>
+      <td><span class="cat-tag" style="${CAT_STYLE[e.cat]||''};font-size:11px">${e.cat}</span></td>
+    </tr>`).join('');
+    wrongHtml = `<div class="wrong-section"><h3>틀린 원소 (${wrongList.length}개)</h3>
+      <table class="wrong-table">
+        <thead><tr><th>번호</th><th>기호</th><th>이름</th><th>분류</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`;
+  }
+  document.getElementById('qa').innerHTML = `<div class="result">
+    <div class="score">${cor}/${total}</div>
+    <div class="grade">${pct}점 — ${grade}</div>
+    <div class="result-btns">
+      <button class="btn" onclick="restart()">처음부터 다시</button>
+      ${wrongList.length>0?`<button class="btn primary" onclick="retryWrong()">틀린 것만 다시</button>`:''}
+    </div>
+    ${wrongHtml}
+  </div>`;
+  document.getElementById('pbar').style.width = '100%';
+}
+
+restart();
+
+function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+</script>
+<script>
+    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+
+    // 드롭다운 스크립트
+    var dropdown = document.getElementsByClassName("dropdown-btn");
+    var i;
+    for (i = 0; i < dropdown.length; i++) {
+      dropdown[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var dropdownContent = this.nextElementSibling;
+        if (dropdownContent.style.display === "block") {
+          dropdownContent.style.display = "none";
+        } else {
+          dropdownContent.style.display = "block";
+        }
+      });
+    }
+</script>
+</body>
+</html>
+

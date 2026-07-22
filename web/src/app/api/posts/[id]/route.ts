@@ -35,7 +35,12 @@ export async function GET(_: Request, context: Context): Promise<NextResponse> {
     const post = await Post.findByIdAndUpdate(id, { $inc: { views: 1 } }, { new: true }).lean();
     if (!post) return NextResponse.json({ error: "게시글을 찾을 수 없습니다." }, { status: 404 });
     return NextResponse.json({
-      post: { ...post, authorLoginId: post.board === "anonymous" ? "익명" : post.authorLoginId },
+      post: {
+        ...post,
+        authorLoginId: post.board === "anonymous" ? "익명" : post.authorLoginId,
+        canDelete: post.authorId.toString() === session.userId || session.role === "admin" || (post.board === "notice" && session.role === "teacher"),
+        canEdit: !post.board.startsWith("lost-") && (post.authorId.toString() === session.userId || session.role === "admin" || (post.board === "notice" && session.role === "teacher")),
+      },
     });
   } catch (error) {
     return apiError(error);

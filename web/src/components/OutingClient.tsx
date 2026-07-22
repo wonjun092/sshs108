@@ -1,78 +1,17 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-
-type Reservation = {
-  _id: string;
-  date: string;
-  studentId: string;
-  name: string;
-  period: string;
-  location: string;
-  status: string;
-};
+import { OUTING_LOCATIONS } from "@/lib/outing";
+import { SheetStatus } from "@/components/SheetStatus";
+type Reservation = { _id: string; date: string; studentId: string; name: string; period: string; location: string; status: string };
 
 export function OutingClient() {
-  const [items, setItems] = useState<Reservation[]>([]);
-  const [error, setError] = useState("");
-  const load = useCallback(async () => {
-    const response = await fetch("/api/reservations", { cache: "no-store" });
-    const result = (await response.json()) as { reservations?: Reservation[]; error?: string };
-    if (!response.ok) return setError(result.error ?? "예약을 불러오지 못했습니다.");
-    setItems(result.reservations ?? []);
-  }, []);
-  useEffect(() => {
-    let active = true;
-    fetch("/api/reservations", { cache: "no-store" })
-      .then(async (response) => ({
-        response,
-        result: await response.json() as { reservations?: Reservation[]; error?: string },
-      }))
-      .then(({ response, result }) => {
-        if (!active) return;
-        if (!response.ok) setError(result.error ?? "예약을 불러오지 못했습니다.");
-        else setItems(result.reservations ?? []);
-      });
-    return () => { active = false; };
-  }, []);
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    const form = event.currentTarget;
-    const response = await fetch("/api/reservations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
-    });
-    const result = (await response.json()) as { error?: string };
-    if (!response.ok) return setError(result.error ?? "예약하지 못했습니다.");
-    form.reset();
-    await load();
-  }
-
-  return (
-    <section>
-      <div className="page-heading"><p className="eyebrow">Reservation</p><h1>이석 신청</h1></div>
-      <p className="notice-box">현재 단계에서는 MongoDB 예약 저장까지만 연결했습니다. Google Sheets 반영은 다음 단계에서 추가됩니다.</p>
-      <form className="form-card outing-form" onSubmit={submit}>
-        <label>날짜<input name="date" type="date" required /></label>
-        <label>학번<input name="studentId" required /></label>
-        <label>이름<input name="name" required /></label>
-        <label>교시<select name="period"><option>1교시</option><option>2교시</option></select></label>
-        <label>장소<input name="location" required /></label>
-        <button className="primary-button" type="submit">예약</button>
-      </form>
-      {error && <p className="error-message">{error}</p>}
-      <div className="post-list">
-        {items.map((item) => (
-          <article className="post-card" key={item._id}>
-            <h2>{item.date} · {item.period}</h2>
-            <p>{item.studentId} {item.name} — {item.location}</p>
-            <span className="tag">{item.status}</span>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
+  const [items, setItems] = useState<Reservation[]>([]); const [error, setError] = useState("");
+  const load = useCallback(async () => { const response = await fetch("/api/reservations", { cache: "no-store" }); const result = await response.json() as { reservations?: Reservation[]; error?: string }; if (!response.ok) setError(result.error ?? "예약을 불러오지 못했습니다."); else setItems(result.reservations ?? []); }, []);
+  useEffect(() => { const timer = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(timer); }, [load]);
+  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setError(""); const form = event.currentTarget; const response = await fetch("/api/reservations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(new FormData(form).entries())) }); const result = await response.json() as { error?: string }; if (!response.ok) return setError(result.error ?? "예약하지 못했습니다."); form.reset(); alert("예약이 완료되었습니다."); await load(); }
+  async function cancel(id: string) { if (!confirm("정말 이 예약을 취소/삭제하시겠습니까?")) return; const response = await fetch("/api/reservations", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }); if (!response.ok) { const result = await response.json() as { error?: string }; return setError(result.error ?? "취소하지 못했습니다."); } await load(); }
+  return <><div className="card apply-card"><h2>신청하기</h2><form className="outing-form" onSubmit={submit}><input type="date" name="date" required /><input name="studentId" placeholder="학번 (예: 1101)" required /><input name="name" placeholder="이름" required /><select name="period"><option value="1교시">1교시 (19:00~20:50)</option><option value="2교시">2교시 (21:30~23:00)</option></select><select name="location" defaultValue="" required><option value="" disabled>신청 장소 선택</option>{OUTING_LOCATIONS.map((item) => <option key={item}>{item}</option>)}</select><button>신청</button></form>{error && <p className="error-message">{error}</p>}</div>
+    <div className="card"><h3>📅 향후 예약 현황</h3>{items.length === 0 ? <p>예약 내역이 없습니다.</p> : items.map((item) => <div className="reservation-row" key={item._id}><span><strong>{item.date}</strong> | {item.period} | {item.location}</span><button className="reject-btn" onClick={() => void cancel(item._id)}>예약 취소</button></div>)}</div>
+    <SheetStatus /></>;
 }

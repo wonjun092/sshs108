@@ -27,6 +27,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       posts: posts.map((post) => ({
         ...post,
         authorLoginId: boardType === "anonymous" ? "익명" : post.authorLoginId,
+        canDelete: post.authorId.toString() === session.userId || session.role === "admin" || (boardType === "notice" && session.role === "teacher"),
+        canEdit: !boardType.startsWith("lost-") && (post.authorId.toString() === session.userId || session.role === "admin" || (boardType === "notice" && session.role === "teacher")),
       })),
     });
   } catch (error) {
