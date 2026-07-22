@@ -33,7 +33,20 @@ input:focus, textarea:focus, select:focus { outline: none; border: 2px solid #34
 .sidenav a { padding: 10px 10px 10px 30px; font-size: 18px; color: #818181; display: block; white-space: nowrap; }
 .sidenav a:hover { color: #f1f1f1; text-decoration: none; }
 .sidenav .closebtn { position: absolute; top: 6px; right: 16px; font-size: 36px; background: none; }
-.sidenav-backdrop { position: fixed; inset: 0; z-index: 90; border: 0; border-radius: 0; background: rgba(0,0,0,.3); }
+.sidenav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(0,0,0,.3);
+  appearance: none;
+}
+.sidenav-backdrop:hover,
+.sidenav-backdrop:focus,
+.sidenav-backdrop:active { background: rgba(0,0,0,.3); }
 .dropdown-btn { padding: 10px 10px 10px 30px; font-size: 18px; color: #818181; display: flex; justify-content: space-between; border: none; background: none; width: 100%; text-align: left; }
 .dropdown-btn:hover, .dropdown-btn.active { color: #f1f1f1; background: none; }
 .dropdown-container { background: #262626; padding-left: 15px; }
