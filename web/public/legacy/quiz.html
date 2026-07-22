@@ -197,7 +197,7 @@
     <a href="/lost/item">물건을 찾습니다</a>
   </div>
   
-  <a href="/admin_dashboard">👑 회원가입 신청</a>
+  <a href="/admin_dashboard" data-admin-only hidden style="display: none;">👑 회원가입 신청</a>
   
   
   <a href="https://diep.io/" target="_blank">🔍 Diep.io</a>
@@ -753,6 +753,24 @@ function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
     function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
     function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
 
+    // iframe 내부가 아니라 브라우저의 최상위 Next.js 페이지를 이동시킨다.
+    document.querySelectorAll('a[href^="/"]').forEach((link) => {
+      link.setAttribute('target', '_top');
+    });
+
+    // 정적 HTML에서도 현재 사용자의 역할에 맞춰 관리자 메뉴를 표시한다.
+    fetch('/api/auth/session', { credentials: 'same-origin' })
+      .then((response) => response.ok ? response.json() : null)
+      .then((session) => {
+        if (session?.role === 'admin') {
+          document.querySelectorAll('[data-admin-only]').forEach((link) => {
+            link.hidden = false;
+            link.style.display = 'block';
+          });
+        }
+      })
+      .catch(() => {});
+
     // 드롭다운 스크립트
     var dropdown = document.getElementsByClassName("dropdown-btn");
     var i;
@@ -770,4 +788,3 @@ function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
 </script>
 </body>
 </html>
-
