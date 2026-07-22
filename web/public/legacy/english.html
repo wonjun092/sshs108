@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holes Vocabulary Master - Full Version</title>
+    <style>
+        /* 사이드바 스타일  */
+        .sidenav {
+            height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0;
+            background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px;
+        }
+        .sidenav a, .dropdown-btn {
+            padding: 8px 8px 8px 32px; text-decoration: none; font-size: 18px; color: #818181;
+            display: block; border: none; background: none; width: 100%; text-align: left; cursor: pointer; outline: none;
+        }
+        .sidenav a:hover, .dropdown-btn:hover { color: #f1f1f1; }
+        .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; }
+        .dropdown-container { display: none; background-color: #262626; padding-left: 8px; }
+        .hamburger { font-size: 30px; cursor: pointer; color: white; margin-right: 20px; }
+        /* [style.css 기반 디자인] */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(to right, #74ebd5, #9face6);
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* 헤더를 양 옆으로 꽉 차게 설정 */
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            box-sizing: border-box;
+            /* 패딩 포함 너비 계산 */
+            margin-bottom: 30px;
+        }
+
+        .header span {
+            font-weight: bold;
+            font-size: 1.4em;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            max-width: 900px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            margin: 15px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background-color: #e67e22;
+        }
+
+        button.secondary:hover {
+            background-color: #d35400;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* 챕터 그리드 */
+        .chapter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+            background: #fdfdfd;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        .chapter-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+
+        .chapter-item input {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 퀴즈 UI */
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chap-tag {
+            background: #34495e;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        #progress {
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .question-box {
+            border-left: 6px solid #3498db;
+            padding-left: 20px;
+            margin: 25px 0;
+        }
+
+        .definition {
+            font-style: italic;
+            color: #555;
+            font-size: 1.15em;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .sentence {
+            font-weight: bold;
+            color: #222;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+          <button class="dropdown-btn active">📁 게시판 모음
+            <span style="float: right; margin-right: 20px;">&#9660;</span>
+          </button>
+
+          <div class="dropdown-container" style="display: block;">
+            <a href="/notice">📢 공지 게시판</a>
+            
+            <a href="/free">💬 자유 게시판</a>
+            <a href="/anonymous">👻 익명 게시판</a>
+            
+          </div>
+          
+          <a href="/admin_dashboard" data-admin-only hidden style="display: none;">👑 회원가입 신청</a>
+          
+          
+          <a href="https://diep.io/" target="_blank">🔍 Diep.io</a>
+          
+          <a href="https://sshs.app/school/food" target="_blank">🍔 급식 및 간식</a>
+          <a href="/english">📖영어 단어 시험</a>
+          <a href="/quiz">🧪 주기율표 퀴즈</a>
+          <hr>
+            <a href="/outing" style="color: #4285F4;">📍 이석 현황/신청</a>
+            <a href='/continuous_outing'>🔄 연속 이석 신청</a>
+            <a href="/google_login" style="font-size: 12px; color: #bbb;">🔑 학교 Google 로그인</a>
+        </div>
+    <div class="header">
+    <div style="display: flex; align-items: center;">
+        <span class="hamburger" onclick="openNav()">&#9776;</span>
+        <span>📖 Holes Vocabulary Master</span>
+    </div>
+    </div>
+
+    <div class="container">
+        <div id="setup-section" class="card">
+            <h3 style="margin-top:0;">시험 범위 설정</h3>
+            <p style="color: #666;">원하는 챕터를 선택하고 문제 수를 입력하세요.</p>
+            <div style="margin-bottom: 15px;">
+                <button onclick="toggleAll(true)">전체 선택</button>
+                <button onclick="toggleAll(false)" style="background-color: #95a5a6;">전체 해제</button>
+            </div>
+
+            <div class="chapter-grid" id="chapter-grid"></div>
+
+            <label>문제 수 (선택 범위 내 최대 <span id="max-count" style="color:#e74c3c; font-weight:bold;">0</span>개):</label>
+            <input type="number" id="question-count" value="10">
+
+            <button style="width: 100%; margin-top: 15px; font-size: 1.1em;" onclick="startQuiz()">테스트 시작</button>
+        </div>
+
+        <div id="quiz-section" class="card hidden">
+            <div class="quiz-info">
+                <div id="progress">문제 1 / 10</div>
+                <div class="chap-tag" id="display-chap">Ch. ??</div>
+            </div>
+            <div class="question-box">
+                <div class="definition" id="display-def"></div>
+                <div class="sentence" id="display-sent"></div>
+            </div>
+            <input type="text" id="answer-input" placeholder="정답 단어를 입력하세요" autocomplete="off">
+            <div id="feedback" class="feedback hidden"></div>
+            <button id="submit-btn" style="width: 100%;" onclick="checkAnswer()">정답 확인</button>
+            <button id="next-btn" style="width: 100%;" class="hidden" onclick="nextQuestion()">다음 문제</button>
+        </div>
+
+        <div id="result-section" class="card hidden" style="text-align: center;">
+            <h2>시험 결과</h2>
+            <div id="final-score" style="font-size: 2.5em; font-weight: bold; color: #2c3e50; margin: 30px 0;"></div>
+            <button id="retry-wrong-btn" class="secondary" style="width: 100%; margin-bottom: 12px;"
+                onclick="retryWrong()">틀린 문제만 다시 풀기</button>
+            <button style="width: 100%; background-color: #95a5a6;" onclick="location.reload()">범위 다시 선택하기</button>
+        </div>
+    </div>
+
+    <script>
+        // 엑셀 데이터 기반 단어 데이터 (Blanked Example + Hint 정보 포함)
+        const vocabulary = [
+  /* Ch 29 */
+  {"ch": "29", "word": "unbearably", "correctFill": "unbearably", "sent": "The air became __________ humid. Stanley was drenched in sweat.", "hintType": "Synonym", "hint": "intolerably, insufferably, extremely"},
+  {"ch": "29", "word": "formation", "correctFill": "formation", "sent": "In that split second Stanley thought he saw an unusual rock __________ on top of one of the mountain peaks.", "hintType": "Synonym", "hint": "arrangement, structure, organization"},
+  {"ch": "29", "word": "delirious", "correctFill": "delirious", "sent": "No one ever knew what he meant by that. He was __________ when he said it.", "hintType": "Synonym", "hint": "confused, disoriented, incoherent"},
+  /* Ch 30 */
+  {"ch": "30", "word": "deprive", "correctFill": "depriving", "sent": "Mr. Sir was no longer __________ him of water. After having to get by on less water for a week or so, Stanley now felt like he had all the water he could want.", "hintType": "Synonym", "hint": "deny, rob, strip", "acceptedAnswers": ["deprive"]},
+  {"ch": "30", "word": "make out", "correctFill": "make out", "sent": "The mountains were little more than dark shadows on the horizon. He thought he could __________ a spot where the top of one mountain seemed to jut upward, but it didn't seem very impressive.", "hintType": "Synonym", "hint": "distinguish, pick out, catch sight of"},
+  {"ch": "30", "word": "feeble", "correctFill": "feeble", "sent": "Zigzag hit Stanley on the shoulder with his open hand. \"Teach me a lesson,\" he challenged. Stanley made a __________ attempt to punch Zigzag, then he felt a flurry of fists against his head and neck.", "hintType": "", "hint": ""},
+  {"ch": "30", "word": "strangle", "correctFill": "strangled", "sent": "\"There was a riot,\" Mr. Pendanski told her. \"Zero almost __________ Ricky.\" The Warden looked at Zigzag, who was still stretching and massaging his neck. Then she turned her attention to Stanley, who was obviously in the worst condition.", "hintType": "", "hint": "", "acceptedAnswers": ["strangle"]},
+  {"ch": "30", "word": "uneasily", "correctFill": "uneasily", "sent": "\"The 'at' sound,\" repeated the Warden. \"Well then, tell me, what does c-a-t spell?\" Zero glanced around __________. Stanley knew he knew the answer. Zero just didn't like answering questions.", "hintType": "Synonym", "hint": "nervously, anxiously, uncomfortably"},
+  {"ch": "30", "word": "have it in for", "correctFill": "have it in for", "sent": "Stanley didn't know why Mr. Pendanski seemed to __________ Zero. If Mr. Pendanski only thought about it, he'd realize it was very logical for Zero to think that the letter \"h\" made the \"ch\" sound.", "hintType": "", "hint": ""},
+  /* Ch 31 */
+  {"ch": "31", "word": "keep an eye out", "correctFill": "kept an eye out", "sent": "He remained out on the lake, digging during the hottest part of the day, long after everyone else had gone in. He __________ for Zero, but Zero didn't come back.", "hintType": "", "hint": "", "acceptedAnswers": ["keep an eye out"]},
+  {"ch": "31", "word": "convince", "correctFill": "convince", "sent": "His only hope was that Zero had found God's thumb on his own. .... He tried to __________ himself it wasn't impossible.", "hintType": "", "hint": ""},
+  /* Ch 32 */
+  {"ch": "32", "word": "fidget", "correctFill": "fidgeting", "sent": "Two days later a new kid was assigned to Group D. His name was Brian, but X-Ray called him Twitch because he was always __________. Twitch was assigned Zero's bed, and Zero's crate.", "hintType": "", "hint": "", "acceptedAnswers": ["fidget"]},
+  {"ch": "32", "word": "break into", "correctFill": "break into", "sent": "Twitch had been arrested for stealing a car. He claimed he could __________ a car, disconnect the alarm, and hot-wire the engine, all in less than a minute.", "hintType": "", "hint": ""},
+  {"ch": "32", "word": "dangle", "correctFill": "dangling", "sent": "Stanley wondered if Mr. Sir had left the keys in the ignition. He slowly backed away from the line, then circled over to the side of the truck. He looked through the window. The keys were there, __________ in the ignition.", "hintType": "", "hint": "", "acceptedAnswers": ["dangle"]},
+  {"ch": "32", "word": "lurch", "correctFill": "lurched", "sent": "The gear shift was on the floor next to the seat. Stanley pulled the lever back until the arrow pointed to the letter D, for Drive. The truck __________ forward. Stanley jerked back against the seat and tightly gripped the wheel as the truck accelerated.", "hintType": "Synonym", "hint": "stagger, reel, pitch", "acceptedAnswers": ["lurch"]},
+  {"ch": "32", "word": "lopsided", "correctFill": "lopsided", "sent": "He had driven straight into a hole. He lay on the dirt staring at the truck, which stuck __________ into the ground.", "hintType": "", "hint": ""},
+  /* Ch 33 */
+  {"ch": "33", "word": "cluster", "correctFill": "cluster", "sent": "He couldn't even see the camp compound anymore, but he still kept passing holes. Just when he thought he'd passed the last hole, he'd come across another __________ of them, a little farther away.", "hintType": "Synonym", "hint": "bunch, clump, mass"},
+  /* Ch 34 */
+  {"ch": "34", "word": "mirage", "correctFill": "mirage", "sent": "The pool hurried away from him, moving as he moved, stopping when he stopped. There wasn't any water. It was a __________ caused by the shimmering waves of heat rising off the dry ground.", "hintType": "", "hint": ""},
+  {"ch": "34", "word": "come into view", "correctFill": "came into view", "sent": "After a while he thought he could make out the shape of the mountains through the haze. At first he wasn't sure if this was another kind of mirage, but the farther he walked, the clearer they __________.", "hintType": "", "hint": "", "acceptedAnswers": ["come into view"]},
+  {"ch": "34", "word": "grimly", "correctFill": "grimly", "sent": "The boat lay upside down, half buried in the dirt. Someone may have drowned here, he thought __________— at the same spot where he could very well die of thirst.", "hintType": "", "hint": ""},
+  /* Ch 35 */
+  {"ch": "35", "word": "drooping", "correctFill": "drooping", "sent": "Zero's face looked like a jack-o'-lantern that had been left out too many days past Halloween— half rotten, with sunken eyes and a __________ smile.", "hintType": "", "hint": ""},
+  {"ch": "35", "word": "raspy", "correctFill": "raspy", "sent": "\"Is that water?\" Zero asked. His voice was weak and __________.", "hintType": "", "hint": ""},
+  {"ch": "35", "word": "scatter", "correctFill": "scattered", "sent": "There were enough cracks and holes in the bottom of the boat, now the roof, to provide light and ventilation. He could see empty jars __________ about.", "hintType": "", "hint": "", "acceptedAnswers": ["scatter"]},
+  {"ch": "35", "word": "jagged", "correctFill": "jagged", "sent": "He quickly brought the jar to his mouth and licked the sploosh off the __________ edges before it spilled.", "hintType": "", "hint": ""},
+  /* Ch 36 */
+  {"ch": "36", "word": "fraction", "correctFill": "fraction", "sent": "Zero collapsed. The shovel stayed up a __________ of a second longer, perfectly balanced on the tip of the blade, then it fell next to him.", "hintType": "", "hint": ""},
+  {"ch": "36", "word": "slope", "correctFill": "slope", "sent": "Unlike the eastern shore, where Camp Green Lake was situated, the western shore did not __________ down gradually.", "hintType": "", "hint": ""},
+  {"ch": "36", "word": "gradually", "correctFill": "gradually", "sent": "Huge white stone cliffs rose up before them. Unlike the eastern shore, where Camp Green Lake was situated, the western shore did not slope down __________.", "hintType": "", "hint": ""},
+  {"ch": "36", "word": "crisscross", "correctFill": "crisscrossing", "sent": "Stanley still managed to hold the sack of jars in his left hand as he slowly moved up, from ledge to ledge, __________ the rut.", "hintType": "", "hint": "", "acceptedAnswers": ["crisscross"]},
+  {"ch": "36", "word": "tremble", "correctFill": "trembled", "sent": "Zero stayed with him, somehow. His frail body __________ terribly as he climbed the stone wall.", "hintType": "Synonym", "hint": "quiver, shiver, shudder", "acceptedAnswers": ["tremble"]},
+  {"ch": "36", "word": "interweave", "correctFill": "interwoven", "sent": "Stanley cupped his hands together, and Zero stepped on his __________ fingers.", "hintType": "", "hint": "", "acceptedAnswers": ["interweave"]},
+  {"ch": "36", "word": "protrude", "correctFill": "protruding", "sent": "He was able to lift Zero high enough for him to grab the __________ slab of rock.", "hintType": "", "hint": "", "acceptedAnswers": ["protrude"]},
+  /* Ch 37 */
+  {"ch": "37", "word": "increment", "correctFill": "increments", "sent": "It became too steep to go straight up. Instead they zigzagged back and forth, increasing their altitude by small __________ every time they changed directions.", "hintType": "", "hint": "", "acceptedAnswers": ["increment"]},
+  {"ch": "37", "word": "attract", "correctFill": "attracted", "sent": "A swarm of gnats hovered around them, __________ by their sweat. Neither Stanley nor Zero had the strength to try to swat at them.", "hintType": "", "hint": "", "acceptedAnswers": ["attract"]},
+  {"ch": "37", "word": "wrenching", "correctFill": "wrenching", "sent": "\"Zero made a horrible, __________ noise as he doubled over and grabbed his stomach.", "hintType": "", "hint": ""},
+  {"ch": "37", "word": "tangle", "correctFill": "tangled", "sent": "As they climbed higher, the patches of weeds grew thicker, and they had to be careful not to get their feet __________ in thorny vines.", "hintType": "", "hint": "", "acceptedAnswers": ["tangle"]},
+  /* Ch 38 */
+  {"ch": "38", "word": "upright", "correctFill": "upright", "sent": "Stanley took hold of Zero's forearms and pulled him __________.", "hintType": "", "hint": ""},
+  {"ch": "38", "word": "resemble", "correctFill": "resembled", "sent": "It seemed to grow bigger with each step he took. It no longer __________ a thumb.", "hintType": "", "hint": "", "acceptedAnswers": ["resemble"]},
+  {"ch": "38", "word": "tumble", "correctFill": "tumbled", "sent": "Zero's head knocked against the back of his shoulder as he fell and __________ into a small muddy gully.", "hintType": "", "hint": "", "acceptedAnswers": ["tumble"]},
+  {"ch": "38", "word": "come across", "correctFill": "come across", "sent": "But I don't want to __________ one of those red-eyed monsters. I seen one once, and that was enough.", "hintType": "", "hint": ""},
+  {"ch": "38", "word": "comprehend", "correctFill": "comprehend", "sent": "It took a moment for Stanley to __________. \"Clyde Livingston's shoes?\"", "hintType": "", "hint": ""},
+  /* Ch 39-40 */
+  {"ch": "39-40", "word": "intertwine", "correctFill": "intertwined", "sent": "He __________ his fingers and tried to rub out the pain.", "hintType": "", "hint": "", "acceptedAnswers": ["intertwine"]},
+  {"ch": "39-40", "word": "contritely", "correctFill": "contritely", "sent": "\"I'm glad Becca's all right,\" Hattie said __________.", "hintType": "", "hint": ""},
+  {"ch": "39-40", "word": "indentation", "correctFill": "indentation", "sent": "He saw a large __________ in the weeds a little farther down the mountain.", "hintType": "", "hint": ""},
+  /* Ch 41 */
+  {"ch": "41", "word": "murky", "correctFill": "murky", "sent": "It contained almost two feet of __________ water.", "hintType": "", "hint": ""},
+  {"ch": "41", "word": "contaminate", "correctFill": "contaminate", "sent": "They didn't dip their socks into the hole, afraid to __________ the water.", "hintType": "", "hint": ""},
+  /* Ch 42 */
+  {"ch": "42", "word": "experience", "correctFill": "experiencing", "sent": "He wondered if perhaps he was __________ something like that.", "hintType": "", "hint": "", "acceptedAnswers": ["experience"]},
+  {"ch": "42", "word": "flutter", "correctFill": "fluttering", "sent": "It stayed on Zero's face for an amazingly long time before __________ off to the side.", "hintType": "", "hint": "", "acceptedAnswers": ["flutter"]},
+  {"ch": "42", "word": "coincidence", "correctFill": "coincidence", "sent": "It was more than a __________. It had to be destiny.", "hintType": "", "hint": ""},
+  /* Ch 43 */
+  {"ch": "43", "word": "recapture", "correctFill": "recapture", "sent": "Instead he tried to __________ the feelings he'd had the night before— the inexplicable feeling of happiness, the sense of destiny.", "hintType": "", "hint": ""},
+  {"ch": "43", "word": "inexplicable", "correctFill": "inexplicable", "sent": "Instead he tried to recapture the feelings he'd had the night before— the __________ feeling of happiness, the sense of destiny.", "hintType": "", "hint": ""},
+  {"ch": "43", "word": "indistinct", "correctFill": "indistinct", "sent": "They were still too far away to see the camp, but he could hear a blend of __________ voices.", "hintType": "", "hint": ""},
+  {"ch": "43", "word": "distinctive", "correctFill": "distinctive", "sent": "As they got closer he occasionally could hear Mr. Sir's __________ bark.", "hintType": "", "hint": ""},
+  /* Ch 44 */
+  {"ch": "44", "word": "pronounced", "correctFill": "pronounced", "sent": "As the dirt chipped and flaked away, the hard object became more __________.", "hintType": "", "hint": ""},
+  {"ch": "44", "word": "expose", "correctFill": "exposed", "sent": "He scraped at the dirt wall, until he __________ one entire side of the box-like object.", "hintType": "", "hint": "", "acceptedAnswers": ["expose"]},
+  {"ch": "44", "word": "budge", "correctFill": "budge", "sent": "He tried pulling it out, but it wouldn't __________.", "hintType": "", "hint": ""},
+  {"ch": "44", "word": "precarious", "correctFill": "precarious", "sent": "As his tunnel grew deeper and wider—and more __________.", "hintType": "", "hint": ""},
+  /* Ch 45-46 */
+  {"ch": "45-46", "word": "in the nick (of time)", "correctFill": "in the nick", "sent": "\"You boys arrived just __________— \" the Warden started to say. She stopped talking and she stopped walking.", "hintType": "", "hint": "", "acceptedAnswers": ["in the nick of time", "in the nick (of time)"]},
+  {"ch": "45-46", "word": "commotion", "correctFill": "commotion", "sent": "Stanley was afraid to look, and afraid not to. He wondered if he should try to scramble out of the hole before the lizards turned on him, but he didn't want to cause any __________.", "hintType": "Synonym", "hint": "disturbance, ruckus, uproar"},
+  {"ch": "45-46", "word": "perch", "correctFill": "perched", "sent": "Stanley glanced at Zero. A lizard was __________ on his shoulder. Zero remained perfectly still except for his right hand, which slowly formed into a fist.", "hintType": "", "hint": "", "acceptedAnswers": ["perch"]},
+  {"ch": "45-46", "word": "strenuous", "correctFill": "strenuous", "sent": "His legs were sore from remaining rigid for so long. Standing still was more __________ than walking.", "hintType": "", "hint": ""},
+  /* Ch 47 */
+  {"ch": "47", "word": "exaggerate", "correctFill": "exaggerated", "sent": "The Warden had dark circles under her eyes from lack of sleep, and lines across her forehead and face which seemed __________ in the stark morning light. Her skin looked blotchy.", "hintType": "Synonym", "hint": "overstate, inflate, stretch", "acceptedAnswers": ["exaggerate"]},
+  {"ch": "47", "word": "momentarily", "correctFill": "momentarily", "sent": "He had never seen a tarantula before, but there was no doubt what it was. He was __________ fascinated by it, as its big hairy body moved slowly and steadily along.", "hintType": "Synonym", "hint": "briefly, for a moment, for a short time"},
+  {"ch": "47", "word": "file a charge", "correctFill": "filing charges", "sent": "She turned on him. \"I'm telling you right now, if any harm comes to him, we will be __________ not only against Ms. Walker and Camp Green Lake but the entire state of Texas as well. Child abuse. False imprisonment. Torture.\"", "hintType": "", "hint": "", "acceptedAnswers": ["file a charge", "file charges"]},
+  {"ch": "47", "word": "authenticate", "correctFill": "authenticated", "sent": "\"Why didn't you release him when she came to you yesterday?\" the tall man asked. \"She didn't have proper authorization,\" said the Warden. \"I had a court order!\" \"It was not __________,\" the Warden said.", "hintType": "Synonym", "hint": "verify, validate, confirm", "acceptedAnswers": ["authenticate"]},
+  {"ch": "47", "word": "legitimate", "correctFill": "legitimate", "sent": "\"I needed authentication from the Attorney General,\" said the Warden. \"How do I know it's __________?\"", "hintType": "", "hint": ""},
+  {"ch": "47", "word": "custody", "correctFill": "custody", "sent": "\"The boys in my __________ have proven themselves dangerous to society. Am I supposed to just turn them loose any time someone hands me a piece of paper?\"", "hintType": "", "hint": ""},
+  {"ch": "47", "word": "hospitalize", "correctFill": "hospitalized", "sent": "\"Stanley has been __________ for the last few days,\" the Warden explained. \"He's been suffering from hallucinations and delirium.\"", "hintType": "", "hint": "", "acceptedAnswers": ["hospitalize"]},
+  {"ch": "47", "word": "rant and rave", "correctFill": "ranting and raving", "sent": "\"He's been suffering from hallucinations and delirium. __________. He was in no condition to leave.\"", "hintType": "", "hint": "", "acceptedAnswers": ["rant and rave"]},
+  {"ch": "47", "word": "in view of", "correctFill": "in view of", "sent": "\"Don't cause any more trouble,\" the Warden warned. \"You stole it from my cabin, and you've been caught red-handed. If I press charges, Stanley might have to return to prison. Now I'm willing, __________ all the circumstances, to—\"", "hintType": "", "hint": ""},
+  /* Ch 48 */
+  {"ch": "48", "word": "think straight", "correctFill": "think straight", "sent": "He was so tired he couldn't __________. He felt as if he was walking in a dream, not quite able to comprehend what was going on around him.", "hintType": "", "hint": ""},
+  {"ch": "48", "word": "detainee", "correctFill": "detainees", "sent": "\"He has to open it!\" said the Warden. \"I have the right to check the personal property of any of the __________.\"", "hintType": "", "hint": "", "acceptedAnswers": ["detainee"]},
+  {"ch": "48", "word": "jurisdiction", "correctFill": "jurisdiction", "sent": "\"He has to open it!\" said the Warden. \"I have the right to check the personal property of any of the detainees.\" \"He is no longer under your __________,\" said Stanley's lawyer.", "hintType": "", "hint": ""},
+  {"ch": "48", "word": "pursuant to", "correctFill": "pursuant to", "sent": "\"There's nothing I can do for your friend,\" said Ms. Morengo. \"You are released __________ an order from the judge.\"", "hintType": "", "hint": ""},
+  {"ch": "48", "word": "misplace", "correctFill": "misplaced", "sent": "The Warden turned to Mr. Pendanski. \"Bring me Hector Zeroni's file.\" He stared at her. Mr. Pendanski went into the office. He returned a few minutes later and announced the file was apparently __________.", "hintType": "", "hint": "", "acceptedAnswers": ["misplace"]},
+  {"ch": "48", "word": "outrage", "correctFill": "outraged", "sent": "The Attorney General was __________. \"What kind of camp are you running here, Ms. Walker?\"", "hintType": "", "hint": "", "acceptedAnswers": ["outrage"]},
+  {"ch": "48", "word": "incarcerate", "correctFill": "incarcerated", "sent": "\"So what are you planning to do with him? Keep him confined indefinitely, without justification, while you go crawling through black holes in cyberspace?\" The Attorney General stared at her. \"He was obviously __________ for a reason.\"", "hintType": "", "hint": "", "acceptedAnswers": ["incarcerate"]},
+  /* Ch 49-50 */
+  {"ch": "49-50", "word": "eliminate", "correctFill": "eliminates", "sent": "\"What did my father invent?\" Stanley asked. \"Did he find a way to recycle sneakers?\" \"No, he's still working on that,\" explained Ms. Morengo. \"But he invented a product that __________ foot odor.\"", "hintType": "Synonym", "hint": "remove, eradicate, exclude", "acceptedAnswers": ["eliminate"]},
+  {"ch": "49-50", "word": "tedious", "correctFill": "tedious", "sent": "The reader probably still has some questions, but unfortunately, from here on in, the answers tend to be long and __________.", "hintType": "Synonym", "hint": "boring, monotonous, tiresome"},
+  {"ch": "49-50", "word": "count", "correctFill": "counted", "sent": "The commercial showed a baseball game. Amid a cloud of dust, Clyde Livingston slid into home plate as the catcher caught the ball and tried to tag him out. \"Safe!\" shouted the umpire as he signaled with his arms. The people at Stanley's house cheered, as if the run really __________.", "hintType": "Synonym", "hint": "matter, be important, carry weight", "acceptedAnswers": ["count"]},
+  {"ch": "49-50", "word": "absent-mindedly", "correctFill": "absent-mindedly", "sent": "A woman sitting in the chair behind Hector was __________ fluffing his hair with her fingers.", "hintType": "", "hint": ""},
+  {"ch": "49-50", "word": "fluff", "correctFill": "fluffing", "sent": "A woman sitting in the chair behind Hector was absent-mindedly __________ his hair with her fingers.", "hintType": "", "hint": "", "acceptedAnswers": ["fluff"]},
+];
+
+        const chapterList = [...new Set(vocabulary.map(v => v.ch))].sort();
+        let quizData = [];
+        let wrongWords = [];
+        let currentIdx = 0;
+        let score = 0;
+
+        const grid = document.getElementById('chapter-grid');
+        chapterList.forEach(ch => {
+            const div = document.createElement('div');
+            div.className = 'chapter-item';
+            div.innerHTML = `<input type="checkbox" value="${ch}" checked onchange="updateMax()"> Ch.${ch}`;
+            grid.appendChild(div);
+        });
+
+        function toggleAll(status) {
+            document.querySelectorAll('#chapter-grid input').forEach(i => i.checked = status);
+            updateMax();
+        }
+
+        function updateMax() {
+            const selected = Array.from(document.querySelectorAll('#chapter-grid input:checked')).map(i => i.value);
+            const count = vocabulary.filter(v => selected.includes(v.ch)).length;
+            document.getElementById('max-count').innerText = count;
+            document.getElementById('question-count').value = count; // 기본값 15 또는 최대값
+        }
+        updateMax();
+
+        function startQuiz() {
+            const selected = Array.from(document.querySelectorAll('#chapter-grid input:checked')).map(i => i.value);
+            const num = parseInt(document.getElementById('question-count').value);
+            if (selected.length === 0) return alert("챕터를 선택하세요!");
+
+            quizData = vocabulary.filter(v => selected.includes(v.ch))
+                .sort(() => Math.random() - 0.5)
+                .slice(0, num);
+            initQuiz();
+        }
+
+        function initQuiz() {
+            currentIdx = 0;
+            score = 0;
+            wrongWords = [];
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('result-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+				const q = quizData[currentIdx];
+				const input = document.getElementById('answer-input');
+				const submitBtn = document.getElementById('submit-btn');
+				const nextBtn = document.getElementById('next-btn');
+				const feedback = document.getElementById('feedback');
+
+				// 1. 문제 정보 업데이트
+				document.getElementById('progress').innerText = `문제 ${currentIdx + 1} / ${quizData.length}`;
+				document.getElementById('display-chap').innerText = `Chapter ${q.ch}`;
+
+				// 2. Hint 표시 (definition 대신)
+				const defEl = document.getElementById('display-def');
+				if (q.hintType) {
+						const hintText = q.hint ? `${q.hint}` : '';
+						defEl.innerText = hintText
+								? `[Hint - ${q.hintType}] ${hintText}`
+								: `[Hint 유형: ${q.hintType}]`;
+						defEl.classList.remove('hidden');
+				} else {
+						defEl.innerText = '';
+						defEl.classList.add('hidden');
+				}
+
+				// 3. 엑셀의 Blanked Example 그대로 사용 (이미 __________ 처리됨)
+				document.getElementById('display-sent').innerText = q.sent;
+
+				// 4. 입력창 상태 초기화 (핵심: 다시 입력 가능하도록 설정)
+				input.value = "";
+				input.disabled = false;    // disabled 해제
+				input.readOnly = false;     // readOnly 해제
+
+				// 5. 버튼 및 피드백 UI 초기화
+				feedback.classList.add('hidden');
+				submitBtn.classList.remove('hidden');
+				nextBtn.classList.add('hidden');
+
+				// 6. 커서 자동 포커스 (엔터키 흐름이 끊기지 않게 함)
+				setTimeout(() => {
+						input.focus();
+				}, 10);
+		}
+
+        function normalizeAnswer(value) {
+            return (value || "")
+                .toString()
+                .trim()
+                .toLowerCase()
+                .replace(/[’‘]/g, "'")
+                .replace(/[“”]/g, '"')
+                .replace(/\s+/g, " ");
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('answer-input');
+            const q = quizData[currentIdx];
+            const user = normalizeAnswer(input.value);
+            const accepted = [q.correctFill, ...(q.acceptedAnswers || [])].map(normalizeAnswer);
+            const fb = document.getElementById('feedback');
+
+            fb.classList.remove('hidden');
+            if (accepted.includes(user)) {
+                fb.innerText = "정답입니다! ✨";
+                fb.className = "feedback correct";
+                score++;
+            } else {
+                fb.innerText = `틀렸습니다. 정답: [ ${q.correctFill} ]`;
+                fb.className = "feedback incorrect";
+                wrongWords.push(q);
+            }
+
+            // [수정] disabled 대신 readOnly를 쓰면 키보드 포커스가 유지되어 엔터가 더 잘 먹힙니다.
+            input.readOnly = true;
+            document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < quizData.length) showQuestion();
+            else showResult();
+        }
+
+        function showResult() {
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('result-section').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score} / ${quizData.length}`;
+
+            const retryBtn = document.getElementById('retry-wrong-btn');
+            if (wrongWords.length > 0) {
+                retryBtn.innerText = `틀린 문제만 다시 풀기 (${wrongWords.length}개)`;
+                retryBtn.classList.remove('hidden');
+            } else {
+                retryBtn.classList.add('hidden');
+            }
+        }
+
+        function retryWrong() {
+            quizData = [...wrongWords].sort(() => Math.random() - 0.5);
+            initQuiz();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            // 엔터키가 눌렸을 때만 작동
+            if (e.key === 'Enter') {
+                const submitBtn = document.getElementById('submit-btn');
+                const nextBtn = document.getElementById('next-btn');
+                const setupSection = document.getElementById('setup-section');
+
+                // 메인 설정 화면이 아닐 때만(퀴즈 진행 중일 때만) 작동
+                if (setupSection.classList.contains('hidden')) {
+
+                    // 1. '정답 확인' 버튼이 보일 때 (채점 전)
+                    if (!submitBtn.classList.contains('hidden')) {
+                        checkAnswer();
+                    }
+                    // 2. '다음 문제' 버튼이 보일 때 (채점 후)
+                    else if (!nextBtn.classList.contains('hidden')) {
+                        nextQuestion();
+                    }
+                }
+            }
+        });
+
+    </script>
+<script>
+    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+</script>
+<script>
+    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+
+    // iframe 내부가 아니라 브라우저의 최상위 Next.js 페이지를 이동시킨다.
+    document.querySelectorAll('a[href^="/"]').forEach((link) => {
+      link.setAttribute('target', '_top');
+    });
+
+    // 정적 HTML에서도 현재 사용자의 역할에 맞춰 관리자 메뉴를 표시한다.
+    fetch('/api/auth/session', { credentials: 'same-origin' })
+      .then((response) => response.ok ? response.json() : null)
+      .then((session) => {
+        if (session?.role === 'admin') {
+          document.querySelectorAll('[data-admin-only]').forEach((link) => {
+            link.hidden = false;
+            link.style.display = 'block';
+          });
+        }
+      })
+      .catch(() => {});
+
+    // 드롭다운 스크립트
+    var dropdown = document.getElementsByClassName("dropdown-btn");
+    var i;
+    for (i = 0; i < dropdown.length; i++) {
+      dropdown[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var dropdownContent = this.nextElementSibling;
+        if (dropdownContent.style.display === "block") {
+          dropdownContent.style.display = "none";
+        } else {
+          dropdownContent.style.display = "block";
+        }
+      });
+    }
+</script>
+</body>
+
+</html>

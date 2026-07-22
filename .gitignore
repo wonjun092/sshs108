@@ -16,6 +16,8 @@ eggs/
 .eggs/
 lib/
 lib64/
+!web/src/lib/
+!web/src/lib/**
 parts/
 sdist/
 var/
@@ -149,6 +151,8 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
 .envrc
 .venv
 env/
@@ -202,6 +206,14 @@ cython_debug/
 # .vscode/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
+
+# Next.js / Node.js
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.vercel/
 
 # Ruff stuff:
 .ruff_cache/
