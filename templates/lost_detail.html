@@ -21,9 +21,10 @@
     </div>
 
     <div class="container">
-        <div class="card">
+        <div class="card{% if notice.get('found') %} lost-found{% endif %}">
             <span class="lost-badge">{{ board_title }}</span>
             <span class="lost-location-badge">{{ location_label }}</span>
+            {% if notice.get('found') %}<span class="lost-found-badge">✓ 주인 찾음</span>{% endif %}
             <h2>[{{ location_label }}] {{ notice.title }}</h2>
             <p style="color: gray; font-size: 14px;">작성자: {{ notice.author }} | 작성일: {{ notice.datetime }} | 👀 조회수: {{ notice.get('views', 0) }}</p>
 
@@ -38,6 +39,9 @@
             {% endif %}
 
             <p style="white-space: pre-wrap; font-size: 16px; min-height: 80px;">{{ notice.content }}</p>
+            {% if (user == notice.author or user == 'admin') and not notice.get('found') %}
+            <a href="/lost/{{ board_type }}/found/{{ index }}{% if selected_location %}?location={{ selected_location|urlencode }}{% endif %}" class="lost-found-button">✓</a>
+            {% endif %}
         </div>
 
         <div class="card">
