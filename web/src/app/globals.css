@@ -77,6 +77,10 @@ input:focus, textarea:focus, select:focus { outline: none; border: 2px solid #34
 .lost-filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
 .lost-filter { padding: 9px 16px; border-radius: 999px; background: #eef1f4; color: #222; font-weight: bold; }
 .lost-filter.active { background: #3498db; color: white; }
+.lost-found { opacity: .58; filter: grayscale(40%); }
+.lost-found-badge { display: inline-block; margin-left: 4px; color: #218838; font-size: 13px; font-weight: bold; }
+.lost-found-button { background: #e8f6eb; color: #218838; font-weight: bold; }
+.lost-found-button:hover { background: #d6efda; }
 .attachment-image { max-width: 100%; border-radius: 8px; }
 .status-table { width: 100%; border-collapse: collapse; background: white; }
 .status-table th, .status-table td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }

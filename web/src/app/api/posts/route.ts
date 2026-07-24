@@ -29,6 +29,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         authorLoginId: boardType === "anonymous" ? "익명" : post.authorLoginId,
         canDelete: post.authorId.toString() === session.userId || session.role === "admin" || (boardType === "notice" && session.role === "teacher"),
         canEdit: !boardType.startsWith("lost-") && (post.authorId.toString() === session.userId || session.role === "admin" || (boardType === "notice" && session.role === "teacher")),
+        canMarkFound: boardType.startsWith("lost-") && !post.found && (post.authorId.toString() === session.userId || session.role === "admin"),
       })),
     });
   } catch (error) {
