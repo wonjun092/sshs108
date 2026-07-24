@@ -21,6 +21,7 @@ const postSchema = new Schema(
     content: { type: String, required: true, trim: true, maxlength: 20_000 },
     location: { type: String, trim: true },
     fileUrl: { type: String, trim: true },
+    found: { type: Boolean, default: false },
     scheduledAt: { type: Date },
     views: { type: Number, default: 0, min: 0 },
     comments: { type: [commentSchema], default: [] },

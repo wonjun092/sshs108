@@ -40,6 +40,7 @@ export async function GET(_: Request, context: Context): Promise<NextResponse> {
         authorLoginId: post.board === "anonymous" ? "익명" : post.authorLoginId,
         canDelete: post.authorId.toString() === session.userId || session.role === "admin" || (post.board === "notice" && session.role === "teacher"),
         canEdit: !post.board.startsWith("lost-") && (post.authorId.toString() === session.userId || session.role === "admin" || (post.board === "notice" && session.role === "teacher")),
+        canMarkFound: post.board.startsWith("lost-") && !post.found && (post.authorId.toString() === session.userId || session.role === "admin"),
       },
     });
   } catch (error) {
