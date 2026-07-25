@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 
-type Post = { _id: string; title: string; authorLoginId: string; location?: string; found?: boolean; views: number; createdAt: string; scheduledAt?: string; comments: unknown[]; canEdit?: boolean; canDelete?: boolean; canMarkFound?: boolean };
+type Post = { _id: string; title: string; authorLoginId: string; location?: string; fileUrl?: string; attachmentContentType?: string; found?: boolean; views: number; createdAt: string; scheduledAt?: string; comments: unknown[]; canEdit?: boolean; canDelete?: boolean; canMarkFound?: boolean };
 const locations = ["예지관", "의행관", "우암관", "융합인재관", "창의인재관", "아람관", "운동장", "모름/기타"];
 
 export function BoardClient({ board, title, description, canWrite }: { board: string; title: string; description?: string; canWrite: boolean }) {
@@ -11,6 +11,7 @@ export function BoardClient({ board, title, description, canWrite }: { board: st
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState("");
+  const [thumbnailView, setThumbnailView] = useState(false);
   const lost = board.startsWith("lost-");
   const originalType = board === "lost-owner" ? "owner" : board === "lost-item" ? "item" : board;
 
@@ -22,6 +23,10 @@ export function BoardClient({ board, title, description, canWrite }: { board: st
     setPosts(result.posts ?? []);
   }, [board]);
   useEffect(() => { const timer = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(timer); }, [load]);
+  useEffect(() => {
+    if (!lost) return;
+    setThumbnailView(window.localStorage.getItem("lost-thumbnail-view") === "true");
+  }, [lost]);
 
   async function createPost(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setError("");
@@ -58,23 +63,36 @@ export function BoardClient({ board, title, description, canWrite }: { board: st
     await load();
   }
 
+  function toggleThumbnailView() {
+    setThumbnailView((enabled) => {
+      const next = !enabled;
+      window.localStorage.setItem("lost-thumbnail-view", String(next));
+      return next;
+    });
+  }
+
   const filtered = location ? posts.filter((post) => post.location === location) : posts;
   return <>
     {description && <p className="lost-description">{description}</p>}
-    {canWrite && <div className="card"><h2>{board === "notice" ? "공지 작성" : "새 글 쓰기"}</h2><form className="board-form" onSubmit={createPost}>
+    {canWrite && <div className="card"><h2>{board === "notice" ? "공지 작성" : "새 글 올리기"}</h2><form className="board-form" onSubmit={createPost}>
       {board === "notice" && <input type="datetime-local" name="scheduledAt" required />}
       <div className={lost ? "lost-title-row" : ""}>{lost && <select name="location" defaultValue="모름/기타">{locations.map((item) => <option key={item}>{item}</option>)}</select>}<input type="text" name="title" placeholder="제목" required /></div>
-      <textarea name="content" placeholder={board === "notice" ? "내용" : "자유롭게 이야기해 보세요!"} required />
+      <textarea name="content" placeholder={board === "notice" ? "내용" : "자유롭게 이야기를 남겨보세요."} required />
       <input type="file" name="file" />
       <button type="submit">등록</button>
     </form></div>}
     {lost && <div className="lost-filter-bar"><button className={`lost-filter ${!location ? "active" : ""}`} onClick={() => setLocation("")}>전체</button>{locations.map((item) => <button className={`lost-filter ${location === item ? "active" : ""}`} onClick={() => setLocation(item)} key={item}>{item}</button>)}</div>}
     <h2>{title} 목록</h2>
+    {lost && <button type="button" className={`thumbnail-switch ${thumbnailView ? "is-on" : ""}`} role="switch" aria-checked={thumbnailView} onClick={toggleThumbnailView}><span className="thumbnail-switch-icon" aria-hidden="true">▦</span><span>사진 썸네일</span><span className="thumbnail-switch-knob" aria-hidden="true" /></button>}
     {error && <p className="error-message">{error}</p>}
-    {loading ? <p>불러오는 중...</p> : filtered.length === 0 ? <div className="card">아직 게시글이 없습니다.</div> : filtered.map((post) => <div className={`card${post.found ? " lost-found" : ""}`} key={post._id}>
-      <Link href={lost ? `/lost/${originalType}/${post._id}` : `/${originalType}/${post._id}`}><h3>{post.location && <span className="lost-location-badge">{post.location}</span>}{post.found && <span className="lost-found-badge">✓ 주인 찾음</span>} {post.title}</h3></Link>
-      <div className="notice-stats">{board !== "anonymous" && board !== "notice" && <>✍️ 작성자: {post.authorLoginId} | </>}👀 조회수: {post.views ?? 0} | 💬 댓글: {post.comments?.length ?? 0}</div>
-      {(post.canEdit || post.canDelete || post.canMarkFound) && <div className="post-actions">{post.canMarkFound && <button className="lost-found-button" onClick={() => void markFound(post._id)}>✓ 주인 찾음 처리</button>}{post.canEdit && <Link href={`/edit/${post._id}`}>수정</Link>}{post.canDelete && <button className="danger-link" onClick={() => void remove(post._id)}>삭제</button>}</div>}
-    </div>)}
+    {loading ? <p>불러오는 중...</p> : filtered.length === 0 ? <div className="card">아직 게시글이 없습니다.</div> : <div className={thumbnailView && lost ? "thumbnail-view" : ""}>{filtered.map((post) => {
+      const hasImageThumbnail = Boolean(post.fileUrl && post.attachmentContentType?.startsWith("image/"));
+      return <div className={`card lost-post-card${post.found ? " lost-found" : ""}`} key={post._id}>
+        {hasImageThumbnail && <img className="lost-thumbnail" src={post.fileUrl} alt="게시글 첨부 사진" />}
+        <Link href={lost ? `/lost/${originalType}/${post._id}` : `/${originalType}/${post._id}`}><h3>{post.location && <span className="lost-location-badge">{post.location}</span>}{post.found && <span className="lost-found-badge">✓ 주인 찾음</span>} {post.title}</h3></Link>
+        <div className="notice-stats">{board !== "anonymous" && board !== "notice" && <>✍ 작성자: {post.authorLoginId} | </>}👀 조회수: {post.views ?? 0} | 💬 댓글: {post.comments?.length ?? 0}</div>
+        {(post.canEdit || post.canDelete || post.canMarkFound) && <div className="post-actions">{post.canMarkFound && <button className="lost-found-button" onClick={() => void markFound(post._id)}>✓ 주인 찾음 처리</button>}{post.canEdit && <Link href={`/edit/${post._id}`}>수정</Link>}{post.canDelete && <button className="danger-link" onClick={() => void remove(post._id)}>삭제</button>}</div>}
+      </div>;
+    })}</div>}
   </>;
 }

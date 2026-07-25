@@ -3,6 +3,7 @@ import { canWriteBoard, getSession } from "@/lib/auth";
 import { connectDatabase } from "@/lib/db";
 import { apiError } from "@/lib/http";
 import { BOARD_TYPES, Post } from "@/models/Post";
+import { Attachment } from "@/models/Attachment";
 import { postCreateSchema } from "@/validation/post";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -23,9 +24,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .sort({ createdAt: -1 })
       .limit(100)
       .lean();
+    const attachmentIds = posts
+      .map((post) => post.fileUrl?.match(/\/api\/uploads\/([a-f\d]{24})$/i)?.[1])
+      .filter((id): id is string => Boolean(id));
+    const attachments = attachmentIds.length
+      ? await Attachment.find({ _id: { $in: attachmentIds } }).select("contentType").lean()
+      : [];
+    const contentTypes = new Map(attachments.map((attachment) => [attachment._id.toString(), attachment.contentType]));
     return NextResponse.json({
       posts: posts.map((post) => ({
         ...post,
+        attachmentContentType: post.fileUrl
+          ? contentTypes.get(post.fileUrl.match(/\/api\/uploads\/([a-f\d]{24})$/i)?.[1] ?? "")
+          : undefined,
         authorLoginId: boardType === "anonymous" ? "익명" : post.authorLoginId,
         canDelete: post.authorId.toString() === session.userId || session.role === "admin" || (boardType === "notice" && session.role === "teacher"),
         canEdit: !boardType.startsWith("lost-") && (post.authorId.toString() === session.userId || session.role === "admin" || (boardType === "notice" && session.role === "teacher")),
