@@ -39,6 +39,8 @@ export function LegacyShell({ user, role, title, children }: Props) {
         <a href="https://sshs.app/school/food" target="_blank" rel="noreferrer">🍔 급식 및 간식</a>
         <Link href="/english">📖 영어 단어 시험</Link>
         <Link href="/quiz">🧪 주기율표 퀴즈</Link>
+        <Link href="/quiz/aminoacid">🧬 아미노산 퀴즈</Link>
+        <Link href="/quiz/hormone">🧠 호르몬 퀴즈</Link>
         <hr />
         <Link className="outing-link" href="/outing">📍 이석 현황/신청</Link>
         <Link href="/continuous_outing">🔄 연속 이석 신청</Link>

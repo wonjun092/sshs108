@@ -853,6 +853,14 @@ def quiz():
         return render_template('periodic_quiz_1.html')
     return render_template('periodic_quiz_1.html', user=session['user'])
 
+@app.route('/quiz/aminoacid')
+def aminoacid_quiz():
+    return render_template('aminoacid_quiz.html', user=session.get('user'))
+
+@app.route('/quiz/hormone')
+def hormone_quiz():
+    return render_template('hormone_quiz.html', user=session.get('user'))
+
 # 영어 단어 퀴즈
 @app.route('/english')
 def english_quiz():
