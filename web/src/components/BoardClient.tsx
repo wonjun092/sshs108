@@ -87,8 +87,11 @@ export function BoardClient({ board, title, description, canWrite }: { board: st
     {error && <p className="error-message">{error}</p>}
     {loading ? <p>불러오는 중...</p> : filtered.length === 0 ? <div className="card">아직 게시글이 없습니다.</div> : <div className={thumbnailView && lost ? "thumbnail-view" : ""}>{filtered.map((post) => {
       const hasImageThumbnail = Boolean(post.fileUrl && post.attachmentContentType?.startsWith("image/"));
-      return <div className={`card lost-post-card${post.found ? " lost-found" : ""}`} key={post._id}>
-        {hasImageThumbnail && <img className="lost-thumbnail" src={post.fileUrl} alt="게시글 첨부 사진" />}
+      return <div className={`card lost-post-card${post.found ? " lost-found" : ""}${hasImageThumbnail ? " has-thumbnail" : ""}`} key={post._id}>
+        {hasImageThumbnail && <div className="lost-thumbnail-frame" aria-label="게시글 첨부 사진">
+          <span className="lost-thumbnail-fallback" aria-hidden="true">사진 없음</span>
+          <img className="lost-thumbnail" src={post.fileUrl} alt="" loading="lazy" onError={(event) => { event.currentTarget.hidden = true; }} />
+        </div>}
         <Link href={lost ? `/lost/${originalType}/${post._id}` : `/${originalType}/${post._id}`}><h3>{post.location && <span className="lost-location-badge">{post.location}</span>}{post.found && <span className="lost-found-badge">✓ 주인 찾음</span>} {post.title}</h3></Link>
         <div className="notice-stats">{board !== "anonymous" && board !== "notice" && <>✍ 작성자: {post.authorLoginId} | </>}👀 조회수: {post.views ?? 0} | 💬 댓글: {post.comments?.length ?? 0}</div>
         {(post.canEdit || post.canDelete || post.canMarkFound) && <div className="post-actions">{post.canMarkFound && <button className="lost-found-button" onClick={() => void markFound(post._id)}>✓ 주인 찾음 처리</button>}{post.canEdit && <Link href={`/edit/${post._id}`}>수정</Link>}{post.canDelete && <button className="danger-link" onClick={() => void remove(post._id)}>삭제</button>}</div>}

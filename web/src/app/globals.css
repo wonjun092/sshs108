@@ -85,12 +85,13 @@ input:focus, textarea:focus, select:focus { outline: none; border: 2px solid #34
 .thumbnail-switch-knob::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: white; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .2s; }
 .thumbnail-switch.is-on .thumbnail-switch-knob { background: #3498db; }
 .thumbnail-switch.is-on .thumbnail-switch-knob::after { transform: translateX(10px); }
-.lost-thumbnail { display: none; }
-.thumbnail-view .lost-post-card { display: grid; grid-template-columns: 150px minmax(0, 1fr); column-gap: 15px; align-items: center; }
-.thumbnail-view .lost-thumbnail { display: block; grid-row: span 3; width: 150px; height: 112px; object-fit: cover; border-radius: 7px; background: #eef1f4; }
-.thumbnail-view .lost-post-card > a { min-width: 0; }
-.thumbnail-view .lost-post-card h3 { margin: 0; overflow-wrap: anywhere; }
-.thumbnail-view .lost-post-card .notice-stats, .thumbnail-view .lost-post-card .post-actions { grid-column: 2; }
+.lost-thumbnail-frame { display: none; }
+.thumbnail-view .lost-post-card.has-thumbnail { display: grid; grid-template-columns: 180px minmax(0, 1fr); grid-template-rows: auto auto 1fr; column-gap: 16px; align-items: start; min-width: 0; }
+.thumbnail-view .lost-thumbnail-frame { position: relative; display: grid; grid-row: 1 / -1; place-items: center; width: 180px; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 8px; background: #eef1f4; color: #8795a1; font-size: 13px; }
+.thumbnail-view .lost-thumbnail { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.thumbnail-view .lost-post-card.has-thumbnail > a { min-width: 0; }
+.thumbnail-view .lost-post-card.has-thumbnail h3 { margin: 0; overflow-wrap: anywhere; }
+.thumbnail-view .lost-post-card.has-thumbnail .notice-stats, .thumbnail-view .lost-post-card.has-thumbnail .post-actions { grid-column: 2; }
 .lost-found { opacity: .58; filter: grayscale(40%); }
 .lost-found-badge { display: inline-block; margin-left: 4px; color: #218838; font-size: 13px; font-weight: bold; }
 .lost-found-button { background: #e8f6eb; color: #218838; font-weight: bold; }
@@ -104,4 +105,16 @@ input:focus, textarea:focus, select:focus { outline: none; border: 2px solid #34
 .outing-form input, .outing-form select { width: calc(100% - 10px); }
 .reservation-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eee; }
 .table-wrapper { overflow-x: auto; }
-@media (max-width: 700px) { .container { width: calc(100% - 24px); } .lost-title-row { flex-direction: column; align-items: stretch; } .lost-title-row select { width: auto; } .header-menu { gap: 10px; font-size: 14px; } }
+@media (max-width: 700px) {
+  .container { width: calc(100% - 24px); }
+  .lost-title-row { flex-direction: column; align-items: stretch; }
+  .lost-title-row select { width: auto; }
+  .header-menu { gap: 10px; font-size: 14px; }
+  .thumbnail-view .lost-post-card.has-thumbnail { grid-template-columns: 112px minmax(0, 1fr); column-gap: 12px; }
+  .thumbnail-view .lost-thumbnail-frame { width: 112px; }
+}
+
+@media (max-width: 420px) {
+  .thumbnail-view .lost-post-card.has-thumbnail { display: block; }
+  .thumbnail-view .lost-thumbnail-frame { width: 100%; margin-bottom: 12px; }
+}
