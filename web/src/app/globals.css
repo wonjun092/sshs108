@@ -31,8 +31,9 @@ input:focus, textarea:focus, select:focus { outline: none; border: 2px solid #34
 .back-login { display: block; margin-top: 15px; color: gray; font-size: 14px; }
 .error-message { padding: 12px; background: #fee2e2; color: #c0392b; border-radius: 8px; }
 .success-message { padding: 12px; background: #dcfce7; color: #166534; border-radius: 8px; }
-.sidenav { height: 100%; width: 0; position: fixed; z-index: 100; top: 0; left: 0; background: #111; overflow-x: hidden; transition: .3s; padding-top: 60px; }
+.sidenav { height: 100%; width: 0; position: fixed; z-index: 100; top: 0; left: 0; background: #111; overflow-x: hidden; transition: .3s; padding-top: 60px; font-family: Arial, "Noto Sans KR", sans-serif; font-size: 18px; font-weight: 400; font-style: normal; }
 .sidenav.open { width: 250px; }
+.sidenav a, .sidenav button { font-family: inherit; font-weight: 400; font-style: normal; }
 .sidenav a { padding: 10px 10px 10px 30px; font-size: 18px; color: #818181; display: block; white-space: nowrap; }
 .sidenav a:hover { color: #f1f1f1; text-decoration: none; }
 .sidenav .closebtn { position: absolute; top: 6px; right: 16px; font-size: 36px; background: none; }
