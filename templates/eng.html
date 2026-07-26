@@ -6,19 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Holes Vocabulary Master - Full Version</title>
     <style>
-        /* 사이드바 스타일  */
-        .sidenav {
-            height: 100%; width: 0; position: fixed; z-index: 1001; top: 0; left: 0;
-            background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px;
-        }
-        .sidenav a, .dropdown-btn {
-            padding: 8px 8px 8px 32px; text-decoration: none; font-size: 18px; color: #818181;
-            display: block; border: none; background: none; width: 100%; text-align: left; cursor: pointer; outline: none;
-        }
-        .sidenav a:hover, .dropdown-btn:hover { color: #f1f1f1; }
-        .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; }
-        .dropdown-container { display: none; background-color: #262626; padding-left: 8px; }
-        .hamburger { font-size: 30px; cursor: pointer; color: white; margin-right: 20px; }
         /* [style.css 기반 디자인] */
         body {
             font-family: Arial, sans-serif;
@@ -196,51 +183,8 @@
 </head>
 
 <body>
-    <div id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-
-          <button class="dropdown-btn active">📁 게시판 모음
-            <span style="float: right; margin-right: 20px;">&#9660;</span>
-          </button>
-
-          <div class="dropdown-container" style="display: block;">
-            <a href="/notice">📢 공지 게시판</a>
-            {% if user != 'Teacher' %}
-            <a href="/free">💬 자유 게시판</a>
-            <a href="/anonymous">👻 익명 게시판</a>
-            {% endif %}
-          </div>
-          <button class="dropdown-btn">🎒 분실물 신고하기
-            <span style="float: right; margin-right: 20px;">&#9660;</span>
-          </button>
-          <div class="dropdown-container">
-            <a href="/lost/owner">주인을 찾습니다</a>
-            <a href="/lost/item">물건을 찾습니다</a>
-          </div>
-          {% if user == 'admin' %}
-          <a href="/admin_dashboard">👑 회원가입 신청</a>
-          {% endif %}
-          {% if user != 'Teacher' %}
-          <a href="https://diep.io/" target="_blank">🔍 Diep.io</a>
-          {% endif %}
-          <a href="https://sshs.app/school/food" target="_blank">🍔 급식 및 간식</a>
-          <a href="/english">📖영어 단어 시험</a>
-          <button class="dropdown-btn">🧠 퀴즈
-            <span style="float: right; margin-right: 20px;">&#9660;</span>
-          </button>
-          <div class="dropdown-container">
-            <a href="/quiz">🧪 주기율표 퀴즈</a>
-            <a href="/quiz/aminoacid">🧬 아미노산 퀴즈</a>
-            <a href="/quiz/hormone">🧠 호르몬 퀴즈</a>
-          </div>
-          <hr>
-            <a href="/outing" style="color: #4285F4;">📍 이석 현황/신청</a>
-            <a href='/continuous_outing'>🔄 연속 이석 신청</a>
-            <a href="/google_login" style="font-size: 12px; color: #bbb;">🔑 학교 Google 로그인</a>
-        </div>
     <div class="header">
-    <div style="display: flex; align-items: center;">
-        <span class="hamburger" onclick="openNav()">&#9776;</span>
+    <div style="display: flex; align-items: center; padding-left: 50px;">
         <span>📖 Holes Vocabulary Master</span>
     </div>
     </div>
@@ -564,29 +508,6 @@
         });
 
     </script>
-<script>
-    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
-    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-</script>
-<script>
-    function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
-    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
-
-    // 드롭다운 스크립트
-    var dropdown = document.getElementsByClassName("dropdown-btn");
-    var i;
-    for (i = 0; i < dropdown.length; i++) {
-      dropdown[i].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var dropdownContent = this.nextElementSibling;
-        if (dropdownContent.style.display === "block") {
-          dropdownContent.style.display = "none";
-        } else {
-          dropdownContent.style.display = "block";
-        }
-      });
-    }
-</script>
 </body>
 
 </html>
