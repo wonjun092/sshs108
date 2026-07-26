@@ -210,6 +210,13 @@
             <a href="/anonymous">👻 익명 게시판</a>
             {% endif %}
           </div>
+          <button class="dropdown-btn">🎒 분실물 신고하기
+            <span style="float: right; margin-right: 20px;">&#9660;</span>
+          </button>
+          <div class="dropdown-container">
+            <a href="/lost/owner">주인을 찾습니다</a>
+            <a href="/lost/item">물건을 찾습니다</a>
+          </div>
           {% if user == 'admin' %}
           <a href="/admin_dashboard">👑 회원가입 신청</a>
           {% endif %}
@@ -218,7 +225,14 @@
           {% endif %}
           <a href="https://sshs.app/school/food" target="_blank">🍔 급식 및 간식</a>
           <a href="/english">📖영어 단어 시험</a>
-          <a href="/quiz">🧪 주기율표 퀴즈</a>
+          <button class="dropdown-btn">🧠 퀴즈
+            <span style="float: right; margin-right: 20px;">&#9660;</span>
+          </button>
+          <div class="dropdown-container">
+            <a href="/quiz">🧪 주기율표 퀴즈</a>
+            <a href="/quiz/aminoacid">🧬 아미노산 퀴즈</a>
+            <a href="/quiz/hormone">🧠 호르몬 퀴즈</a>
+          </div>
           <hr>
             <a href="/outing" style="color: #4285F4;">📍 이석 현황/신청</a>
             <a href='/continuous_outing'>🔄 연속 이석 신청</a>
