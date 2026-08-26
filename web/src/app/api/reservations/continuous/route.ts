@@ -18,7 +18,11 @@ export async function POST(request: Request) {
     const documents: Record<string, unknown>[] = [];
     for (const day = new Date(start); day <= end; day.setDate(day.getDate() + 1)) {
       const weekday = day.getDay(); if (weekday < 1 || weekday > 4) continue;
-      if (input.location === "(기숙사)" && Number.isFinite(studentNumber)) { const dateOdd = day.getDate() % 2 === 1; if (studentOdd === dateOdd) continue; }
+      if (input.location === "(기숙사)" && Number.isFinite(studentNumber)) {
+        const dateOdd = day.getDate() % 2 === 1;
+        const isAllowedDormitoryDate = studentOdd ? !dateOdd : dateOdd;
+        if (!isAllowedDormitoryDate) continue;
+      }
       const date = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(day);
       documents.push({ date, studentId: input.studentId, name: input.name, period: input.period, location: input.location, createdBy: session.userId, status: "scheduled" });
     }

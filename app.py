@@ -338,10 +338,8 @@ def continuous_outing():
                 if location == '(기숙사)' and s_id_int != -1:
                     is_date_odd = (current_date.day % 2 != 0)
 
-                    if is_student_odd and is_date_odd:
-                        skip_date = True
-                    elif not is_student_odd and not is_date_odd:
-                        skip_date = True
+                    is_allowed_dormitory_date = not is_date_odd if is_student_odd else is_date_odd
+                    skip_date = not is_allowed_dormitory_date
 
                 if skip_date:
                     skipped_count += 1
