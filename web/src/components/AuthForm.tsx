@@ -29,9 +29,9 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
   return <form className="legacy-auth-form" onSubmit={submit}>
     <input name="loginId" placeholder={mode === "signup" ? "쓰고 싶은 ID" : "아이디"} required />
-    <input name="password" type="password" minLength={8} placeholder="비밀번호" required />
+    <input name="password" type="password" minLength={5} placeholder="비밀번호" required />
     {mode === "signup" && <>
-      <input name="passwordConfirm" type="password" minLength={8} placeholder="비밀번호 재확인" required />
+      <input name="passwordConfirm" type="password" minLength={5} placeholder="비밀번호 재확인" required />
       <input name="studentId" placeholder="교번 (예: 26001)" required />
       <input name="name" placeholder="실명" required />
       <input name="birthDate" type="date" required />
