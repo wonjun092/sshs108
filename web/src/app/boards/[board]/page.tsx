@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default async function Page({ params }: { params: Promise<{ board: string }> }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ board: string }>;
+}) {
   const { board } = await params;
   const paths: Record<string, string> = {
     notice: "/notice",

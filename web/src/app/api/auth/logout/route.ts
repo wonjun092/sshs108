@@ -3,6 +3,10 @@ import { SESSION_COOKIE } from "@/lib/auth";
 
 export async function POST(): Promise<NextResponse> {
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(SESSION_COOKIE, "", { httpOnly: true, path: "/", maxAge: 0 });
+  response.cookies.set(SESSION_COOKIE, "", {
+    httpOnly: true,
+    path: "/",
+    maxAge: 0,
+  });
   return response;
 }

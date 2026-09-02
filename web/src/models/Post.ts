@@ -1,6 +1,12 @@
 import { InferSchemaType, Model, Schema, model, models } from "mongoose";
 
-export const BOARD_TYPES = ["notice", "free", "anonymous", "lost-owner", "lost-item"] as const;
+export const BOARD_TYPES = [
+  "notice",
+  "free",
+  "anonymous",
+  "lost-owner",
+  "lost-item",
+] as const;
 
 const commentSchema = new Schema(
   {
@@ -15,7 +21,12 @@ const commentSchema = new Schema(
 const postSchema = new Schema(
   {
     board: { type: String, enum: BOARD_TYPES, required: true, index: true },
-    authorId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    authorId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     authorLoginId: { type: String, required: true },
     title: { type: String, required: true, trim: true, maxlength: 200 },
     content: { type: String, required: true, trim: true, maxlength: 20_000 },
@@ -33,4 +44,5 @@ const postSchema = new Schema(
 postSchema.index({ board: 1, createdAt: -1 });
 export type PostDocument = InferSchemaType<typeof postSchema>;
 export const Post =
-  (models.Post as Model<PostDocument> | undefined) ?? model<PostDocument>("Post", postSchema);
+  (models.Post as Model<PostDocument> | undefined) ??
+  model<PostDocument>("Post", postSchema);

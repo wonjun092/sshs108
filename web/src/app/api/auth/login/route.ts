@@ -10,12 +10,20 @@ export async function POST(request: Request): Promise<NextResponse> {
   try {
     const input = loginSchema.parse(await request.json());
     await connectDatabase();
-    const user = await User.findOne({ loginId: input.loginId }).select("+passwordHash");
+    const user = await User.findOne({ loginId: input.loginId }).select(
+      "+passwordHash",
+    );
     if (!user || !(await compare(input.password, user.passwordHash))) {
-      return NextResponse.json({ error: "아이디 또는 비밀번호가 올바르지 않습니다." }, { status: 401 });
+      return NextResponse.json(
+        { error: "아이디 또는 비밀번호가 올바르지 않습니다." },
+        { status: 401 },
+      );
     }
     if (user.status !== "active") {
-      return NextResponse.json({ error: "관리자 승인을 기다리고 있습니다." }, { status: 403 });
+      return NextResponse.json(
+        { error: "관리자 승인을 기다리고 있습니다." },
+        { status: 403 },
+      );
     }
 
     const token = await createSessionToken({

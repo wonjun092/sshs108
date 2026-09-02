@@ -56,18 +56,40 @@ function postDate(value?: string): Date {
 async function main() {
   const source = resolve(argument("--source") ?? "..");
   const dryRun = process.argv.includes("--dry-run");
-  const activeUsers = readJson<Record<string, string>>(source, "users.json", {});
-  const pendingUsers = readJson<Record<string, PendingUser>>(source, "pending_users.json", {});
+  const activeUsers = readJson<Record<string, string>>(
+    source,
+    "users.json",
+    {},
+  );
+  const pendingUsers = readJson<Record<string, PendingUser>>(
+    source,
+    "pending_users.json",
+    {},
+  );
   const postGroups = [
-    { board: "notice", posts: readJson<LegacyPost[]>(source, "notices.json", []) },
+    {
+      board: "notice",
+      posts: readJson<LegacyPost[]>(source, "notices.json", []),
+    },
     { board: "free", posts: readJson<LegacyPost[]>(source, "free.json", []) },
-    { board: "anonymous", posts: readJson<LegacyPost[]>(source, "anonymous.json", []) },
-    { board: "lost", posts: readJson<LegacyPost[]>(source, "lost_found.json", []) },
+    {
+      board: "anonymous",
+      posts: readJson<LegacyPost[]>(source, "anonymous.json", []),
+    },
+    {
+      board: "lost",
+      posts: readJson<LegacyPost[]>(source, "lost_found.json", []),
+    },
   ] as const;
 
-  const reservationDatabase = new DatabaseSync(join(source, "reservations.db"), { readOnly: true });
+  const reservationDatabase = new DatabaseSync(
+    join(source, "reservations.db"),
+    { readOnly: true },
+  );
   const reservations = reservationDatabase
-    .prepare("SELECT date, student_id, name, period, location FROM reservations")
+    .prepare(
+      "SELECT date, student_id, name, period, location FROM reservations",
+    )
     .all() as Array<Record<string, string>>;
   reservationDatabase.close();
 
@@ -84,7 +106,12 @@ async function main() {
   const userIds = new Map<string, string>();
 
   for (const [loginId, password] of Object.entries(activeUsers)) {
-    const role = loginId === "admin" ? "admin" : loginId === "Teacher" ? "teacher" : "student";
+    const role =
+      loginId === "admin"
+        ? "admin"
+        : loginId === "Teacher"
+          ? "teacher"
+          : "student";
     const user = await User.findOneAndUpdate(
       { loginId },
       {
@@ -116,15 +143,20 @@ async function main() {
 
   const migrationOwner = process.env.MIGRATION_OWNER_LOGIN_ID ?? "admin";
   const fallbackAuthorId = userIds.get(migrationOwner);
-  if (!fallbackAuthorId) throw new Error(`Migration owner '${migrationOwner}' was not found.`);
+  if (!fallbackAuthorId)
+    throw new Error(`Migration owner '${migrationOwner}' was not found.`);
 
   for (const group of postGroups) {
     for (const [legacyIndex, legacy] of group.posts.entries()) {
-      const authorLoginId = legacy.real_author ?? legacy.author ?? migrationOwner;
+      const authorLoginId =
+        legacy.real_author ?? legacy.author ?? migrationOwner;
       const authorId = userIds.get(authorLoginId) ?? fallbackAuthorId;
-      const board: (typeof BOARD_TYPES)[number] = group.board === "lost"
-        ? legacy.type === "owner" ? "lost-owner" : "lost-item"
-        : group.board;
+      const board: (typeof BOARD_TYPES)[number] =
+        group.board === "lost"
+          ? legacy.type === "owner"
+            ? "lost-owner"
+            : "lost-item"
+          : group.board;
       await Post.findOneAndUpdate(
         { board, legacyIndex },
         {
@@ -138,8 +170,13 @@ async function main() {
             views: legacy.views ?? 0,
             createdAt: postDate(legacy.datetime),
             comments: (legacy.comments ?? []).map((comment) => ({
-              authorId: userIds.get(comment.real_writer ?? comment.writer ?? "") ?? fallbackAuthorId,
-              writer: board === "anonymous" ? "익명" : comment.writer ?? migrationOwner,
+              authorId:
+                userIds.get(comment.real_writer ?? comment.writer ?? "") ??
+                fallbackAuthorId,
+              writer:
+                board === "anonymous"
+                  ? "익명"
+                  : (comment.writer ?? migrationOwner),
               content: comment.content ?? "",
               legacyTime: comment.time,
             })),
@@ -151,7 +188,10 @@ async function main() {
   }
 
   for (const reservation of reservations) {
-    const ownerId = userIds.get(reservation.student_id) ?? userIds.get(reservation.name) ?? fallbackAuthorId;
+    const ownerId =
+      userIds.get(reservation.student_id) ??
+      userIds.get(reservation.name) ??
+      fallbackAuthorId;
     await Reservation.updateOne(
       {
         date: reservation.date,
@@ -173,7 +213,9 @@ async function main() {
   console.log("Migration completed without storing plaintext passwords.");
 }
 
-main().then(() => process.exit(0)).catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

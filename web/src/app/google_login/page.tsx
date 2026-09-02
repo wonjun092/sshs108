@@ -1,2 +1,4 @@
 import { redirect } from "next/navigation";
-export default function Page() { redirect("/api/google/login"); }
+export default function Page() {
+  redirect("/api/google/login");
+}
