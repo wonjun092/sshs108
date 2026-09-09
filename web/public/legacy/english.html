@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Holes Vocabulary Master - Full Version</title>
+    <title>English Vocabulary Master</title>
     <style>
         /* [style.css 기반 디자인] */
         body {
@@ -34,6 +34,47 @@
             font-weight: bold;
             font-size: 1.4em;
             letter-spacing: 1px;
+        }
+
+        .book-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .book-tab {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            padding: 9px 16px;
+        }
+
+        .book-tab:hover,
+        .book-tab.active {
+            background: #3498db;
+            border-color: #3498db;
+        }
+
+        .answer-definition {
+            display: block;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid currentColor;
+            font-weight: normal;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+                padding: 18px 24px 18px 74px;
+            }
+
+            .header > div {
+                padding-left: 0 !important;
+            }
         }
 
         .container {
@@ -148,8 +189,21 @@
             font-style: italic;
             color: #555;
             font-size: 1.15em;
-            margin-bottom: 12px;
+            margin-top: 12px;
             line-height: 1.4;
+        }
+
+        .hint-toggle {
+            background: transparent;
+            color: #2980b9;
+            border: 1px solid #3498db;
+            padding: 7px 12px;
+            margin-top: 14px;
+            font-size: 0.95em;
+        }
+
+        .hint-toggle:hover {
+            background: #eaf6fd;
         }
 
         .sentence {
@@ -185,14 +239,18 @@
 <body>
     <div class="header">
     <div style="display: flex; align-items: center; padding-left: 50px;">
-        <span>📖 Holes Vocabulary Master</span>
+        <span id="book-title">📖 The Wednesday Wars Vocabulary</span>
+    </div>
+    <div class="book-selector" aria-label="책 선택">
+        <button type="button" class="book-tab" data-book="holes" onclick="selectBook('holes')">Holes</button>
+        <button type="button" class="book-tab active" data-book="wednesdayWars" onclick="selectBook('wednesdayWars')">Wednesday Wars</button>
     </div>
     </div>
 
     <div class="container">
         <div id="setup-section" class="card">
             <h3 style="margin-top:0;">시험 범위 설정</h3>
-            <p style="color: #666;">원하는 챕터를 선택하고 문제 수를 입력하세요.</p>
+            <p id="range-help" style="color: #666;">원하는 월(챕터)을 선택하고 문제 수를 입력하세요.</p>
             <div style="margin-bottom: 15px;">
                 <button onclick="toggleAll(true)">전체 선택</button>
                 <button onclick="toggleAll(false)" style="background-color: #95a5a6;">전체 해제</button>
@@ -212,8 +270,9 @@
                 <div class="chap-tag" id="display-chap">Ch. ??</div>
             </div>
             <div class="question-box">
-                <div class="definition" id="display-def"></div>
                 <div class="sentence" id="display-sent"></div>
+                <button type="button" id="hint-toggle" class="hint-toggle hidden" aria-expanded="false" onclick="toggleHint()">Hint: 보기</button>
+                <div class="definition hidden" id="display-def"></div>
             </div>
             <input type="text" id="answer-input" placeholder="정답 단어를 입력하세요" autocomplete="off">
             <div id="feedback" class="feedback hidden"></div>
@@ -226,13 +285,13 @@
             <div id="final-score" style="font-size: 2.5em; font-weight: bold; color: #2c3e50; margin: 30px 0;"></div>
             <button id="retry-wrong-btn" class="secondary" style="width: 100%; margin-bottom: 12px;"
                 onclick="retryWrong()">틀린 문제만 다시 풀기</button>
-            <button style="width: 100%; background-color: #95a5a6;" onclick="location.reload()">범위 다시 선택하기</button>
+            <button style="width: 100%; background-color: #95a5a6;" onclick="resetToSetup()">범위 다시 선택하기</button>
         </div>
     </div>
 
     <script>
         // 엑셀 데이터 기반 단어 데이터 (Blanked Example + Hint 정보 포함)
-        const vocabulary = [
+        const holesVocabulary = [
   /* Ch 29 */
   {"ch": "29", "word": "unbearably", "correctFill": "unbearably", "sent": "The air became __________ humid. Stanley was drenched in sweat.", "hintType": "Synonym", "hint": "intolerably, insufferably, extremely"},
   {"ch": "29", "word": "formation", "correctFill": "formation", "sent": "In that split second Stanley thought he saw an unusual rock __________ on top of one of the mountain peaks.", "hintType": "Synonym", "hint": "arrangement, structure, organization"},
@@ -335,19 +394,99 @@
   {"ch": "49-50", "word": "fluff", "correctFill": "fluffing", "sent": "A woman sitting in the chair behind Hector was absent-mindedly __________ his hair with her fingers.", "hintType": "", "hint": "", "acceptedAnswers": ["fluff"]},
 ];
 
-        const chapterList = [...new Set(vocabulary.map(v => v.ch))].sort();
+        // The Wednesday Wars - September (첨부 강의자료 기반)
+        // correctFill은 예문 빈칸에 들어가는 활용형, word는 표제어입니다.
+        const wednesdayWarsVocabulary = [
+            {"ch":"September","word":"juvenile","correctFill":"juvenile","sent":"They were the kinds of things that sent kids to _________ detention homes.","definition":"[only before noun] (formal or law) relating to young people who are not yet adults"},
+            {"ch":"September","word":"suppose","correctFill":"suppose","sent":"It worked, and the color stained her face for a long time until, I __________, those skin cells wore off.","definition":"to think or believe that something is true or possible (based on the knowledge that you have)"},
+            {"ch":"September","word":"suspend","correctFill":"suspended","sent":"Doug Swieteck was __________ for two whole weeks.","definition":"to officially prevent somebody from doing their job, going to school, etc. for a time, as a punishment or while a complaint against them is investigated","acceptedAnswers":["suspend"]},
+            {"ch":"September","word":"congratulate","correctFill":"congratulate","sent":"We were all supposed to _______________ her on the new post.","definition":"to tell somebody that you are pleased about their success or achievements"},
+            {"ch":"September","word":"monitor","correctFill":"monitor","sent":"Even when she had to be the playground __________ during recess.","definition":"someone who watches over something; a person in charge of something or someone"},
+            {"ch":"September","word":"Presbyterian","correctFill":"Presbyterian","sent":"On Sunday morning, my family was at Saint Andrew _____________ Church.","definition":"connected with a branch of the Christian Protestant Church that is one of the largest Churches in the US"},
+            {"ch":"September","word":"Hebrew","correctFill":"Hebrew","sent":"On Wednesday afternoons half of my class went to _________ School at Temple Beth-El.","definition":"belonging to or relating to the Hebrew language or people"},
+            {"ch":"September","word":"catechism","correctFill":"catechism","sent":"The other half went to ____________ at Saint Adelbert's.","definition":"a set of questions and answers that are used for teaching people about the beliefs of the Christian religion"},
+            {"ch":"September","word":"mutilation","correctFill":"mutilation","sent":"The ____________ of 'guess' into an intransitive verb is a crime against the language.","definition":"severe damage to somebody's body, especially when part of it is cut or torn off; the act of causing such damage"},
+            {"ch":"September","word":"impress","correctFill":"impressed","sent":"They sure would have been __________ at the perfect life of an architect from Hoodhood and Associates.","definition":"to cause someone to admire or respect you","acceptedAnswers":["impress"]},
+            {"ch":"September","word":"ally","correctFill":"ally","sent":"I needed to have an _______ in the war against Mrs. Baker.","definition":"a person who helps and supports somebody who is in a difficult situation"},
+            {"ch":"September","word":"retire","correctFill":"retire","sent":"There will be no Hoodhood and Associates for you to take over when I'm ready to _______.","definition":"to leave your job and stop working, especially because you have reached a particular age or because you are ill; to tell somebody they must stop doing their job"},
+            {"ch":"September","word":"explosive","correctFill":"explosives","sent":"I didn't see any trip wires, so probably there weren't any _________.","definition":"a substance that is able or likely to cause an explosion","acceptedAnswers":["explosive"]},
+            {"ch":"September","word":"recruit","correctFill":"recruited","sent":"Mrs. Baker had probably _________ an eighth grader to do something awful to me.","definition":"to find new people to join a company, an organization, the armed forces, etc.","acceptedAnswers":["recruit"]},
+            {"ch":"September","word":"bribe","correctFill":"bribed","sent":"Doug Swieteck said that if his father hadn’t ______ the judge, his brother would have been on Death Row.","definition":"to give somebody money or something valuable in order to persuade them to help you, especially by doing something dishonest","acceptedAnswers":["bribe"]},
+            {"ch":"September","word":"perimeter","correctFill":"perimeter","sent":"I kept a __________ of about ten feet or so around me.","definition":"the outside edge of an area of land"},
+            {"ch":"September","word":"handy","correctFill":"handy","sent":"You never know what might come in _________ when something awful is about to happen to you.","definition":"easy to use or to do"},
+            {"ch":"September","word":"foil","correctFill":"foil","sent":"I would ______ Mrs. Baker's nefarious plan.","definition":"to stop something from happening, especially something illegal; to prevent somebody from doing something"},
+            {"ch":"September","word":"instructions","correctFill":"instructions","sent":"Doug Swieteck's brother had clearly received ___________.","definition":"something that somebody tells you to do","acceptedAnswers":["instruction"]},
+            {"ch":"September","word":"crack","correctFill":"cracking","sent":"His voice was __________, probably because he was imagining the propulsion of a soccer ball.","definition":"changing in depth, volume, etc. suddenly and in a way that you cannot control","acceptedAnswers":["crack","cracked"]},
+            {"ch":"September","word":"accuse","correctFill":"accused","sent":"I glanced up at Mrs. Baker's window—she wasn't there, probably so she wouldn't be _________ of being an accomplice.","definition":"to say that somebody has done something wrong or is guilty of something","acceptedAnswers":["accuse"]},
+            {"ch":"September","word":"shuffle","correctFill":"shuffle","sent":"What she did wasn't really running. It was more a panicky __________.","definition":"a slow walk in which you take small steps and do not lift your feet completely off the ground"},
+            {"ch":"September","word":"pinched","correctFill":"pinched","sent":"Mrs. Baker's face was _________ when we came back into the class—the disappointment of a failed assassination plot.","definition":"(of a person's face) pale and thin, especially because of illness, cold or worry"},
+            {"ch":"September","word":"screech","correctFill":"screeched","sent":"The P.A. crackled and _________ like a parrot.","definition":"to make a loud high unpleasant sound; to say something using this sound","acceptedAnswers":["screech"]},
+            {"ch":"September","word":"ambition","correctFill":"ambition","sent":"Mr. Guareschi's long __________ had been to become dictator of a small country.","definition":"a desire to be successful, powerful, or famous"},
+            {"ch":"September","word":"convince","correctFill":"convinced","sent":"Perhaps she is not __________ that your skills are sufficiently developed to begin seventh-grade mathematics.","definition":"to make somebody or yourself believe that something is true","acceptedAnswers":["convince"]},
+            {"ch":"September","word":"legitimate","correctFill":"legitimate","sent":"Mrs. Baker does have a ___________ concern, it would seem, but a passing grade is a passing grade.","definition":"for which there is a fair and acceptable reason"},
+            {"ch":"September","word":"scribble","correctFill":"scribbled","sent":"Mr. Guareschi _________ over Mrs. Baker's memo.","definition":"to write something quickly and carelessly, especially because you do not have much time","acceptedAnswers":["scribble"]},
+            {"ch":"September","word":"syllable","correctFill":"syllables","sent":"'Regrettable.' She said all four __________ very slowly.","definition":"any of the units into which a word is divided, containing a vowel sound and usually one or more consonants","acceptedAnswers":["syllable"]},
+            {"ch":"September","word":"murderous","correctFill":"murderous","sent":"I watched her carefully for the rest of the day, but nothing ever gave away her __________ intentions.","definition":"intending or likely to murder"}
+        ];
+
+        const books = {
+            holes: {
+                title: "Holes Vocabulary Master",
+                rangeHelp: "원하는 챕터를 선택하고 문제 수를 입력하세요.",
+                chapterLabel: ch => `Ch.${ch}`,
+                quizChapterLabel: ch => `Chapter ${ch}`,
+                vocabulary: holesVocabulary
+            },
+            wednesdayWars: {
+                title: "The Wednesday Wars Vocabulary",
+                rangeHelp: "원하는 월(챕터)을 선택하고 문제 수를 입력하세요.",
+                chapterLabel: ch => ch,
+                quizChapterLabel: ch => ch,
+                vocabulary: wednesdayWarsVocabulary
+            }
+        };
+
+        let currentBookKey = "wednesdayWars";
         let quizData = [];
         let wrongWords = [];
         let currentIdx = 0;
         let score = 0;
 
         const grid = document.getElementById('chapter-grid');
-        chapterList.forEach(ch => {
-            const div = document.createElement('div');
-            div.className = 'chapter-item';
-            div.innerHTML = `<input type="checkbox" value="${ch}" checked onchange="updateMax()"> Ch.${ch}`;
-            grid.appendChild(div);
-        });
+
+        function getCurrentBook() {
+            return books[currentBookKey];
+        }
+
+        function renderBookSetup() {
+            const book = getCurrentBook();
+            const chapterList = [...new Set(book.vocabulary.map(v => v.ch))];
+            document.getElementById('book-title').innerText = `📖 ${book.title}`;
+            document.getElementById('range-help').innerText = book.rangeHelp;
+            document.querySelectorAll('.book-tab').forEach(button => {
+                button.classList.toggle('active', button.dataset.book === currentBookKey);
+            });
+            grid.innerHTML = '';
+            chapterList.forEach(ch => {
+                const label = document.createElement('label');
+                label.className = 'chapter-item';
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = ch;
+                checkbox.checked = true;
+                checkbox.addEventListener('change', updateMax);
+                label.append(checkbox, document.createTextNode(` ${book.chapterLabel(ch)}`));
+                grid.appendChild(label);
+            });
+            updateMax();
+        }
+
+        function selectBook(bookKey) {
+            if (!books[bookKey]) return;
+            currentBookKey = bookKey;
+            resetToSetup();
+            renderBookSetup();
+        }
 
         function toggleAll(status) {
             document.querySelectorAll('#chapter-grid input').forEach(i => i.checked = status);
@@ -356,18 +495,19 @@
 
         function updateMax() {
             const selected = Array.from(document.querySelectorAll('#chapter-grid input:checked')).map(i => i.value);
-            const count = vocabulary.filter(v => selected.includes(v.ch)).length;
+            const count = getCurrentBook().vocabulary.filter(v => selected.includes(v.ch)).length;
             document.getElementById('max-count').innerText = count;
             document.getElementById('question-count').value = count; // 기본값 15 또는 최대값
         }
-        updateMax();
-
         function startQuiz() {
             const selected = Array.from(document.querySelectorAll('#chapter-grid input:checked')).map(i => i.value);
-            const num = parseInt(document.getElementById('question-count').value);
+            const max = getCurrentBook().vocabulary.filter(v => selected.includes(v.ch)).length;
+            const requested = parseInt(document.getElementById('question-count').value, 10);
             if (selected.length === 0) return alert("챕터를 선택하세요!");
+            if (!Number.isFinite(requested) || requested < 1) return alert("문제 수를 1개 이상 입력하세요!");
+            const num = Math.min(requested, max);
 
-            quizData = vocabulary.filter(v => selected.includes(v.ch))
+            quizData = getCurrentBook().vocabulary.filter(v => selected.includes(v.ch))
                 .sort(() => Math.random() - 0.5)
                 .slice(0, num);
             initQuiz();
@@ -392,20 +532,19 @@
 
 				// 1. 문제 정보 업데이트
 				document.getElementById('progress').innerText = `문제 ${currentIdx + 1} / ${quizData.length}`;
-				document.getElementById('display-chap').innerText = `Chapter ${q.ch}`;
+				document.getElementById('display-chap').innerText = getCurrentBook().quizChapterLabel(q.ch);
 
-				// 2. Hint 표시 (definition 대신)
+				// 2. Hint는 버튼을 눌렀을 때만 표시합니다.
 				const defEl = document.getElementById('display-def');
-				if (q.hintType) {
-						const hintText = q.hint ? `${q.hint}` : '';
-						defEl.innerText = hintText
-								? `[Hint - ${q.hintType}] ${hintText}`
-								: `[Hint 유형: ${q.hintType}]`;
-						defEl.classList.remove('hidden');
-				} else {
-						defEl.innerText = '';
-						defEl.classList.add('hidden');
-				}
+				const hintToggle = document.getElementById('hint-toggle');
+				const hintText = q.definition
+						? `영영풀이: ${q.definition}`
+						: (q.hint ? `[Hint${q.hintType ? ` - ${q.hintType}` : ''}] ${q.hint}` : '');
+				defEl.innerText = hintText;
+				defEl.classList.add('hidden');
+				hintToggle.classList.toggle('hidden', !hintText);
+				hintToggle.innerText = 'Hint: 보기';
+				hintToggle.setAttribute('aria-expanded', 'false');
 
 				// 3. 엑셀의 Blanked Example 그대로 사용 (이미 __________ 처리됨)
 				document.getElementById('display-sent').innerText = q.sent;
@@ -425,6 +564,15 @@
 						input.focus();
 				}, 10);
 		}
+
+        function toggleHint() {
+            const hintToggle = document.getElementById('hint-toggle');
+            const defEl = document.getElementById('display-def');
+            const willShow = defEl.classList.contains('hidden');
+            defEl.classList.toggle('hidden', !willShow);
+            hintToggle.innerText = willShow ? 'Hint: 숨기기' : 'Hint: 보기';
+            hintToggle.setAttribute('aria-expanded', String(willShow));
+        }
 
         function normalizeAnswer(value) {
             return (value || "")
@@ -452,6 +600,13 @@
                 fb.innerText = `틀렸습니다. 정답: [ ${q.correctFill} ]`;
                 fb.className = "feedback incorrect";
                 wrongWords.push(q);
+            }
+
+            if (q.definition) {
+                const definition = document.createElement('span');
+                definition.className = 'answer-definition';
+                definition.innerText = `영영풀이: ${q.definition}`;
+                fb.appendChild(definition);
             }
 
             // [수정] disabled 대신 readOnly를 쓰면 키보드 포커스가 유지되어 엔터가 더 잘 먹힙니다.
@@ -485,6 +640,16 @@
             initQuiz();
         }
 
+        function resetToSetup() {
+            quizData = [];
+            wrongWords = [];
+            currentIdx = 0;
+            score = 0;
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('result-section').classList.add('hidden');
+            document.getElementById('setup-section').classList.remove('hidden');
+        }
+
         window.addEventListener('keydown', (e) => {
             // 엔터키가 눌렸을 때만 작동
             if (e.key === 'Enter') {
@@ -506,6 +671,8 @@
                 }
             }
         });
+
+        renderBookSetup();
 
     </script>
 </body>
