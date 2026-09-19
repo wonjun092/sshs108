@@ -4,7 +4,7 @@ import { SharedSidebar } from "@/components/SharedSidebar";
 
 export default async function Page() {
   const session = await getSession();
-  if (!session) redirect("/login");
+  // if (!session) redirect("/login");
 
   return (
     <div className="standalone-quiz-page">
