@@ -3,8 +3,8 @@ import { getSession } from "@/lib/auth";
 import { SharedSidebar } from "@/components/SharedSidebar";
 
 export default async function Page() {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  // const session = await getSession();
+  // if (!session) redirect("/login");
 
   return (
     <div className="standalone-quiz-page">
