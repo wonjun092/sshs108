@@ -9,7 +9,7 @@ export default async function Page() {
   return (
     <div className="standalone-quiz-page">
       <SharedSidebar
-        role={session.role}
+        //role={session.role}
         triggerClassName="hamburger standalone-quiz-menu"
       />
       <iframe
