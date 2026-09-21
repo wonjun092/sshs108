@@ -53,6 +53,100 @@
         border-color: #3498db;
       }
 
+      .record-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        padding: 14px 16px;
+        border: 1px solid #b9ddf5;
+        border-radius: 8px;
+        background: #eef8ff;
+        color: #234;
+      }
+
+      .record-option label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .record-option input {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+      }
+
+      .record-note,
+      .ranking-status,
+      #record-status {
+        color: #667;
+        font-size: 0.92em;
+      }
+
+      #record-status {
+        min-height: 1.4em;
+        margin: -14px 0 18px;
+      }
+
+      .ranking-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .ranking-row {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid #e6e9ed;
+        border-radius: 10px;
+        background: #f8fafc;
+      }
+
+      .rank-badge {
+        display: inline-grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #e6ebef;
+        color: #34495e;
+        font-weight: bold;
+      }
+
+      .rank-1 .rank-badge {
+        background: #ffd700;
+        color: #5b4900;
+      }
+
+      .rank-2 .rank-badge {
+        background: #c0c0c0;
+        color: #3f4650;
+      }
+
+      .rank-3 .rank-badge {
+        background: #cd7f32;
+        color: white;
+      }
+
+      .ranking-user {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        font-weight: bold;
+      }
+
+      .ranking-score {
+        color: #2c3e50;
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+
       .answer-definition {
         display: block;
         margin-top: 10px;
@@ -257,6 +351,14 @@
         >
           Wednesday Wars
         </button>
+        <button
+          type="button"
+          id="ranking-tab"
+          class="book-tab"
+          onclick="showRanking()"
+        >
+          Ranking
+        </button>
       </div>
     </div>
 
@@ -281,6 +383,16 @@
           >개):</label
         >
         <input type="number" id="question-count" value="10" />
+
+        <div id="record-option" class="record-option hidden">
+          <label>
+            <input type="checkbox" id="record-score" checked />
+            기록 재기
+          </label>
+          <span class="record-note"
+            >Wednesday Wars 전체 범위를 풀 때만 랭킹에 반영됩니다.</span
+          >
+        </div>
 
         <button
           style="width: 100%; margin-top: 15px; font-size: 1.1em"
@@ -339,6 +451,7 @@
             margin: 30px 0;
           "
         ></div>
+        <div id="record-status"></div>
         <button
           id="retry-wrong-btn"
           class="secondary"
@@ -353,6 +466,14 @@
         >
           범위 다시 선택하기
         </button>
+      </div>
+
+      <div id="ranking-section" class="card hidden">
+        <h2 style="margin-top: 0">Wednesday Wars Ranking</h2>
+        <p class="ranking-status" id="ranking-status">
+          기록을 불러오는 중입니다.
+        </p>
+        <div class="ranking-list" id="ranking-list"></div>
       </div>
     </div>
 
@@ -2322,6 +2443,8 @@
       let wrongWords = [];
       let currentIdx = 0;
       let score = 0;
+      let shouldRecordCurrentQuiz = false;
+      let recordOptionEligible = false;
 
       const grid = document.getElementById("chapter-grid");
 
@@ -2381,7 +2504,32 @@
         ).length;
         document.getElementById("max-count").innerText = count;
         document.getElementById("question-count").value = count; // 기본값 15 또는 최대값
+        updateRecordOption();
       }
+
+      function updateRecordOption() {
+        const selected = document.querySelectorAll(
+          "#chapter-grid input:checked",
+        ).length;
+        const chapterCount = new Set(
+          getCurrentBook().vocabulary.map((v) => v.ch),
+        ).size;
+        const requested = parseInt(
+          document.getElementById("question-count").value,
+          10,
+        );
+        const eligible =
+          currentBookKey === "wednesdayWars" &&
+          selected === chapterCount &&
+          requested === getCurrentBook().vocabulary.length;
+        const option = document.getElementById("record-option");
+        const checkbox = document.getElementById("record-score");
+
+        option.classList.toggle("hidden", !eligible);
+        if (eligible && !recordOptionEligible) checkbox.checked = true;
+        recordOptionEligible = eligible;
+      }
+
       function startQuiz() {
         const selected = Array.from(
           document.querySelectorAll("#chapter-grid input:checked"),
@@ -2398,6 +2546,11 @@
           return alert("문제 수를 1개 이상 입력하세요!");
         const num = Math.min(requested, max);
 
+        shouldRecordCurrentQuiz =
+          recordOptionEligible &&
+          document.getElementById("record-score").checked &&
+          num === getCurrentBook().vocabulary.length;
+
         quizData = getCurrentBook()
           .vocabulary.filter((v) => selected.includes(v.ch))
           .sort(() => Math.random() - 0.5)
@@ -2411,6 +2564,7 @@
         wrongWords = [];
         document.getElementById("setup-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("hidden");
+        document.getElementById("ranking-section").classList.add("hidden");
         document.getElementById("quiz-section").classList.remove("hidden");
         showQuestion();
       }
@@ -2524,6 +2678,9 @@
         document.getElementById("result-section").classList.remove("hidden");
         document.getElementById("final-score").innerText =
           `${score} / ${quizData.length}`;
+        document.getElementById("record-status").innerText = "";
+
+        if (shouldRecordCurrentQuiz) submitRankingScore();
 
         const retryBtn = document.getElementById("retry-wrong-btn");
         if (wrongWords.length > 0) {
@@ -2535,8 +2692,92 @@
       }
 
       function retryWrong() {
+        shouldRecordCurrentQuiz = false;
         quizData = [...wrongWords].sort(() => Math.random() - 0.5);
         initQuiz();
+      }
+
+      async function submitRankingScore() {
+        const status = document.getElementById("record-status");
+        status.innerText = "기록을 저장하는 중입니다...";
+
+        try {
+          const response = await fetch("/api/english-ranking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              score,
+              total: quizData.length,
+            }),
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "기록 저장 실패");
+          status.innerText = data.improved
+            ? "새 최고 기록이 저장되었습니다."
+            : "기존 최고 기록이 더 높아 그대로 유지되었습니다.";
+        } catch (error) {
+          status.innerText =
+            error instanceof Error
+              ? error.message
+              : "기록을 저장하지 못했습니다.";
+        }
+      }
+
+      async function showRanking() {
+        document.getElementById("setup-section").classList.add("hidden");
+        document.getElementById("quiz-section").classList.add("hidden");
+        document.getElementById("result-section").classList.add("hidden");
+        document.getElementById("ranking-section").classList.remove("hidden");
+        document.getElementById("book-title").innerText =
+          "🏆 Wednesday Wars Ranking";
+        document.querySelectorAll(".book-tab").forEach((button) => {
+          button.classList.toggle("active", button.id === "ranking-tab");
+        });
+
+        const status = document.getElementById("ranking-status");
+        const list = document.getElementById("ranking-list");
+        status.innerText = "기록을 불러오는 중입니다.";
+        list.replaceChildren();
+
+        try {
+          const response = await fetch("/api/english-ranking", {
+            cache: "no-store",
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "랭킹 불러오기 실패");
+
+          if (data.rankings.length === 0) {
+            status.innerText = "아직 등록된 기록이 없습니다.";
+            return;
+          }
+
+          status.innerText =
+            "기록 재기를 선택한 사용자의 최고 기록만 표시됩니다.";
+          data.rankings.forEach((entry) => {
+            const row = document.createElement("div");
+            row.className = `ranking-row rank-${entry.rank}`;
+
+            const badge = document.createElement("span");
+            badge.className = "rank-badge";
+            badge.innerText = entry.rank;
+
+            const user = document.createElement("span");
+            user.className = "ranking-user";
+            user.innerText = entry.loginId;
+
+            const scoreCell = document.createElement("span");
+            scoreCell.className = "ranking-score";
+            scoreCell.innerText = `${entry.score} / ${entry.total}`;
+
+            row.append(badge, user, scoreCell);
+            list.appendChild(row);
+          });
+        } catch (error) {
+          status.innerText =
+            error instanceof Error
+              ? error.message
+              : "랭킹을 불러오지 못했습니다.";
+        }
       }
 
       function resetToSetup() {
@@ -2546,6 +2787,7 @@
         score = 0;
         document.getElementById("quiz-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("hidden");
+        document.getElementById("ranking-section").classList.add("hidden");
         document.getElementById("setup-section").classList.remove("hidden");
       }
 
@@ -2569,6 +2811,10 @@
           }
         }
       });
+
+      document
+        .getElementById("question-count")
+        .addEventListener("input", updateRecordOption);
 
       renderBookSetup();
     </script>
