@@ -147,16 +147,6 @@
         font-weight: bold;
       }
 
-      .answer-definition {
-        display: block;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid currentColor;
-        font-weight: normal;
-        line-height: 1.5;
-        text-align: left;
-      }
-
       @media (max-width: 700px) {
         .header {
           align-items: flex-start;
@@ -411,14 +401,37 @@
           <div class="sentence" id="display-sent"></div>
           <button
             type="button"
+            id="definition-toggle"
+            class="hint-toggle hidden"
+            aria-expanded="false"
+            aria-controls="display-def"
+            onclick="toggleHint('definition-toggle')"
+          >
+            영-영 풀이
+          </button>
+          <button
+            type="button"
+            id="korean-meaning-toggle"
+            class="hint-toggle hidden"
+            aria-expanded="false"
+            aria-controls="display-korean-meaning"
+            onclick="toggleHint('korean-meaning-toggle')"
+          >
+            한글 뜻
+          </button>
+          <button
+            type="button"
             id="hint-toggle"
             class="hint-toggle hidden"
             aria-expanded="false"
-            onclick="toggleHint()"
+            aria-controls="display-hint"
+            onclick="toggleHint('hint-toggle')"
           >
-            Hint: 보기
+            추가 힌트
           </button>
           <div class="definition hidden" id="display-def"></div>
+          <div class="definition hidden" id="display-korean-meaning"></div>
+          <div class="definition hidden" id="display-hint"></div>
         </div>
         <input
           type="text"
@@ -1190,6 +1203,7 @@
         {
           ch: "September-1",
           word: "juvenile",
+          koreanMeaning: "청소년의, 미성년자의",
           correctFill: "juvenile",
           sent: "They were the kinds of things that sent kids to _________ detention homes.",
           definition:
@@ -1198,6 +1212,7 @@
         {
           ch: "September-1",
           word: "suppose",
+          koreanMeaning: "생각하다, 추측하다",
           correctFill: "suppose",
           sent: "It worked, and the color stained her face for a long time until, I __________, those skin cells wore off.",
           definition:
@@ -1206,6 +1221,7 @@
         {
           ch: "September-1",
           word: "suspend",
+          koreanMeaning: "정학시키다; 일시적으로 직무를 정지시키다",
           correctFill: "suspended",
           sent: "Doug Swieteck was __________ for two whole weeks.",
           definition:
@@ -1215,6 +1231,7 @@
         {
           ch: "September-1",
           word: "congratulate",
+          koreanMeaning: "축하하다",
           correctFill: "congratulate",
           sent: "We were all supposed to _______________ her on the new post.",
           definition:
@@ -1223,6 +1240,7 @@
         {
           ch: "September-1",
           word: "monitor",
+          koreanMeaning: "감독자, 지켜보는 사람",
           correctFill: "monitor",
           sent: "Even when she had to be the playground __________ during recess.",
           definition:
@@ -1231,6 +1249,7 @@
         {
           ch: "September-1",
           word: "Presbyterian",
+          koreanMeaning: "장로교의",
           correctFill: "Presbyterian",
           sent: "On Sunday morning, my family was at Saint Andrew _____________ Church.",
           definition:
@@ -1239,6 +1258,7 @@
         {
           ch: "September-1",
           word: "Hebrew",
+          koreanMeaning: "히브리어의, 히브리인의",
           correctFill: "Hebrew",
           sent: "On Wednesday afternoons half of my class went to _________ School at Temple Beth-El.",
           definition:
@@ -1247,6 +1267,7 @@
         {
           ch: "September-1",
           word: "catechism",
+          koreanMeaning: "교리 문답, 교리 교육",
           correctFill: "catechism",
           sent: "The other half went to ____________ at Saint Adelbert's.",
           definition:
@@ -1255,6 +1276,7 @@
         {
           ch: "September-1",
           word: "mutilation",
+          koreanMeaning: "심한 훼손, 절단",
           correctFill: "mutilation",
           sent: "The ____________ of 'guess' into an intransitive verb is a crime against the language.",
           definition:
@@ -1263,6 +1285,7 @@
         {
           ch: "September-1",
           word: "impress",
+          koreanMeaning: "깊은 인상을 주다, 감탄하게 하다",
           correctFill: "impressed",
           sent: "They sure would have been __________ at the perfect life of an architect from Hoodhood and Associates.",
           definition: "to cause someone to admire or respect you",
@@ -1271,6 +1294,7 @@
         {
           ch: "September-1",
           word: "ally",
+          koreanMeaning: "협력자, 자기편",
           correctFill: "ally",
           sent: "I needed to have an _______ in the war against Mrs. Baker.",
           definition:
@@ -1279,6 +1303,7 @@
         {
           ch: "September-1",
           word: "retire",
+          koreanMeaning: "은퇴하다",
           correctFill: "retire",
           sent: "There will be no Hoodhood and Associates for you to take over when I'm ready to _______.",
           definition:
@@ -1287,6 +1312,7 @@
         {
           ch: "September-1",
           word: "explosive",
+          koreanMeaning: "폭발물",
           correctFill: "explosives",
           sent: "I didn't see any trip wires, so probably there weren't any _________.",
           definition:
@@ -1296,6 +1322,7 @@
         {
           ch: "September-1",
           word: "recruit",
+          koreanMeaning: "모집하다, 새로 뽑다",
           correctFill: "recruited",
           sent: "Mrs. Baker had probably _________ an eighth grader to do something awful to me.",
           definition:
@@ -1305,6 +1332,7 @@
         {
           ch: "September-1",
           word: "bribe",
+          koreanMeaning: "뇌물을 주다, 매수하다",
           correctFill: "bribed",
           sent: "Doug Swieteck said that if his father hadn’t ______ the judge, his brother would have been on Death Row.",
           definition:
@@ -1314,6 +1342,7 @@
         {
           ch: "September-2",
           word: "perimeter",
+          koreanMeaning: "둘레, 주변 경계",
           correctFill: "perimeter",
           sent: "I kept a __________ of about ten feet or so around me.",
           definition: "the outside edge of an area of land",
@@ -1321,6 +1350,7 @@
         {
           ch: "September-2",
           word: "handy",
+          koreanMeaning: "편리한, 유용한",
           correctFill: "handy",
           sent: "You never know what might come in _________ when something awful is about to happen to you.",
           definition: "easy to use or to do",
@@ -1328,6 +1358,7 @@
         {
           ch: "September-2",
           word: "foil",
+          koreanMeaning: "좌절시키다, 저지하다",
           correctFill: "foil",
           sent: "I would ______ Mrs. Baker's nefarious plan.",
           definition:
@@ -1336,6 +1367,7 @@
         {
           ch: "September-2",
           word: "instructions",
+          koreanMeaning: "지시, 지시 사항",
           correctFill: "instructions",
           sent: "Doug Swieteck's brother had clearly received ___________.",
           definition: "something that somebody tells you to do",
@@ -1344,6 +1376,7 @@
         {
           ch: "September-2",
           word: "crack",
+          koreanMeaning: "목소리가 갈라지다, 갑자기 변하다",
           correctFill: "cracking",
           sent: "His voice was __________, probably because he was imagining the propulsion of a soccer ball.",
           definition:
@@ -1353,6 +1386,7 @@
         {
           ch: "September-2",
           word: "accuse",
+          koreanMeaning: "비난하다, 혐의를 제기하다",
           correctFill: "accused",
           sent: "I glanced up at Mrs. Baker's window—she wasn't there, probably so she wouldn't be _________ of being an accomplice.",
           definition:
@@ -1362,6 +1396,7 @@
         {
           ch: "September-2",
           word: "shuffle",
+          koreanMeaning: "발을 끌며 걷기",
           correctFill: "shuffle",
           sent: "What she did wasn't really running. It was more a panicky __________.",
           definition:
@@ -1370,6 +1405,7 @@
         {
           ch: "September-2",
           word: "pinched",
+          koreanMeaning: "얼굴이 수척한, 핼쑥한",
           correctFill: "pinched",
           sent: "Mrs. Baker's face was _________ when we came back into the class—the disappointment of a failed assassination plot.",
           definition:
@@ -1378,6 +1414,7 @@
         {
           ch: "September-2",
           word: "screech",
+          koreanMeaning: "날카로운 소리를 내다",
           correctFill: "screeched",
           sent: "The P.A. crackled and _________ like a parrot.",
           definition:
@@ -1387,6 +1424,7 @@
         {
           ch: "September-2",
           word: "ambition",
+          koreanMeaning: "야망, 포부",
           correctFill: "ambition",
           sent: "Mr. Guareschi's long __________ had been to become dictator of a small country.",
           definition: "a desire to be successful, powerful, or famous",
@@ -1394,6 +1432,7 @@
         {
           ch: "September-2",
           word: "convince",
+          koreanMeaning: "확신시키다, 납득시키다",
           correctFill: "convinced",
           sent: "Perhaps she is not __________ that your skills are sufficiently developed to begin seventh-grade mathematics.",
           definition:
@@ -1403,6 +1442,7 @@
         {
           ch: "September-2",
           word: "legitimate",
+          koreanMeaning: "정당한, 타당한",
           correctFill: "legitimate",
           sent: "Mrs. Baker does have a ___________ concern, it would seem, but a passing grade is a passing grade.",
           definition: "for which there is a fair and acceptable reason",
@@ -1410,6 +1450,7 @@
         {
           ch: "September-2",
           word: "scribble",
+          koreanMeaning: "휘갈겨 쓰다",
           correctFill: "scribbled",
           sent: "Mr. Guareschi _________ over Mrs. Baker's memo.",
           definition:
@@ -1419,6 +1460,7 @@
         {
           ch: "September-2",
           word: "syllable",
+          koreanMeaning: "음절",
           correctFill: "syllables",
           sent: "'Regrettable.' She said all four __________ very slowly.",
           definition:
@@ -1428,6 +1470,7 @@
         {
           ch: "September-2",
           word: "murderous",
+          koreanMeaning: "살의를 품은, 살인하려는",
           correctFill: "murderous",
           sent: "I watched her carefully for the rest of the day, but nothing ever gave away her __________ intentions.",
           definition: "intending or likely to murder",
@@ -1439,6 +1482,7 @@
         {
           ch: "October-1",
           word: "haze",
+          koreanMeaning: "연무, 흐릿하게 낀 연기나 안개",
           correctFill: "haze",
           sent: "I saw her through the __________ of bonfire smoke.",
           definition:
@@ -1447,6 +1491,7 @@
         {
           ch: "October-1",
           word: "owe",
+          koreanMeaning: "신세를 지다, 보답할 의무가 있다",
           correctFill: "owe",
           sent: "We __________ you more than we can ever say.",
           definition:
@@ -1455,6 +1500,7 @@
         {
           ch: "October-1",
           word: "pound",
+          koreanMeaning: "세게 반복해서 두드리다",
           correctFill: "pounded",
           sent: "He __________ on the door demanding to be let in.",
           definition: "to hit something hard and repeatedly",
@@ -1463,6 +1509,7 @@
         {
           ch: "October-1",
           word: "circulate",
+          koreanMeaning: "순환하다, 순환시키다",
           correctFill: "circulated",
           sent: "Cooled air is __________ throughout the building.",
           definition: "to move or send something around a place or system",
@@ -1471,6 +1518,7 @@
         {
           ch: "October-1",
           word: "grime",
+          koreanMeaning: "찌든 때, 표면에 쌓인 먼지",
           correctFill: "grime",
           sent: "Keep plants healthy by regularly removing any dust and __________ from their leaves.",
           definition: "dirt that forms a layer on a surface",
@@ -1478,6 +1526,7 @@
         {
           ch: "October-1",
           word: "land",
+          koreanMeaning: "내려앉다, 착륙하다",
           correctFill: "landed",
           sent: "A butterfly __________ on her shoulder, while she admired the flowers.",
           definition: "to come down through the air and settle on a surface",
@@ -1486,6 +1535,7 @@
         {
           ch: "October-1",
           word: "chuck",
+          koreanMeaning: "툭 던지다, 아무렇게나 넣다",
           correctFill: "chucked",
           sent: "He __________ the paper in the drawer.",
           definition: "to throw or put something somewhere carelessly",
@@ -1494,6 +1544,7 @@
         {
           ch: "October-1",
           word: "vile",
+          koreanMeaning: "몹시 불쾌한, 역겨운",
           correctFill: "vile",
           sent: "There was a __________ smell coming from the room.",
           definition: "extremely unpleasant or disgusting",
@@ -1501,6 +1552,7 @@
         {
           ch: "October-1",
           word: "persecution",
+          koreanMeaning: "박해, 부당한 탄압",
           correctFill: "persecution",
           sent: "They left the country to avoid political __________.",
           definition:
@@ -1509,6 +1561,7 @@
         {
           ch: "October-1",
           word: "behavior",
+          koreanMeaning: "행동, 행실",
           correctFill: "behavior",
           sent: "The policeman observed his __________ closely.",
           definition: "the way a person acts or conducts themselves",
@@ -1516,6 +1569,7 @@
         {
           ch: "October-1",
           word: "deserted",
+          koreanMeaning: "사람이 살지 않는, 버려진",
           correctFill: "deserted",
           sent: "Let's learn the methods to survive on a __________ island.",
           definition: "empty of people; no longer inhabited or used",
@@ -1523,6 +1577,7 @@
         {
           ch: "October-1",
           word: "conquer",
+          koreanMeaning: "극복하다, 이겨 내다",
           correctFill: "conquer",
           sent: "The only way to __________ a fear is to face it.",
           definition: "to overcome a fear, problem or difficulty",
@@ -1530,6 +1585,7 @@
         {
           ch: "October-1",
           word: "paranoid",
+          koreanMeaning: "지나치게 의심하는, 피해망상적인",
           correctFill: "paranoid",
           sent: "If you're always scared that something's going to happen to you, you're just being __________.",
           definition:
@@ -1538,6 +1594,7 @@
         {
           ch: "October-1",
           word: "unbecoming",
+          koreanMeaning: "신분이나 지위에 걸맞지 않은",
           correctFill: "unbecoming",
           sent: "He was accused of conduct __________ of a lawyer.",
           definition: "not appropriate for someone in a particular position",
@@ -1545,6 +1602,7 @@
         {
           ch: "October-1",
           word: "linger",
+          koreanMeaning: "오래 남다, 계속 머무르다",
           correctFill: "lingers",
           sent: "You can tell you're in love when her voice __________ in your ears.",
           definition: "to remain or continue for a long time",
@@ -1555,6 +1613,7 @@
         {
           ch: "October-2",
           word: "grateful",
+          koreanMeaning: "고마워하는, 감사하는",
           correctFill: "grateful",
           sent: "We are deeply __________ for your help.",
           definition:
@@ -1563,6 +1622,7 @@
         {
           ch: "October-2",
           word: "fumes",
+          koreanMeaning: "강한 냄새가 나는 가스나 연기",
           correctFill: "fumes",
           sent: "The __________ from the fire made her choke.",
           definition:
@@ -1571,6 +1631,7 @@
         {
           ch: "October-2",
           word: "obvious",
+          koreanMeaning: "명백한, 분명한",
           correctFill: "obvious",
           sent: "I can't stand people who always point out __________ things.",
           definition: "easy to see, notice or understand",
@@ -1578,6 +1639,7 @@
         {
           ch: "October-2",
           word: "waft",
+          koreanMeaning: "공기 중에 은은히 퍼지다, 떠다니다",
           correctFill: "wafted",
           sent: "The aroma of fresh coffee __________ through the air.",
           definition: "to move gently through the air",
@@ -1586,6 +1648,7 @@
         {
           ch: "October-2",
           word: "conclude",
+          koreanMeaning: "결론을 내리다",
           correctFill: "concluded",
           sent: "The police __________ that the crash was not the result of a criminal act.",
           definition:
@@ -1595,6 +1658,7 @@
         {
           ch: "October-2",
           word: "extravagant",
+          koreanMeaning: "지나치게 비싼, 사치스러운",
           correctFill: "extravagant",
           sent: "We don't have the money to spend on some __________ gift.",
           definition:
@@ -1603,6 +1667,7 @@
         {
           ch: "October-2",
           word: "likely",
+          koreanMeaning: "그럴 가능성이 있는",
           correctFill: "likely",
           sent: "The study says that single people who own pets are less __________ to suffer from depression.",
           definition: "having a good chance of happening or being true",
@@ -1610,6 +1675,7 @@
         {
           ch: "October-2",
           word: "exaggeration",
+          koreanMeaning: "과장",
           correctFill: "exaggeration",
           sent: "It is no __________ to say that a book can change a person's life.",
           definition:
@@ -1618,6 +1684,7 @@
         {
           ch: "October-2",
           word: "ominous",
+          koreanMeaning: "불길한, 나쁜 일을 예고하는",
           correctFill: "ominous",
           sent: "There are some very __________ signs that something is just not right in world financial markets right now.",
           definition: "suggesting that something bad is going to happen",
@@ -1625,6 +1692,7 @@
         {
           ch: "October-2",
           word: "analyze",
+          koreanMeaning: "분석하다",
           correctFill: "analyzed",
           sent: "The researchers __________ samples collected from the participants' saliva.",
           definition: "to examine something carefully to understand it",
@@ -1633,6 +1701,7 @@
         {
           ch: "October-2",
           word: "inherit",
+          koreanMeaning: "상속받다, 물려받다",
           correctFill: "inherited",
           sent: "The present duke __________ the title from his father.",
           definition:
@@ -1642,6 +1711,7 @@
         {
           ch: "October-2",
           word: "bully",
+          koreanMeaning: "괴롭히다, 위협하다",
           correctFill: "bully",
           sent: "When people try to push you down, use you, or __________ you, stand up to them.",
           definition: "to frighten or hurt someone who is less powerful",
@@ -1649,6 +1719,7 @@
         {
           ch: "October-2",
           word: "enthrone",
+          koreanMeaning: "왕위에 앉히다, 즉위시키다",
           correctFill: "enthroned",
           sent: "The Queen was __________ more than 50 years ago.",
           definition: "to officially make someone a king or queen",
@@ -1657,6 +1728,7 @@
         {
           ch: "October-2",
           word: "possessed",
+          koreanMeaning: "악령에 사로잡힌",
           correctFill: "possessed",
           sent: "It was believed that people could be __________ by evil spirits.",
           definition: "controlled by an evil spirit",
@@ -1664,6 +1736,7 @@
         {
           ch: "October-2",
           word: "remnant",
+          koreanMeaning: "남은 부분, 잔재",
           correctFill: "remnants",
           sent: "The Big Bang theory states that the cooled __________ of the Big Bang permeate the entirety of the Universe.",
           definition:
@@ -1675,6 +1748,7 @@
         {
           ch: "November-1",
           word: "damp",
+          koreanMeaning: "축축한, 습기 있는",
           correctFill: "damp",
           sent: "The corner of the classroom was __________ where the roof had leaked.",
           definition: "slightly wet, often in an unpleasant way",
@@ -1682,6 +1756,7 @@
         {
           ch: "November-1",
           word: "gorge",
+          koreanMeaning: "배불리 먹다, 마구 먹어 대다",
           correctFill: "gorged",
           sent: "She __________ herself on the doughnuts her husband bought.",
           definition: "to eat a very large amount of food",
@@ -1690,6 +1765,7 @@
         {
           ch: "November-1",
           word: "glimpse",
+          koreanMeaning: "언뜻 봄, 잠깐 봄",
           correctFill: "glimpse",
           sent: "The crowd pushed and shoved one another to get a __________ of the top star.",
           definition: "a brief look at someone or something",
@@ -1697,6 +1773,7 @@
         {
           ch: "November-1",
           word: "revolution",
+          koreanMeaning: "혁명",
           correctFill: "revolution",
           sent: "The citizens mark the anniversary of the __________ with a march and a parade.",
           definition:
@@ -1705,6 +1782,7 @@
         {
           ch: "November-1",
           word: "curse",
+          koreanMeaning: "욕설, 저주하는 말",
           correctFill: "curse",
           sent: "Some said that they learned the __________ words from the Internet.",
           definition: "an offensive word used to express anger",
@@ -1712,6 +1790,7 @@
         {
           ch: "November-1",
           word: "assume",
+          koreanMeaning: "추정하다, 사실이라고 여기다",
           correctFill: "assumed",
           sent: "It is generally __________ that stress is caused by too much work.",
           definition: "to believe something is true without being certain",
@@ -1720,6 +1799,7 @@
         {
           ch: "November-1",
           word: "devious",
+          koreanMeaning: "속임수를 쓰는, 교활한",
           correctFill: "devious",
           sent: "Psychopaths' ability to conceal their __________ behavior is truly remarkable.",
           definition: "dishonest and indirect in trying to achieve something",
@@ -1727,6 +1807,7 @@
         {
           ch: "November-1",
           word: "confine",
+          koreanMeaning: "가두다, 일정한 범위로 제한하다",
           correctFill: "confined",
           sent: "The inmates were __________ to their cells after the riot.",
           definition:
@@ -1736,6 +1817,7 @@
         {
           ch: "November-1",
           word: "limp",
+          koreanMeaning: "절뚝거리다",
           correctFill: "limped",
           sent: "He __________ off with a leg injury.",
           definition: "to walk unevenly because one leg or foot is injured",
@@ -1744,6 +1826,7 @@
         {
           ch: "November-1",
           word: "censor",
+          koreanMeaning: "검열하다, 부적절한 부분을 삭제하다",
           correctFill: "censor",
           sent: "They did not want the government to __________ their movie.",
           definition:
@@ -1752,6 +1835,7 @@
         {
           ch: "November-1",
           word: "embarrassed",
+          koreanMeaning: "당황한, 쑥스러운",
           correctFill: "embarrassed",
           sent: "Don't be __________ to ask for help once in a while.",
           definition: "feeling ashamed, awkward or self-conscious",
@@ -1759,6 +1843,7 @@
         {
           ch: "November-1",
           word: "recite",
+          koreanMeaning: "암송하다, 외워서 낭송하다",
           correctFill: "recite",
           sent: "She can __________ the whole poem from memory without making a single slip.",
           definition: "to say a poem or passage aloud from memory",
@@ -1766,6 +1851,7 @@
         {
           ch: "November-1",
           word: "assign",
+          koreanMeaning: "맡기다, 과제를 부여하다",
           correctFill: "assigns",
           sent: "The physics teacher always __________ a lot of homework to the students.",
           definition: "to give someone a task or responsibility",
@@ -1774,6 +1860,7 @@
         {
           ch: "November-1",
           word: "amazement",
+          koreanMeaning: "큰 놀라움, 경탄",
           correctFill: "amazement",
           sent: "She expressed __________ at how much I had learned in three years.",
           definition: "a feeling of great surprise or wonder",
@@ -1781,6 +1868,7 @@
         {
           ch: "November-1",
           word: "combination",
+          koreanMeaning: "결합, 조합",
           correctFill: "combination",
           sent: "A __________ of internal and external factors caused the company to close down.",
           definition: "two or more things joined or acting together",
@@ -1790,6 +1878,7 @@
         {
           ch: "November-2",
           word: "beware",
+          koreanMeaning: "조심하다, 경계하다",
           correctFill: "Beware",
           sent: "__________ of salespeople who promise offers that seem too good to be true.",
           definition: "to be careful about a possible danger or problem",
@@ -1797,6 +1886,7 @@
         {
           ch: "November-2",
           word: "credit",
+          koreanMeaning: "공로에 대한 인정, 칭찬",
           correctFill: "credit",
           sent: "We did all the work and he gets all the __________!",
           definition: "praise or recognition for something someone has done",
@@ -1804,6 +1894,7 @@
         {
           ch: "November-2",
           word: "scurry",
+          koreanMeaning: "종종걸음으로 급히 움직이다",
           correctFill: "scurried",
           sent: "The little mouse __________ away as fast as its little legs could go.",
           definition: "to move quickly with short, hurried steps",
@@ -1812,6 +1903,7 @@
         {
           ch: "November-2",
           word: "swell",
+          koreanMeaning: "부풀다; 감정이 벅차오르다",
           correctFill: "swelled",
           sent: "His heart __________ with pride as he stood watching his son graduate.",
           definition: "to grow larger or become filled with a strong feeling",
@@ -1820,6 +1912,7 @@
         {
           ch: "November-2",
           word: "accompany",
+          koreanMeaning: "함께 나타나다, 동반하다",
           correctFill: "accompanied",
           sent: "Clouds and rolling sounds of thunder __________ a few drops of rain.",
           definition: "to happen or appear together with something else",
@@ -1828,6 +1921,7 @@
         {
           ch: "November-2",
           word: "trickle",
+          koreanMeaning: "가늘게 흐르는 소량의 액체",
           correctFill: "trickle",
           sent: "At times, you could see a nosebleed that is no more than a __________ of blood.",
           definition: "a small, slow flow of liquid",
@@ -1835,6 +1929,7 @@
         {
           ch: "November-2",
           word: "rhetorical",
+          koreanMeaning: "수사적인, 설득이나 표현 효과를 위한",
           correctFill: "rhetorical",
           sent: "People often use __________ devices to persuade others of a particular point of view.",
           definition: "relating to language used to persuade or impress people",
@@ -1842,6 +1937,7 @@
         {
           ch: "November-2",
           word: "reverently",
+          koreanMeaning: "경건하게, 깊은 존경심을 담아",
           correctFill: "reverently",
           sent: "Praying is to speak __________ to God in order to express thanks or make a request.",
           definition: "in a way that shows deep respect",
@@ -1849,6 +1945,7 @@
         {
           ch: "November-2",
           word: "patriotic",
+          koreanMeaning: "애국적인",
           correctFill: "patriotic",
           sent: "The crowd sang their national anthem and other __________ songs waving flags.",
           definition: "showing love and support for one's country",
@@ -1856,6 +1953,7 @@
         {
           ch: "November-2",
           word: "attach",
+          koreanMeaning: "붙이다, 부착하다",
           correctFill: "attached",
           sent: "Price tags can be __________ to items using a tagging gun, safety pins, or scotch tape.",
           definition: "to fasten or join one thing to another",
@@ -1864,6 +1962,7 @@
         {
           ch: "November-2",
           word: "declare",
+          koreanMeaning: "선언하다, 분명히 밝히다",
           correctFill: "declared",
           sent: "She __________ that it was the best advice she'd ever received.",
           definition: "to state something clearly or publicly",
@@ -1872,6 +1971,7 @@
         {
           ch: "November-2",
           word: "doomed",
+          koreanMeaning: "실패하거나 파멸할 운명인",
           correctFill: "doomed",
           sent: "Unless we all stop burning fossil fuels we are all __________.",
           definition: "certain to suffer failure, destruction or death",
@@ -1879,6 +1979,7 @@
         {
           ch: "November-2",
           word: "significant",
+          koreanMeaning: "중요한, 상당한",
           correctFill: "significant",
           sent: "There hasn't been a __________ increase in the number of women students in recent years.",
           definition: "large or important enough to be noticed",
@@ -1886,6 +1987,7 @@
         {
           ch: "November-2",
           word: "slump",
+          koreanMeaning: "털썩 주저앉다, 힘없이 쓰러지다",
           correctFill: "slumped",
           sent: "Exhausted, he __________ down in his leather chair.",
           definition: "to fall or sit down heavily, often from tiredness",
@@ -1894,6 +1996,7 @@
         {
           ch: "November-2",
           word: "reconnaissance",
+          koreanMeaning: "정찰, 적이나 지역에 대한 정보 수집",
           correctFill: "reconnaissance",
           sent: "During WW2, aerial __________ was one of the key methods of obtaining intelligence about the enemy and their activities.",
           definition:
@@ -1904,6 +2007,7 @@
         {
           ch: "December-1",
           word: "obliterate",
+          koreanMeaning: "완전히 없애다, 지워 버리다",
           correctFill: "obliterate",
           sent: "Though I tried to forget the incident, I couldn't __________ it from my memory.",
           definition: "to destroy or remove something completely",
@@ -1911,6 +2015,7 @@
         {
           ch: "December-1",
           word: "applause",
+          koreanMeaning: "박수, 박수갈채",
           correctFill: "applause",
           sent: "The audience greeted her with thunderous __________.",
           definition: "the sound of people clapping to show approval",
@@ -1918,6 +2023,7 @@
         {
           ch: "December-1",
           word: "glitter",
+          koreanMeaning: "반짝이다",
           correctFill: "glitters",
           sent: "Be careful because all that __________ is not gold.",
           definition: "to shine with many small flashes of light",
@@ -1926,6 +2032,7 @@
         {
           ch: "December-1",
           word: "advent",
+          koreanMeaning: "출현, 도래",
           correctFill: "advent",
           sent: "With the __________ of the North American Free Trade Agreement, yearly commercial traffic across the border has increased 110 percent since 1993.",
           definition: "the arrival or beginning of something important",
@@ -1933,6 +2040,7 @@
         {
           ch: "December-1",
           word: "humiliation",
+          koreanMeaning: "굴욕, 수치심",
           correctFill: "humiliation",
           sent: "We have seen shameful images of prisoners being subjected to abuse and __________.",
           definition:
@@ -1941,6 +2049,7 @@
         {
           ch: "December-1",
           word: "devotion",
+          koreanMeaning: "헌신, 깊은 애정",
           correctFill: "devotion",
           sent: "She finished a difficult job because of her dogged __________ to it.",
           definition:
@@ -1949,6 +2058,7 @@
         {
           ch: "December-1",
           word: "reputation",
+          koreanMeaning: "평판, 명성",
           correctFill: "reputation",
           sent: "The incident caused severe damage to their __________.",
           definition:
@@ -1957,6 +2067,7 @@
         {
           ch: "December-1",
           word: "concern",
+          koreanMeaning: "걱정, 우려",
           correctFill: "concern",
           sent: "The recent rise in crime is a matter of considerable public __________.",
           definition: "a feeling of worry about something",
@@ -1964,6 +2075,7 @@
         {
           ch: "December-1",
           word: "vocation",
+          koreanMeaning: "천직이라는 확신, 소명 의식",
           correctFill: "vocation",
           sent: "I have a __________ for this work. or I feel that God has called me to this work.",
           definition:
@@ -1972,6 +2084,7 @@
         {
           ch: "December-1",
           word: "startled",
+          koreanMeaning: "깜짝 놀란",
           correctFill: "startled",
           sent: "Bill was so __________ he almost jumped out of his skin.",
           definition: "suddenly surprised or frightened",
@@ -1979,6 +2092,7 @@
         {
           ch: "December-1",
           word: "confident",
+          koreanMeaning: "자신감 있는, 확신하는",
           correctFill: "confident",
           sent: "We found that popular teenagers were more __________ than others, and had more highly developed social skills.",
           definition: "sure of your own abilities or of something being true",
@@ -1986,6 +2100,7 @@
         {
           ch: "December-1",
           word: "bribe",
+          koreanMeaning: "뇌물",
           correctFill: "bribe",
           sent: "It is illegal to offer a __________ to a policeman.",
           definition:
@@ -1994,6 +2109,7 @@
         {
           ch: "December-1",
           word: "wander",
+          koreanMeaning: "정처 없이 돌아다니다, 배회하다",
           correctFill: "wander",
           sent: "I wanted to join a caravan and __________ around the Sahara desert!",
           definition: "to move around without a fixed route or destination",
@@ -2001,6 +2117,7 @@
         {
           ch: "December-1",
           word: "occasion",
+          koreanMeaning: "특정한 때, 행사",
           correctFill: "occasion",
           sent: "You should wear clothes suitable for the __________.",
           definition: "a particular event or time when something happens",
@@ -2010,6 +2127,7 @@
         {
           ch: "December-2",
           word: "fetch",
+          koreanMeaning: "가서 가져오다, 데려오다",
           correctFill: "fetch",
           sent: "Can you __________ a newspaper for me?",
           definition: "to go and bring back someone or something",
@@ -2017,6 +2135,7 @@
         {
           ch: "December-2",
           word: "autograph",
+          koreanMeaning: "유명인의 친필 서명, 사인",
           correctFill: "autograph",
           sent: "The boy asked a famous soccer player for his __________.",
           definition:
@@ -2025,6 +2144,7 @@
         {
           ch: "December-2",
           word: "suspicion",
+          koreanMeaning: "의심, 혐의",
           correctFill: "suspicion",
           sent: "The police attaches __________ to the strange man.",
           definition:
@@ -2033,6 +2153,7 @@
         {
           ch: "December-2",
           word: "compliment",
+          koreanMeaning: "칭찬, 찬사",
           correctFill: "Compliments",
           sent: "__________ not only deliver positive effects to others; those effects bounce back on us, building up the positive atmosphere.",
           definition: "a remark expressing praise or admiration",
@@ -2041,6 +2162,7 @@
         {
           ch: "December-2",
           word: "decent",
+          koreanMeaning: "도덕적으로 올바른, 품위 있는",
           correctFill: "decent",
           sent: "To help the poor is the __________ thing to do.",
           definition: "morally right, respectable or appropriate",
@@ -2048,6 +2170,7 @@
         {
           ch: "December-2",
           word: "pound",
+          koreanMeaning: "세게 치다, 두드리다",
           correctFill: "pound",
           sent: "Carpenters use a hammer to __________ nails.",
           definition: "to hit something hard, often repeatedly",
@@ -2055,6 +2178,7 @@
         {
           ch: "December-2",
           word: "rebel",
+          koreanMeaning: "반항하다, 저항하다",
           correctFill: "rebel",
           sent: "My son began to __________ against the restraint imposed by his teachers.",
           definition: "to resist or refuse to obey authority",
@@ -2062,6 +2186,7 @@
         {
           ch: "December-2",
           word: "shrug",
+          koreanMeaning: "어깨를 으쓱하다",
           correctFill: "shrugged",
           sent: "He couldn't figure out why she was crying and he just __________ in a maze.",
           definition:
@@ -2071,6 +2196,7 @@
         {
           ch: "December-2",
           word: "frantic",
+          koreanMeaning: "몹시 불안해하는, 다급한",
           correctFill: "frantic",
           sent: "Meanwhile, people mobbed bakeries and gas stations in a __________ rush for supplies.",
           definition: "wildly hurried or worried, often because of fear",
@@ -2078,6 +2204,7 @@
         {
           ch: "December-2",
           word: "insubstantial",
+          koreanMeaning: "충분하지 않은, 설득력이 약한",
           correctFill: "insubstantial",
           sent: "A headache is an __________ reason for missing a week of school.",
           definition: "not strong, important or convincing enough",
@@ -2085,6 +2212,7 @@
         {
           ch: "December-2",
           word: "potent",
+          koreanMeaning: "강력한, 효과가 큰",
           correctFill: "potent",
           sent: "Violence on TV may turn out to be a __________ influence on some young people.",
           definition: "very powerful or effective",
@@ -2092,6 +2220,7 @@
         {
           ch: "December-2",
           word: "enslave",
+          koreanMeaning: "노예로 만들다, 자유를 빼앗다",
           correctFill: "enslave",
           sent: "The slave would then realize he was an equal to his master and question why his master has the right to __________ him.",
           definition: "to make someone a slave or take away their freedom",
@@ -2099,6 +2228,7 @@
         {
           ch: "December-2",
           word: "clumsy",
+          koreanMeaning: "서투른, 어설픈",
           correctFill: "clumsy",
           sent: "He is such a __________ idiot that he always messes things up.",
           definition: "awkward in movement or lacking skill",
@@ -2106,6 +2236,7 @@
         {
           ch: "December-2",
           word: "grieve",
+          koreanMeaning: "깊이 슬퍼하다",
           correctFill: "grieve",
           sent: "His trust in his friend was as firm as ever; and he said that he did not __________ at having to suffer for one whom he loved so much.",
           definition: "to feel deep sadness, especially after a loss",
@@ -2113,6 +2244,7 @@
         {
           ch: "December-2",
           word: "architect",
+          koreanMeaning: "건축가",
           correctFill: "architect",
           sent: "The __________ drafted the blueprints for the building.",
           definition: "a person who designs buildings",
@@ -2122,6 +2254,7 @@
         {
           ch: "January-1",
           word: "contribution",
+          koreanMeaning: "기여, 공헌",
           correctFill: "contribution",
           sent: "They made a large __________ toward solving pollution problems.",
           definition: "something given or done to help achieve a shared goal",
@@ -2129,6 +2262,7 @@
         {
           ch: "January-1",
           word: "fuss",
+          koreanMeaning: "야단법석, 쓸데없는 걱정이나 불평",
           correctFill: "fuss",
           sent: "There's no need to make much __________ about small things.",
           definition:
@@ -2137,6 +2271,7 @@
         {
           ch: "January-1",
           word: "bid",
+          koreanMeaning: "입찰하다, 가격을 제시하다",
           correctFill: "bid",
           sent: "We'd go to builders and say we'd like to __________ on the landscaping part of their business.",
           definition: "to offer a price for doing a job or buying something",
@@ -2144,6 +2279,7 @@
         {
           ch: "January-1",
           word: "outstanding",
+          koreanMeaning: "뛰어난, 탁월한",
           correctFill: "outstanding",
           sent: "The spectators rose to their feet to pay tribute to the __________ performance.",
           definition: "exceptionally good or impressive",
@@ -2151,6 +2287,7 @@
         {
           ch: "January-1",
           word: "commitment",
+          koreanMeaning: "굳은 약속, 헌신",
           correctFill: "commitment",
           sent: "That husband and wife have a strong __________ to each other.",
           definition:
@@ -2159,6 +2296,7 @@
         {
           ch: "January-1",
           word: "contract",
+          koreanMeaning: "계약, 계약서",
           correctFill: "contract",
           sent: "Joe's advertising firm just won a new __________ with an insurance company.",
           definition: "a formal agreement between people or organizations",
@@ -2166,6 +2304,7 @@
         {
           ch: "January-1",
           word: "stoop",
+          koreanMeaning: "몸을 앞으로 구부리다",
           correctFill: "stooped",
           sent: "She __________ over the journals on the stand to take a close look at his picture on the cover.",
           definition: "to bend your body forward and downward",
@@ -2174,6 +2313,7 @@
         {
           ch: "January-1",
           word: "initial",
+          koreanMeaning: "처음의, 초기의",
           correctFill: "initial",
           sent: "They have made through with our __________ goals.",
           definition: "happening or existing at the beginning",
@@ -2181,6 +2321,7 @@
         {
           ch: "January-1",
           word: "migrate",
+          koreanMeaning: "이주하다, 이동하다",
           correctFill: "migrate",
           sent: "As rural incomes increase, fewer farmers __________ to find work.",
           definition: "to move from one place or country to another",
@@ -2188,6 +2329,7 @@
         {
           ch: "January-1",
           word: "supervise",
+          koreanMeaning: "감독하다, 관리하다",
           correctFill: "supervise",
           sent: "Someone has to __________ the final phase of the construction.",
           definition: "to oversee work and make sure it is done properly",
@@ -2195,6 +2337,7 @@
         {
           ch: "January-1",
           word: "denial",
+          koreanMeaning: "부인, 사실이 아니라고 하는 말",
           correctFill: "denial",
           sent: "The terrorists issued a __________ of responsibility for the attack.",
           definition:
@@ -2203,6 +2346,7 @@
         {
           ch: "January-1",
           word: "malice",
+          koreanMeaning: "악의, 남을 해치려는 마음",
           correctFill: "malice",
           sent: "I bear no __________ toward you for your mistake.",
           definition: "a desire to hurt someone or cause them trouble",
@@ -2210,6 +2354,7 @@
         {
           ch: "January-1",
           word: "chill",
+          koreanMeaning: "냉기, 한기",
           correctFill: "chill",
           sent: "Put the heater on for long enough to take the __________ off the room.",
           definition: "an unpleasant feeling of coldness",
@@ -2217,6 +2362,7 @@
         {
           ch: "January-1",
           word: "remnant",
+          koreanMeaning: "자투리, 남은 조각",
           correctFill: "remnants",
           sent: "This shop is selling __________ of cloth at half price.",
           definition: "a small piece or amount left over from something larger",
@@ -2225,6 +2371,7 @@
         {
           ch: "January-1",
           word: "penitentiary",
+          koreanMeaning: "교도소",
           correctFill: "penitentiaries",
           sent: "The American regime has it's own prisons, which are called federal __________.",
           definition: "a prison for people convicted of serious crimes",
@@ -2233,6 +2380,7 @@
         {
           ch: "January-1",
           word: "tactic",
+          koreanMeaning: "전술, 목적 달성을 위한 방법",
           correctFill: "tactic",
           sent: "Chameleons use their color-changing ability as a survival __________.",
           definition: "a method or action used to achieve a particular goal",
@@ -2240,6 +2388,7 @@
         {
           ch: "January-1",
           word: "frown",
+          koreanMeaning: "눈살을 찌푸리다",
           correctFill: "frowning",
           sent: "She showed her displeasure at his bad manners by __________ at him.",
           definition:
@@ -2249,6 +2398,7 @@
         {
           ch: "January-1",
           word: "burrow",
+          koreanMeaning: "굴을 파다",
           correctFill: "burrows",
           sent: "The mole __________ underground.",
           definition: "to dig a hole or tunnel in the ground",
@@ -2257,6 +2407,7 @@
         {
           ch: "January-1",
           word: "intersection",
+          koreanMeaning: "교차로",
           correctFill: "intersection",
           sent: "Cars enter the __________ to change directions.",
           definition: "a place where roads cross or meet",
@@ -2264,6 +2415,7 @@
         {
           ch: "January-1",
           word: "scent",
+          koreanMeaning: "향기, 냄새",
           correctFill: "scent",
           sent: "He was attracted when he smelled the unusual __________ of her perfume.",
           definition: "a particular smell, especially a pleasant one",
@@ -2273,6 +2425,7 @@
         {
           ch: "January-2",
           word: "suspect",
+          koreanMeaning: "의심하다, 혐의가 있다고 여기다",
           correctFill: "suspect",
           sent: "The police __________ her of murder but don't have enough evidence.",
           definition:
@@ -2281,6 +2434,7 @@
         {
           ch: "January-2",
           word: "permission",
+          koreanMeaning: "허락, 허가",
           correctFill: "permission",
           sent: "I don't miss classes without __________. I'm such a model student!",
           definition: "approval or authorization to do something",
@@ -2288,6 +2442,7 @@
         {
           ch: "January-2",
           word: "observation",
+          koreanMeaning: "관찰, 주의 깊게 지켜봄",
           correctFill: "observation",
           sent: "The heart patient is under __________ by a trained nurse.",
           definition: "the act of watching someone or something carefully",
@@ -2295,6 +2450,7 @@
         {
           ch: "January-2",
           word: "dissolve",
+          koreanMeaning: "녹다, 용해되다",
           correctFill: "dissolves",
           sent: "Stir over medium heat until sugar __________ into a light brown syrup.",
           definition: "to mix with a liquid and become part of it",
@@ -2303,6 +2459,7 @@
         {
           ch: "January-2",
           word: "rage",
+          koreanMeaning: "격분, 몹시 심한 분노",
           correctFill: "rage",
           sent: "We have nothing but __________ and animosity toward the local government.",
           definition: "very strong anger",
@@ -2310,6 +2467,7 @@
         {
           ch: "January-2",
           word: "combine",
+          koreanMeaning: "결합하다, 합치다",
           correctFill: "combine",
           sent: "To solve a problem, you must look beyond how you feel and __________ information that you already know with new observations.",
           definition: "to bring two or more things together",
@@ -2317,6 +2475,7 @@
         {
           ch: "January-2",
           word: "groan",
+          koreanMeaning: "신음하다, 불평하다",
           correctFill: "groan",
           sent: "His parents were beginning to __________ about the price of college tuition.",
           definition:
@@ -2325,6 +2484,7 @@
         {
           ch: "January-2",
           word: "administer",
+          koreanMeaning: "실시하다, 시행하다",
           correctFill: "administered",
           sent: "The questionnaire was __________ by trained interviewers.",
           definition: "to organize and carry out a test, survey or procedure",
@@ -2333,6 +2493,7 @@
         {
           ch: "January-2",
           word: "torment",
+          koreanMeaning: "심한 고통, 괴롭힘",
           correctFill: "torment",
           sent: "The family said they had endured years of __________ and abuse from neighbors.",
           definition: "severe suffering or repeated cruel treatment",
@@ -2340,6 +2501,7 @@
         {
           ch: "January-2",
           word: "connection",
+          koreanMeaning: "관련성, 연결 관계",
           correctFill: "connection",
           sent: "There's a __________ between smoking and cancer.",
           definition: "a link or relationship between people or things",
@@ -2347,6 +2509,7 @@
         {
           ch: "January-2",
           word: "fatal",
+          koreanMeaning: "치명적인",
           correctFill: "fatal",
           sent: "A __________ defect in the construction design caused the building to collapse.",
           definition: "causing death, destruction or complete failure",
@@ -2354,6 +2517,7 @@
         {
           ch: "January-2",
           word: "procedure",
+          koreanMeaning: "절차, 정해진 순서",
           correctFill: "procedure",
           sent: "Doctors recommend the following __________ when washing hands.",
           definition: "an established series of steps for doing something",
@@ -2361,6 +2525,7 @@
         {
           ch: "January-2",
           word: "revenge",
+          koreanMeaning: "복수, 보복",
           correctFill: "revenge",
           sent: "Opponents to the death penalty say that death is actually __________ rather than justice.",
           definition:
@@ -2369,6 +2534,7 @@
         {
           ch: "January-2",
           word: "exception",
+          koreanMeaning: "예외",
           correctFill: "exception",
           sent: "There is no law without __________.",
           definition: "a case that does not follow a general rule",
@@ -2376,6 +2542,7 @@
         {
           ch: "January-2",
           word: "vouch",
+          koreanMeaning: "보증하다, 믿을 만하다고 확언하다",
           correctFill: "vouch",
           sent: "He's a close friend from way back, so I can __________ for his character.",
           definition:
@@ -2384,6 +2551,7 @@
         {
           ch: "January-2",
           word: "territory",
+          koreanMeaning: "영토, 영역",
           correctFill: "territory",
           sent: "Dokdo is undoubtedly a Korean __________.",
           definition:
@@ -2392,6 +2560,7 @@
         {
           ch: "January-2",
           word: "adjust",
+          koreanMeaning: "조절하다, 알맞게 바꾸다",
           correctFill: "adjust",
           sent: "If the chair is too high you can __________ it to suit you.",
           definition: "to change something slightly to make it more suitable",
@@ -2399,6 +2568,7 @@
         {
           ch: "January-2",
           word: "diagnostic",
+          koreanMeaning: "진단의, 원인을 알아내기 위한",
           correctFill: "diagnostic",
           sent: "Each personality disorder has its own set of __________ criteria.",
           definition:
@@ -2407,6 +2577,7 @@
         {
           ch: "January-2",
           word: "confirm",
+          koreanMeaning: "확인하다, 확정하다",
           correctFill: "confirm",
           sent: "I'd like to __________ my reservation for February 15 through 18.",
           definition: "to verify or make an arrangement definite",
@@ -2414,6 +2585,7 @@
         {
           ch: "January-2",
           word: "component",
+          koreanMeaning: "구성 요소, 부품",
           correctFill: "components",
           sent: "The machine has a lot of delicate __________.",
           definition: "one of the parts that make up a larger object or system",
@@ -2582,19 +2754,15 @@
         document.getElementById("display-chap").innerText =
           getCurrentBook().quizChapterLabel(q.ch);
 
-        // 2. Hint는 버튼을 눌렀을 때만 표시합니다.
-        const defEl = document.getElementById("display-def");
-        const hintToggle = document.getElementById("hint-toggle");
-        const hintText = q.definition
-          ? `영영풀이: ${q.definition}`
-          : q.hint
-            ? `[Hint${q.hintType ? ` - ${q.hintType}` : ""}] ${q.hint}`
-            : "";
-        defEl.innerText = hintText;
-        defEl.classList.add("hidden");
-        hintToggle.classList.toggle("hidden", !hintText);
-        hintToggle.innerText = "Hint: 보기";
-        hintToggle.setAttribute("aria-expanded", "false");
+        // 2. 각 힌트는 독립적으로 표시하며 매 문제마다 접힌 상태로 초기화합니다.
+        renderHint("definition-toggle", q.definition, "영-영 풀이");
+        renderHint("korean-meaning-toggle", q.koreanMeaning, "한글 뜻");
+        // Holes의 hint/hintType(예: Synonym)은 definition과 별도로 보존합니다.
+        renderHint(
+          "hint-toggle",
+          q.hint,
+          q.hintType ? `추가 힌트 (${q.hintType})` : "추가 힌트",
+        );
 
         // 3. 엑셀의 Blanked Example 그대로 사용 (이미 __________ 처리됨)
         document.getElementById("display-sent").innerText = q.sent;
@@ -2615,13 +2783,26 @@
         }, 10);
       }
 
-      function toggleHint() {
-        const hintToggle = document.getElementById("hint-toggle");
-        const defEl = document.getElementById("display-def");
-        const willShow = defEl.classList.contains("hidden");
-        defEl.classList.toggle("hidden", !willShow);
-        hintToggle.innerText = willShow ? "Hint: 숨기기" : "Hint: 보기";
-        hintToggle.setAttribute("aria-expanded", String(willShow));
+      // Optional fields: definition = 영영풀이, koreanMeaning = 한글 뜻,
+      // hint/hintType = 기존 추가 힌트. 빈 값은 해당 버튼을 숨깁니다.
+      function renderHint(buttonId, value, label) {
+        const button = document.getElementById(buttonId);
+        const panel = document.getElementById(button.getAttribute("aria-controls"));
+        const text = typeof value === "string" ? value.trim() : "";
+        panel.innerText = text ? `${label}: ${text}` : "";
+        panel.classList.add("hidden");
+        button.innerText = label;
+        button.classList.toggle("hidden", !text);
+        button.setAttribute("aria-expanded", "false");
+      }
+
+      function toggleHint(buttonId) {
+        const button = document.getElementById(buttonId);
+        const panel = document.getElementById(button.getAttribute("aria-controls"));
+        if (button.classList.contains("hidden")) return;
+        const willShow = panel.classList.contains("hidden");
+        panel.classList.toggle("hidden", !willShow);
+        button.setAttribute("aria-expanded", String(willShow));
       }
 
       function normalizeAnswer(value) {
@@ -2652,13 +2833,6 @@
           fb.innerText = `틀렸습니다. 정답: [ ${q.correctFill} ]`;
           fb.className = "feedback incorrect";
           wrongWords.push(q);
-        }
-
-        if (q.definition) {
-          const definition = document.createElement("span");
-          definition.className = "answer-definition";
-          definition.innerText = `영영풀이: ${q.definition}`;
-          fb.appendChild(definition);
         }
 
         // [수정] disabled 대신 readOnly를 쓰면 키보드 포커스가 유지되어 엔터가 더 잘 먹힙니다.
@@ -2793,13 +2967,16 @@
 
       window.addEventListener("keydown", (e) => {
         // 엔터키가 눌렸을 때만 작동
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && !e.isComposing) {
+          // 버튼의 Enter는 해당 버튼의 기본 동작만 실행합니다(힌트/책 선택 등).
+          if (e.target.closest("button")) return;
           const submitBtn = document.getElementById("submit-btn");
           const nextBtn = document.getElementById("next-btn");
-          const setupSection = document.getElementById("setup-section");
+          const quizSection = document.getElementById("quiz-section");
 
           // 메인 설정 화면이 아닐 때만(퀴즈 진행 중일 때만) 작동
-          if (setupSection.classList.contains("hidden")) {
+          if (!quizSection.classList.contains("hidden")) {
+            e.preventDefault();
             // 1. '정답 확인' 버튼이 보일 때 (채점 전)
             if (!submitBtn.classList.contains("hidden")) {
               checkAnswer();
