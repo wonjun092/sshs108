@@ -2,17 +2,28 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { connectDatabase } from "@/lib/db";
 import { EnglishQuizScore } from "@/models/EnglishQuizScore";
+import { parseEnglishQuizRecord, WEDNESDAY_WARS_TOTAL } from "@/lib/english-quiz";
 
 const BOOK = "wednesdayWars" as const;
-const WEDNESDAY_WARS_TOTAL = 159;
 
 export async function GET() {
   await connectDatabase();
 
-  const scores = await EnglishQuizScore.find({ book: BOOK })
-    .sort({ score: -1, achievedAt: 1 })
-    .limit(100)
-    .lean();
+  const [scores, speedrunScores] = await Promise.all([
+    EnglishQuizScore.find({ book: BOOK })
+      .sort({ score: -1, achievedAt: 1 })
+      .limit(100)
+      .lean(),
+    EnglishQuizScore.find({
+      book: BOOK,
+      score: WEDNESDAY_WARS_TOTAL,
+      total: WEDNESDAY_WARS_TOTAL,
+      speedrunDurationMs: { $gt: 0 },
+    })
+      .sort({ speedrunDurationMs: 1, speedrunAchievedAt: 1, _id: 1 })
+      .limit(100)
+      .lean(),
+  ]);
 
   const rankings = scores.map((entry, index) => {
     return {
@@ -23,7 +34,13 @@ export async function GET() {
     };
   });
 
-  return NextResponse.json({ rankings, total: WEDNESDAY_WARS_TOTAL });
+  const speedruns = speedrunScores.map((entry, index) => ({
+    rank: index + 1,
+    loginId: entry.loginId,
+    durationMs: entry.speedrunDurationMs,
+  }));
+
+  return NextResponse.json({ rankings, speedruns, total: WEDNESDAY_WARS_TOTAL });
 }
 
 export async function POST(request: Request) {
@@ -42,55 +59,55 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
   }
 
-  const score =
-    typeof body === "object" && body !== null && "score" in body
-      ? (body as { score?: unknown }).score
-      : undefined;
-  const total =
-    typeof body === "object" && body !== null && "total" in body
-      ? (body as { total?: unknown }).total
-      : undefined;
-
-  if (
-    typeof score !== "number" ||
-    typeof total !== "number" ||
-    !Number.isInteger(score) ||
-    !Number.isInteger(total) ||
-    total !== WEDNESDAY_WARS_TOTAL ||
-    score < 0 ||
-    score > WEDNESDAY_WARS_TOTAL
-  ) {
+  const record = parseEnglishQuizRecord(body);
+  if (!record) {
     return NextResponse.json(
-      { error: "Wednesday Wars 전체 범위 기록만 저장할 수 있습니다." },
+      { error: "Wednesday Wars 전체 범위의 유효한 점수와 시간만 저장할 수 있습니다." },
       { status: 400 },
     );
   }
+  const { score, total, durationMs } = record;
 
   await connectDatabase();
-  const existing = await EnglishQuizScore.findOne({
-    userId: session.userId,
-    book: BOOK,
-  });
-
+  const identity = { userId: session.userId, book: BOOK };
   let improved = false;
-  if (!existing) {
-    await EnglishQuizScore.create({
-      userId: session.userId,
-      loginId: session.loginId,
-      book: BOOK,
-      score,
-      total,
-      achievedAt: new Date(),
-    });
-    improved = true;
-  } else if (score > existing.score) {
-    existing.loginId = session.loginId;
-    existing.score = score;
-    existing.total = total;
-    existing.achievedAt = new Date();
-    await existing.save();
-    improved = true;
+  try {
+    const inserted = await EnglishQuizScore.updateOne(
+      identity,
+      { $setOnInsert: { ...identity, loginId: session.loginId, score, total, achievedAt: new Date() } },
+      { upsert: true },
+    );
+    improved = inserted.upsertedCount > 0;
+  } catch (error) {
+    // Another request may have inserted this user's first record concurrently.
+    if (typeof error !== "object" || error === null || !("code" in error) || error.code !== 11000) throw error;
+  }
+  if (!improved) {
+    const updated = await EnglishQuizScore.updateOne(
+      { ...identity, score: { $lt: score } },
+      { $set: { loginId: session.loginId, score, total, achievedAt: new Date() } },
+    );
+    improved = updated.modifiedCount > 0;
   }
 
-  return NextResponse.json({ recorded: true, improved });
+  const speedrunEligible = score === WEDNESDAY_WARS_TOTAL && durationMs !== undefined;
+  let speedrunImproved = false;
+  if (speedrunEligible) {
+    // Only replace a missing or slower personal best, including concurrent finishes.
+    const updated = await EnglishQuizScore.updateOne(
+      {
+        userId: session.userId,
+        book: BOOK,
+        $or: [
+          { speedrunDurationMs: { $exists: false } },
+          { speedrunDurationMs: null },
+          { speedrunDurationMs: { $gt: durationMs } },
+        ],
+      },
+      { $set: { speedrunDurationMs: durationMs, speedrunAchievedAt: new Date() } },
+    );
+    speedrunImproved = updated.modifiedCount > 0;
+  }
+
+  return NextResponse.json({ recorded: true, improved, speedrunEligible, speedrunImproved });
 }

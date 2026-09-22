@@ -147,6 +147,25 @@
         font-weight: bold;
       }
 
+      .quiz-timer {
+        position: sticky;
+        top: 12px;
+        z-index: 1;
+        width: fit-content;
+        margin-bottom: 16px;
+        padding: 8px 12px;
+        border: 1px solid #b9ddf5;
+        border-radius: 8px;
+        background: #eef8ff;
+        color: #234;
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .speedrun-heading { margin-top: 32px; }
+
+      #final-duration { margin-bottom: 22px; font-variant-numeric: tabular-nums; }
+
       @media (max-width: 700px) {
         .header {
           align-items: flex-start;
@@ -380,7 +399,7 @@
             기록 재기
           </label>
           <span class="record-note"
-            >Wednesday Wars 전체 범위를 풀 때만 랭킹에 반영됩니다.</span
+            >전체 159문제의 시간도 자동 측정합니다. 모두 맞히면 Speedrun에 반영됩니다.</span
           >
         </div>
 
@@ -393,6 +412,9 @@
       </div>
 
       <div id="quiz-section" class="card hidden">
+        <div id="quiz-timer" class="quiz-timer hidden" role="timer" aria-label="경과 시간">
+          경과 시간 <span id="elapsed-time">00:00</span>
+        </div>
         <div class="quiz-info">
           <div id="progress">문제 1 / 10</div>
           <div class="chap-tag" id="display-chap">Ch. ??</div>
@@ -465,6 +487,7 @@
           "
         ></div>
         <div id="record-status"></div>
+        <div id="final-duration" class="hidden"></div>
         <button
           id="retry-wrong-btn"
           class="secondary"
@@ -487,6 +510,11 @@
           기록을 불러오는 중입니다.
         </p>
         <div class="ranking-list" id="ranking-list"></div>
+        <h2 class="speedrun-heading">Speedrun</h2>
+        <p class="ranking-status" id="speedrun-status">
+          전체 159문제를 모두 맞힌 기록을 빠른 순서로 표시합니다.
+        </p>
+        <div class="ranking-list" id="speedrun-list"></div>
       </div>
     </div>
 
@@ -2617,6 +2645,10 @@
       let score = 0;
       let shouldRecordCurrentQuiz = false;
       let recordOptionEligible = false;
+      let quizStartedAt = null;
+      let quizTimer = null;
+      let completedDurationMs = null;
+      let currentQuestionAnswered = false;
 
       const grid = document.getElementById("chapter-grid");
 
@@ -2731,6 +2763,7 @@
       }
 
       function initQuiz() {
+        resetQuizTimer();
         currentIdx = 0;
         score = 0;
         wrongWords = [];
@@ -2739,9 +2772,47 @@
         document.getElementById("ranking-section").classList.add("hidden");
         document.getElementById("quiz-section").classList.remove("hidden");
         showQuestion();
+        if (shouldRecordCurrentQuiz) {
+          quizStartedAt = performance.now();
+          document.getElementById("quiz-timer").classList.remove("hidden");
+          updateQuizTimer();
+          quizTimer = setInterval(updateQuizTimer, 250);
+        }
+      }
+
+      function formatDuration(durationMs) {
+        const seconds = Math.floor(durationMs / 1000);
+        return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+      }
+
+      function updateQuizTimer() {
+        if (quizStartedAt === null) return;
+        document.getElementById("elapsed-time").innerText = formatDuration(
+          completedDurationMs ?? performance.now() - quizStartedAt,
+        );
+      }
+
+      function stopQuizTimer() {
+        if (quizStartedAt !== null && completedDurationMs === null) {
+          completedDurationMs = Math.max(1, Math.round(performance.now() - quizStartedAt));
+          updateQuizTimer();
+        }
+        clearInterval(quizTimer);
+        quizTimer = null;
+      }
+
+      function resetQuizTimer() {
+        clearInterval(quizTimer);
+        quizTimer = null;
+        quizStartedAt = null;
+        completedDurationMs = null;
+        document.getElementById("quiz-timer").classList.add("hidden");
+        document.getElementById("elapsed-time").innerText = "00:00";
+        document.getElementById("final-duration").classList.add("hidden");
       }
 
       function showQuestion() {
+        currentQuestionAnswered = false;
         const q = quizData[currentIdx];
         const input = document.getElementById("answer-input");
         const submitBtn = document.getElementById("submit-btn");
@@ -2816,6 +2887,8 @@
       }
 
       function checkAnswer() {
+        if (currentQuestionAnswered || document.getElementById("quiz-section").classList.contains("hidden")) return;
+        currentQuestionAnswered = true;
         const input = document.getElementById("answer-input");
         const q = quizData[currentIdx];
         const user = normalizeAnswer(input.value);
@@ -2839,20 +2912,28 @@
         input.readOnly = true;
         document.getElementById("submit-btn").classList.add("hidden");
         document.getElementById("next-btn").classList.remove("hidden");
+        if (currentIdx === quizData.length - 1) stopQuizTimer();
       }
 
       function nextQuestion() {
+        if (!currentQuestionAnswered || document.getElementById("quiz-section").classList.contains("hidden")) return;
         currentIdx++;
         if (currentIdx < quizData.length) showQuestion();
         else showResult();
       }
 
       function showResult() {
+        stopQuizTimer();
         document.getElementById("quiz-section").classList.add("hidden");
         document.getElementById("result-section").classList.remove("hidden");
         document.getElementById("final-score").innerText =
           `${score} / ${quizData.length}`;
         document.getElementById("record-status").innerText = "";
+        const duration = document.getElementById("final-duration");
+        duration.classList.toggle("hidden", completedDurationMs === null);
+        if (completedDurationMs !== null) {
+          duration.innerText = `소요 시간 ${formatDuration(completedDurationMs)}${score === quizData.length ? " · 전부 정답!" : " · Speedrun은 159개 모두 정답일 때만 저장됩니다."}`;
+        }
 
         if (shouldRecordCurrentQuiz) submitRankingScore();
 
@@ -2882,6 +2963,7 @@
             body: JSON.stringify({
               score,
               total: quizData.length,
+              ...(completedDurationMs !== null ? { durationMs: completedDurationMs } : {}),
             }),
           });
           const data = await response.json();
@@ -2889,6 +2971,11 @@
           status.innerText = data.improved
             ? "새 최고 기록이 저장되었습니다."
             : "기존 최고 기록이 더 높아 그대로 유지되었습니다.";
+          if (data.speedrunEligible) {
+            status.innerText += data.speedrunImproved
+              ? " Speedrun 새 최고 기록이 저장되었습니다."
+              : " Speedrun은 기존 최고 기록을 유지했습니다.";
+          }
         } catch (error) {
           status.innerText =
             error instanceof Error
@@ -2898,6 +2985,8 @@
       }
 
       async function showRanking() {
+        resetQuizTimer();
+        shouldRecordCurrentQuiz = false;
         document.getElementById("setup-section").classList.add("hidden");
         document.getElementById("quiz-section").classList.add("hidden");
         document.getElementById("result-section").classList.add("hidden");
@@ -2910,8 +2999,12 @@
 
         const status = document.getElementById("ranking-status");
         const list = document.getElementById("ranking-list");
+        const speedrunStatus = document.getElementById("speedrun-status");
+        const speedrunList = document.getElementById("speedrun-list");
         status.innerText = "기록을 불러오는 중입니다.";
+        speedrunStatus.innerText = "Speedrun 기록을 불러오는 중입니다.";
         list.replaceChildren();
+        speedrunList.replaceChildren();
 
         try {
           const response = await fetch("/api/english-ranking", {
@@ -2922,11 +3015,9 @@
 
           if (data.rankings.length === 0) {
             status.innerText = "아직 등록된 기록이 없습니다.";
-            return;
+          } else {
+            status.innerText = "기록 재기를 선택한 사용자의 최고 기록만 표시됩니다.";
           }
-
-          status.innerText =
-            "기록 재기를 선택한 사용자의 최고 기록만 표시됩니다.";
           data.rankings.forEach((entry) => {
             const row = document.createElement("div");
             row.className = `ranking-row rank-${entry.rank}`;
@@ -2946,15 +3037,39 @@
             row.append(badge, user, scoreCell);
             list.appendChild(row);
           });
+
+          const speedruns = data.speedruns || [];
+          speedrunStatus.innerText = speedruns.length
+            ? "전체 159문제를 모두 맞힌 사용자의 최고 기록입니다. 시간은 분:초로 표시됩니다."
+            : "아직 등록된 Speedrun 기록이 없습니다. 전체 159문제를 모두 맞혀 보세요!";
+          speedruns.forEach((entry) => {
+            const row = document.createElement("div");
+            row.className = `ranking-row rank-${entry.rank}`;
+            const badge = document.createElement("span");
+            badge.className = "rank-badge";
+            badge.innerText = entry.rank;
+            const user = document.createElement("span");
+            user.className = "ranking-user";
+            user.innerText = entry.loginId;
+            const time = document.createElement("span");
+            time.className = "ranking-score";
+            time.innerText = formatDuration(entry.durationMs);
+            row.append(badge, user, time);
+            speedrunList.appendChild(row);
+          });
         } catch (error) {
           status.innerText =
             error instanceof Error
               ? error.message
               : "랭킹을 불러오지 못했습니다.";
+          speedrunStatus.innerText = "Speedrun 기록을 불러오지 못했습니다.";
         }
       }
 
       function resetToSetup() {
+        resetQuizTimer();
+        shouldRecordCurrentQuiz = false;
+        currentQuestionAnswered = false;
         quizData = [];
         wrongWords = [];
         currentIdx = 0;
