@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test:english": "node --test tests/english-speedrun.test.mjs",
     "migrate:legacy": "tsx scripts/migrate-legacy.ts"
   },
   "dependencies": {
