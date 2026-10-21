@@ -5,7 +5,7 @@ import { HtmlDeployment } from "@/models/HtmlDeployment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "친구가 만든 HTML 페이지", robots: { index: false, follow: false } };
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
