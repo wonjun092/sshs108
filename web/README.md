@@ -90,8 +90,8 @@ parent navigation are not permitted. Files needing CDNs, APIs, localStorage,
 external fonts, or relative assets must be adapted into a self-contained file.
 This is browser privilege isolation, not malware scanning or a CPU quota: an
 uploaded page can still display misleading content or run expensive JavaScript,
-and can navigate its own frame. The wrapper labels it as user-uploaded content;
-administrators can remove abusive pages. No uploaded markup is injected into the
+and can navigate its own frame. Uploaded pages fill the viewport without a header;
+administrators can manage or remove them at `/baepo`. No uploaded markup is injected into the
 application DOM. Mutation APIs require a matching non-null Origin, check the
 session and active user, cap the request stream before multipart parsing, and
 validate the file's actual byte size, UTF-8 encoding, extension, and HTML marker.

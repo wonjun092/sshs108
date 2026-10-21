@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connectDatabase } from "@/lib/db";
 import { validateSlug } from "@/lib/baepo-policy";
@@ -14,7 +13,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   await connectDatabase();
   if (!await HtmlDeployment.exists({ _id: slug })) notFound();
   return <main className="baepo-viewer">
-    <header><span>친구가 올린 페이지 · /{slug}</span><Link href="/baepo">업로드 관리</Link></header>
     <iframe title={`/${slug} HTML 페이지`} src={`/api/baepo/${slug}/content`}
       sandbox="allow-scripts" referrerPolicy="no-referrer" />
   </main>;
