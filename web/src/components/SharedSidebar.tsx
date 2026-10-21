@@ -80,6 +80,7 @@ export function SharedSidebar({
           🍔 급식 및 간식
         </a>
         <Link href="/english">📖 영어 단어 시험</Link>
+        <Link href="/baepo">🌐 HTML 페이지 업로드</Link>
         <button
           className={`dropdown-btn ${quizzesOpen ? "active" : ""}`}
           onClick={() => setQuizzesOpen(!quizzesOpen)}

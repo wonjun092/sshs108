@@ -9,6 +9,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:english": "node --test tests/english-speedrun.test.mjs",
+    "test:baepo": "tsx --test tests/baepo.test.ts",
+    "test:baepo:integration": "tsx --test tests/baepo.integration.test.ts",
     "migrate:legacy": "tsx scripts/migrate-legacy.ts"
   },
   "dependencies": {
@@ -21,11 +23,13 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@types/node": "24.10.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.1",
     "eslint-config-next": "16.2.10",
+    "mongodb-memory-server": "11.3.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
   },

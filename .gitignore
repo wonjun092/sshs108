@@ -214,6 +214,7 @@ out/
 coverage/
 *.tsbuildinfo
 .vercel/
+test-results/
 
 # Ruff stuff:
 .ruff_cache/
