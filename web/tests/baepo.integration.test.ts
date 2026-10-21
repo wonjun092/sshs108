@@ -64,7 +64,15 @@ test("baepo production server: real MongoDB races, authorization and browser san
     for (const slug of ["Example", "a/b", "%61pi", "a".repeat(49)]) assert.equal((await post(slug)).status, 400);
     assert.equal((await post("bad-extension", 0, html, "x.svg")).status, 400);
     assert.equal((await post("empty", 0, "")).status, 400);
-    assert.equal((await post("huge", 0, "<html>" + "x".repeat(1024 * 1024))).status, 413);
+    const limitHtml = "<html>".padEnd(3 * 1024 * 1024, " ");
+    assert.equal((await post("size-limit", 0, limitHtml)).status, 201);
+    const limitEntry = await HtmlDeployment.findById("size-limit").lean();
+    assert.equal(limitEntry?.size, 3 * 1024 * 1024);
+    assert.equal((await fetch(`${origin}/api/baepo/size-limit`, {
+      method: "PUT", headers: { ...headers(), "if-match": limitEntry!.revision }, body: file("size-limit", limitHtml),
+    })).status, 200);
+    assert.equal((await post("huge", 0, limitHtml + "x")).status, 413);
+    await HtmlDeployment.deleteOne({ _id: "size-limit" });
   });
 
   await t.test("concurrent registration has exactly one winner and stores one full document", async () => {

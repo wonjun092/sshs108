@@ -53,7 +53,7 @@ attachment endpoint from bypassing the HTML-page sandbox.
 ## Single-file HTML pages (`/baepo`)
 
 Approved, active accounts can publish a UTF-8 `.html` or `.htm` file (up to
-1 MiB) at `/<slug>`. The sidebar links to `/baepo`, where owners can list,
+3 MiB) at `/<slug>`. The sidebar links to `/baepo`, where owners can list,
 replace, and delete their own files. Administrators can manage every upload.
 Published pages are **public**, including their source; never upload secrets or
 personal information. Account status and role are checked against MongoDB on

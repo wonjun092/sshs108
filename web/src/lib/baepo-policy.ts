@@ -1,6 +1,6 @@
 import reservedRoutes from "./baepo-reserved.json";
 
-export const MAX_HTML_BYTES = 1024 * 1024;
+export const MAX_HTML_BYTES = 3 * 1024 * 1024;
 export const MAX_UPLOAD_BYTES = MAX_HTML_BYTES + 16 * 1024;
 const reserved = new Set(reservedRoutes);
 
@@ -26,7 +26,7 @@ export function validateHtml(filename: string, bytes: Uint8Array) {
   if (!/\.html?$/i.test(filename) || filename.length > 180 || /[\\/\x00-\x1f]/.test(filename))
     throw new BaepoError(400, ".html 또는 .htm 파일만 업로드할 수 있습니다.");
   if (!bytes.length) throw new BaepoError(400, "빈 파일은 업로드할 수 없습니다.");
-  if (bytes.length > MAX_HTML_BYTES) throw new BaepoError(413, "HTML 파일은 1MB 이하여야 합니다.");
+  if (bytes.length > MAX_HTML_BYTES) throw new BaepoError(413, "HTML 파일은 3MB 이하여야 합니다.");
   let html: string;
   try { html = new TextDecoder("utf-8", { fatal: true }).decode(bytes); }
   catch { throw new BaepoError(400, "UTF-8로 저장한 HTML 파일을 선택해주세요."); }

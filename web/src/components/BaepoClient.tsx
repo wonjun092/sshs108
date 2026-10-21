@@ -65,7 +65,7 @@ export function BaepoClient({ admin }: { admin: boolean }) {
     <section className="baepo-card">
       <h1>HTML 파일로 페이지 만들기</h1>
       <p>승인된 계정으로 단일 HTML 파일을 올리면 <strong>/{"원하는-경로"}</strong>에서 누구나 볼 수 있습니다.</p>
-      <p>UTF-8 형식의 .html 또는 .htm 파일, 최대 1MB입니다. CSS·JavaScript·이미지는 파일 안에 포함해주세요.
+      <p>UTF-8 형식의 .html 또는 .htm 파일, 최대 3MB입니다. CSS·JavaScript·이미지는 파일 안에 포함해주세요.
         외부 파일·통신, 로그인 정보·저장소 접근, 팝업·상위 페이지 이동은 지원하지 않습니다. 개인정보나 비밀키는 넣지 마세요.</p>
       <form ref={formRef} onSubmit={upload}>
         <fieldset disabled={busy}>
