@@ -1,4 +1,5 @@
 import { InferSchemaType, Model, Schema, model, models } from "mongoose";
+import { WEDNESDAY_WARS_RANKING_BOOK } from "@/lib/english-quiz";
 
 const englishQuizScoreSchema = new Schema(
   {
@@ -6,21 +7,19 @@ const englishQuizScoreSchema = new Schema(
     loginId: { type: String, required: true, trim: true },
     book: {
       type: String,
-      enum: ["wednesdayWars"],
+      enum: [WEDNESDAY_WARS_RANKING_BOOK],
       required: true,
     },
     score: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 1 },
     achievedAt: { type: Date, default: Date.now, required: true },
-    speedrunDurationMs: { type: Number, min: 1 },
-    speedrunAchievedAt: { type: Date },
+    durationMs: { type: Number, required: true, min: 1 },
   },
   { timestamps: true },
 );
 
 englishQuizScoreSchema.index({ userId: 1, book: 1 }, { unique: true });
-englishQuizScoreSchema.index({ book: 1, score: -1, achievedAt: 1 });
-englishQuizScoreSchema.index({ book: 1, speedrunDurationMs: 1, speedrunAchievedAt: 1 });
+englishQuizScoreSchema.index({ book: 1, score: -1, durationMs: 1, achievedAt: 1, _id: 1 });
 
 export type EnglishQuizScoreDocument = InferSchemaType<
   typeof englishQuizScoreSchema

@@ -145,6 +145,16 @@
         color: #2c3e50;
         font-size: 1.1em;
         font-weight: bold;
+        text-align: right;
+      }
+
+      .ranking-duration {
+        display: block;
+        margin-top: 4px;
+        color: #667;
+        font-size: 0.85em;
+        font-weight: normal;
+        font-variant-numeric: tabular-nums;
       }
 
       .quiz-timer {
@@ -161,8 +171,6 @@
         font-weight: bold;
         font-variant-numeric: tabular-nums;
       }
-
-      .speedrun-heading { margin-top: 32px; }
 
       #final-duration { margin-bottom: 22px; font-variant-numeric: tabular-nums; }
 
@@ -252,6 +260,13 @@
         width: auto;
         margin-right: 8px;
         cursor: pointer;
+      }
+
+      .chapter-parts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        font-weight: bold;
       }
 
       .hidden {
@@ -384,6 +399,17 @@
           </button>
         </div>
 
+        <div id="wednesday-parts" class="chapter-parts hidden" role="group" aria-label="파트별 전체 선택">
+          <label class="chapter-item">
+            <input type="checkbox" id="part1-select" onchange="togglePart(1, this.checked)" />
+            Part 1 (9~1월) 전체 선택
+          </label>
+          <label class="chapter-item">
+            <input type="checkbox" id="part2-select" onchange="togglePart(2, this.checked)" />
+            Part 2 (2~6월) 전체 선택
+          </label>
+        </div>
+
         <div class="chapter-grid" id="chapter-grid"></div>
 
         <label
@@ -399,7 +425,7 @@
             기록 재기
           </label>
           <span class="record-note"
-            >전체 159문제의 시간도 자동 측정합니다. 모두 맞히면 Speedrun에 반영됩니다.</span
+            >Part 2의 맞힌 개수와 소요 시간을 랭킹에 기록합니다.</span
           >
         </div>
 
@@ -505,16 +531,12 @@
       </div>
 
       <div id="ranking-section" class="card hidden">
-        <h2 style="margin-top: 0">Wednesday Wars Ranking</h2>
-        <p class="ranking-status" id="ranking-status">
+        <h2 style="margin-top: 0">Wednesday Wars Part 2 랭킹</h2>
+        <p class="ranking-status">맞힌 개수가 많은 순으로 표시합니다. 개수가 같으면 시간이 짧은 기록이 앞섭니다.</p>
+        <p class="ranking-status" id="ranking-status" role="status">
           기록을 불러오는 중입니다.
         </p>
         <div class="ranking-list" id="ranking-list"></div>
-        <h2 class="speedrun-heading">Speedrun</h2>
-        <p class="ranking-status" id="speedrun-status">
-          전체 159문제를 모두 맞힌 기록을 빠른 순서로 표시합니다.
-        </p>
-        <div class="ranking-list" id="speedrun-list"></div>
       </div>
     </div>
 
@@ -1225,7 +1247,7 @@
         },
       ];
 
-      // The Wednesday Wars - September / October / November / December / January (첨부 강의자료 기반)
+      // The Wednesday Wars - September–June (첨부 강의자료 기반)
       // correctFill은 예문 빈칸에 들어가는 활용형, word는 표제어입니다.
       const wednesdayWarsVocabulary = [
         {
@@ -2619,6 +2641,1422 @@
           definition: "one of the parts that make up a larger object or system",
           acceptedAnswers: ["component"],
         },
+
+        // February-1
+        {
+          ch: "February-1",
+          word: "cheat",
+          koreanMeaning: "속이다, 사기치다",
+          correctFill: "cheat",
+          sent: "Mary is nobody's fool. She knows Jack would try to __________ her.",
+        },
+        {
+          ch: "February-1",
+          word: "atmosphere",
+          koreanMeaning: "대기, 분위기",
+          correctFill: "atmosphere",
+          sent: "Her jokes loosened up the tense __________ of the meeting quite a bit.",
+        },
+        {
+          ch: "February-1",
+          word: "thrive",
+          koreanMeaning: "번창하다, 잘 자라다",
+          correctFill: "thrive",
+          sent: "While many of our competitors are failing, we continue to __________.",
+        },
+        {
+          ch: "February-1",
+          word: "property",
+          koreanMeaning: "재산, 소유물",
+          correctFill: "property",
+          sent: "A thief is a wretch who steals the __________ of others.",
+        },
+        {
+          ch: "February-1",
+          word: "decrease",
+          koreanMeaning: "줄이다; 감소, 하락",
+          correctFill: "decrease",
+          sent: "The __________ of customers is a bit of no good to our company.",
+        },
+        {
+          ch: "February-1",
+          word: "flush",
+          koreanMeaning: "(얼굴이)붉어지다, (변기의) 물을 내리다",
+          correctFill: "flush",
+          sent: "She threw his mobile phone into the toilet and tried to __________ it away.",
+        },
+        {
+          ch: "February-1",
+          word: "refuse",
+          koreanMeaning: "거절하다, 거부하다",
+          correctFill: "refuse",
+          sent: "This company doesn't __________ to hire those who are physically handicapped.",
+        },
+        {
+          ch: "February-1",
+          word: "restitution",
+          koreanMeaning: "반환, 배상",
+          correctFill: "restitution",
+          sent: "The government requested for the __________ of cultural treasures taken during World War II.",
+        },
+        {
+          ch: "February-1",
+          word: "mold",
+          koreanMeaning: "틀, 형성하다; 곰팡이",
+          correctFill: "mold",
+          sent: "I found the bread covered in green __________.",
+        },
+        {
+          ch: "February-1",
+          word: "bulge",
+          koreanMeaning: "가득차다, 불룩하다",
+          correctFill: "bulging",
+          sent: "Her pockets were __________ with candy.",
+        },
+        {
+          ch: "February-1",
+          word: "obligation",
+          koreanMeaning: "의무, 부담",
+          correctFill: "obligation",
+          sent: "In Korea, under __________ to protect the country, young men must go to the army.",
+        },
+        {
+          ch: "February-1",
+          word: "clasp",
+          koreanMeaning: "움켜쥐다, 잠그다",
+          correctFill: "clasped",
+          sent: "She __________ her bag tightly as she walked through the crowd.",
+        },
+        {
+          ch: "February-1",
+          word: "appreciation",
+          koreanMeaning: "감탄, 감상, 감사, 가치 평가",
+          correctFill: "appreciation",
+          sent: "Vera's own __________ for life's beautiful things comes from her mother.",
+        },
+        {
+          ch: "February-1",
+          word: "routine",
+          koreanMeaning: "규칙적인 일, 일상",
+          correctFill: "routine",
+          sent: "The __________ would always follow the same pattern.",
+        },
+        {
+          ch: "February-1",
+          word: "tragic",
+          koreanMeaning: "비극적인",
+          correctFill: "tragic",
+          sent: "He was moved to tears by the __________ story.",
+        },
+        {
+          ch: "February-1",
+          word: "arrogant",
+          koreanMeaning: "오만한",
+          correctFill: "arrogant",
+          sent: "He is too __________ to let someone else finish a conversation.",
+        },
+        {
+          ch: "February-1",
+          word: "fate",
+          koreanMeaning: "운명, 숙명",
+          correctFill: "fate",
+          sent: "This is the serious problem which will decide the __________ of the country.",
+        },
+        {
+          ch: "February-1",
+          word: "symmetrical",
+          koreanMeaning: "대칭적인",
+          correctFill: "symmetrical",
+          sent: "However, in real life, nothing natural is __________, not even the human body.",
+        },
+        {
+          ch: "February-1",
+          word: "critical",
+          koreanMeaning: "비판적인, 비난하는; 대단히 중요한",
+          correctFill: "critical",
+          sent: "Each Sunday, Spin News publishes a __________ analysis of the week's major news stories.",
+        },
+
+        // February-2
+        {
+          ch: "February-2",
+          word: "punctuate",
+          koreanMeaning: "간간이 끼어들다; 구두점을 찍다",
+          correctFill: "punctuate",
+          sent: "You must not forget to __________ when you write English sentences.",
+        },
+        {
+          ch: "February-2",
+          word: "profession",
+          koreanMeaning: "직업, 직종",
+          correctFill: "profession",
+          sent: "The Ji's have been practicing medicine as a family __________.",
+        },
+        {
+          ch: "February-2",
+          word: "hesitate",
+          koreanMeaning: "망설이다, 주저하다",
+          correctFill: "hesitate",
+          sent: "Don't __________ in doing anything good.",
+        },
+        {
+          ch: "February-2",
+          word: "allot",
+          koreanMeaning: "할당하다, 배당하다",
+          correctFill: "allot",
+          sent: "The newspaper will __________ a full page to each of the three candidates.",
+        },
+        {
+          ch: "February-2",
+          word: "vibrate",
+          koreanMeaning: "떨다, 진동하다",
+          correctFill: "vibrate",
+          sent: "The leaves continued to __________ in the breeze.",
+        },
+        {
+          ch: "February-2",
+          word: "weird",
+          koreanMeaning: "기이한, 기묘한",
+          correctFill: "weird",
+          sent: "That woman left a bad taste in my mouth with her __________ action.",
+        },
+        {
+          ch: "February-2",
+          word: "conduct",
+          koreanMeaning: "(특정 활동을)하다, 지휘하다, 행동하다",
+          correctFill: "conduct",
+          sent: "She was found guilty of unprofessional __________.",
+        },
+        {
+          ch: "February-2",
+          word: "representative",
+          koreanMeaning: "대표, 대리인; 대표하는",
+          correctFill: "representative",
+          sent: "Kimchi is the most __________ Korean food.",
+        },
+        {
+          ch: "February-2",
+          word: "sob",
+          koreanMeaning: "흐느껴 울다",
+          correctFill: "sobbing",
+          sent: "Unable to contain the sadness that welled up within her, she burst out __________.",
+        },
+        {
+          ch: "February-2",
+          word: "shimmer",
+          koreanMeaning: "희미하게 빛나다, 어른거리다",
+          correctFill: "shimmered",
+          sent: "The surface of the lake __________ in silver under the moon-light.",
+        },
+        {
+          ch: "February-2",
+          word: "promote",
+          koreanMeaning: "촉진하다, 홍보하다",
+          correctFill: "promote",
+          sent: "The new government tried to __________ economic growth.",
+        },
+        {
+          ch: "February-2",
+          word: "irregular",
+          koreanMeaning: "불규칙한, 비정상적인",
+          correctFill: "irregular",
+          sent: "Being on an __________ schedule does harm to your health.",
+        },
+        {
+          ch: "February-2",
+          word: "submission",
+          koreanMeaning: "제출; 항복, 굴복",
+          correctFill: "submission",
+          sent: "They prepared a report for __________ to the council.",
+        },
+        {
+          ch: "February-2",
+          word: "astounded",
+          koreanMeaning: "경악한, 몹시 놀란",
+          correctFill: "astounded",
+          sent: "She was __________ by the news that she had won the contest.",
+        },
+        {
+          ch: "February-2",
+          word: "occasionally",
+          koreanMeaning: "가끔",
+          correctFill: "occasionally",
+          sent: "We know each other and talk __________, mostly during coffee breaks.",
+        },
+        {
+          ch: "February-2",
+          word: "significant",
+          koreanMeaning: "중요한, 의미있는",
+          correctFill: "significant",
+          sent: "The loss of that dream is a very __________ loss.",
+        },
+        {
+          ch: "February-2",
+          word: "relevant",
+          koreanMeaning: "관련있는, 적절한",
+          correctFill: "relevant",
+          sent: "All of his work experience is __________ and fits the requirements for the job.",
+        },
+        {
+          ch: "February-2",
+          word: "contemporary",
+          koreanMeaning: "동시대의, 현대의",
+          correctFill: "contemporary",
+          sent: "His work is a masterpiece of __________ literature.",
+        },
+        {
+          ch: "February-2",
+          word: "Innovative",
+          koreanMeaning: "획기적인",
+          correctFill: "Innovative",
+          sent: "__________ ideas are needed to make the business a success.",
+        },
+        {
+          ch: "February-2",
+          word: "withdraw",
+          koreanMeaning: "철수하다, 철회하다, 탈퇴하다",
+          correctFill: "withdraw",
+          sent: "She purposely treated the child coldly in order to __________ her affection.",
+        },
+
+        // March-1
+        {
+          ch: "March-1",
+          word: "scramble",
+          koreanMeaning: "재빨리움직이다",
+          correctFill: "scrambled",
+          sent: "She __________ up the steep hillside and over the rocks.",
+        },
+        {
+          ch: "March-1",
+          word: "bulge",
+          koreanMeaning: "가득차다, 불룩하다",
+          correctFill: "bulges",
+          sent: "The sack of apples __________ here and there.",
+        },
+        {
+          ch: "March-1",
+          word: "offensive",
+          koreanMeaning: "공격",
+          correctFill: "offensive",
+          sent: "A military __________ is a planned attack made by a large group of soldiers.",
+        },
+        {
+          ch: "March-1",
+          word: "holler",
+          koreanMeaning: "소리지르다",
+          correctFill: "holler",
+          sent: "I began to __________ for help from people.",
+        },
+        {
+          ch: "March-1",
+          word: "brandish",
+          koreanMeaning: "휘두르다",
+          correctFill: "brandished",
+          sent: "She __________ a saucepan at me so I ran out of the kitchen.",
+        },
+        {
+          ch: "March-1",
+          word: "tilt",
+          koreanMeaning: "기울이다",
+          correctFill: "tilted",
+          sent: "He __________ his chair backwards and put his feet up on his desk.",
+        },
+        {
+          ch: "March-1",
+          word: "huddle",
+          koreanMeaning: "모이다",
+          correctFill: "huddled",
+          sent: "We __________ around the fire for warmth.",
+        },
+        {
+          ch: "March-1",
+          word: "fertilize",
+          koreanMeaning: "비료를주다",
+          correctFill: "fertilize",
+          sent: "Most farmers __________ their farmland with chemicals.",
+        },
+        {
+          ch: "March-1",
+          word: "remarkable",
+          koreanMeaning: "주목할만한",
+          correctFill: "remarkable",
+          sent: "It's a __________ achievement for the company.",
+        },
+        {
+          ch: "March-1",
+          word: "hoard",
+          koreanMeaning: "비축하다",
+          correctFill: "hoard",
+          sent: "They began to __________ food and gasoline and save their money.",
+        },
+        {
+          ch: "March-1",
+          word: "grasp",
+          koreanMeaning: "이해, 파악",
+          correctFill: "grasp",
+          sent: "The government has no __________ of the suffering of the poor.",
+        },
+        {
+          ch: "March-1",
+          word: "explode",
+          koreanMeaning: "터지다",
+          correctFill: "exploded",
+          sent: "A bomb __________ at one of London's busiest railway stations this morning.",
+        },
+        {
+          ch: "March-1",
+          word: "beware",
+          koreanMeaning: "조심하다",
+          correctFill: "Beware",
+          sent: "__________ of falling asleep while sunbathing.",
+        },
+        {
+          ch: "March-1",
+          word: "wade",
+          koreanMeaning: "걸어서지나가다",
+          correctFill: "wade",
+          sent: "The river was full but we managed to __________ across.",
+        },
+        {
+          ch: "March-1",
+          word: "deserve",
+          koreanMeaning: "…을받을만하다",
+          correctFill: "deserve",
+          sent: "After all that hard work, you __________ a holiday.",
+        },
+        {
+          ch: "March-1",
+          word: "hire",
+          koreanMeaning: "고용하다",
+          correctFill: "hire",
+          sent: "Employers always expects to __________ skilled people.",
+        },
+        {
+          ch: "March-1",
+          word: "replace",
+          koreanMeaning: "대체하다",
+          correctFill: "replaced",
+          sent: "The factory __________ most of its workers with robots.",
+        },
+        {
+          ch: "March-1",
+          word: "remind",
+          koreanMeaning: "상기시키다",
+          correctFill: "reminded",
+          sent: "I __________ Johnson that the conference had been cancelled.",
+        },
+        {
+          ch: "March-1",
+          word: "embarrassed",
+          koreanMeaning: "당황스러운",
+          correctFill: "embarrassed",
+          sent: "He felt __________ at being the center of attention.",
+        },
+        {
+          ch: "March-1",
+          word: "prophecy",
+          koreanMeaning: "예언",
+          correctFill: "prophecy",
+          sent: "His __________ that she would one day be a star came true.",
+        },
+
+        // March-2
+        {
+          ch: "March-2",
+          word: "stance",
+          koreanMeaning: "자세",
+          correctFill: "stance",
+          sent: "Danny’s upright __________ made him appear the taller of the two.",
+        },
+        {
+          ch: "March-2",
+          word: "identify",
+          koreanMeaning: "알아보다",
+          correctFill: "identify",
+          sent: "Even the smallest baby can __________ its mother by her voice.",
+        },
+        {
+          ch: "March-2",
+          word: "stride",
+          koreanMeaning: "걸음",
+          correctFill: "strides",
+          sent: "Tim reached the door in only three __________.",
+        },
+        {
+          ch: "March-2",
+          word: "except",
+          koreanMeaning: "~을제외하고는",
+          correctFill: "except",
+          sent: "Everyone was there __________ for Sally.",
+        },
+        {
+          ch: "March-2",
+          word: "underestimate",
+          koreanMeaning: "과소평가하다",
+          correctFill: "underestimated",
+          sent: "Their ability should not be __________.",
+        },
+        {
+          ch: "March-2",
+          word: "fierce",
+          koreanMeaning: "사나운, 격렬한",
+          correctFill: "fierce",
+          sent: "Two men were shot during __________ fighting last weekend.",
+        },
+        {
+          ch: "March-2",
+          word: "purchase",
+          koreanMeaning: "구입하다",
+          correctFill: "purchased",
+          sent: "Tickets must be __________ two weeks in advance.",
+        },
+        {
+          ch: "March-2",
+          word: "endurance",
+          koreanMeaning: "인내력",
+          correctFill: "endurance",
+          sent: "Running a marathon is a test of human __________.",
+        },
+        {
+          ch: "March-2",
+          word: "dispense",
+          koreanMeaning: "없애다",
+          correctFill: "dispense",
+          sent: "They've had to __________ with a lot of luxuries since Mike lost his job.",
+        },
+        {
+          ch: "March-2",
+          word: "accompany",
+          koreanMeaning: "동반하다",
+          correctFill: "accompanied",
+          sent: "Children must be __________ by an adult.",
+        },
+        {
+          ch: "March-2",
+          word: "hoist",
+          koreanMeaning: "들어올리다",
+          correctFill: "hoisted",
+          sent: "A helicopter __________ the final section of the bridge into place.",
+        },
+        {
+          ch: "March-2",
+          word: "shrug",
+          koreanMeaning: "으쓱하다",
+          correctFill: "shrugging",
+          sent: "‘I don't know,' Anna replied, __________ her shoulders.",
+        },
+        {
+          ch: "March-2",
+          word: "enclose",
+          koreanMeaning: "에워싸다",
+          correctFill: "encloses",
+          sent: "The park that __________ the monument has recently been enlarged.",
+        },
+        {
+          ch: "March-2",
+          word: "paralyzed",
+          koreanMeaning: "마비된",
+          correctFill: "paralyzed",
+          sent: "The accident left her __________ from the waist down.",
+        },
+        {
+          ch: "March-2",
+          word: "stern",
+          koreanMeaning: "엄격한",
+          correctFill: "stern",
+          sent: "Someone who is __________ is very serious and strict.",
+        },
+        {
+          ch: "March-2",
+          word: "motivation",
+          koreanMeaning: "동기부여",
+          correctFill: "motivation",
+          sent: "There seems to be a lack of __________ among the staff.",
+        },
+        {
+          ch: "March-2",
+          word: "encouragement",
+          koreanMeaning: "격려",
+          correctFill: "encouragement",
+          sent: "I could never have achieved this without the __________ of my teacher.",
+        },
+        {
+          ch: "March-2",
+          word: "inscribe",
+          koreanMeaning: "쓰다, 새기다",
+          correctFill: "inscribed",
+          sent: "The wall was __________ with the names of the dead from the Great War.",
+        },
+        {
+          ch: "March-2",
+          word: "evaporate",
+          koreanMeaning: "증발시키다",
+          correctFill: "evaporates",
+          sent: "The sun __________ moisture on the leaves.",
+        },
+        {
+          ch: "March-2",
+          word: "assassin",
+          koreanMeaning: "암살범",
+          correctFill: "assassin",
+          sent: "She hired an __________ to eliminate her rival.",
+        },
+
+        // April-1
+        {
+          ch: "April-1",
+          word: "partisan",
+          koreanMeaning: "편파[당파]적인",
+          correctFill: "partisan",
+          sent: "They were cheered on by a __________ crowd of about 20,000 fans.",
+        },
+        {
+          ch: "April-1",
+          word: "pretend",
+          koreanMeaning: "…인 척하다",
+          correctFill: "pretended",
+          sent: "The children __________ that they were dinosaurs.",
+          acceptedAnswers: ["pretend"],
+        },
+        {
+          ch: "April-1",
+          word: "scrunch",
+          koreanMeaning: "돌돌 구기다[뭉치다]",
+          correctFill: "scrunched",
+          sent: "I __________ up the letter and threw it in the bin.",
+          acceptedAnswers: ["scrunch"],
+        },
+        {
+          ch: "April-1",
+          word: "blush",
+          koreanMeaning: "얼굴을 붉히다",
+          correctFill: "blushed",
+          sent: "Joan __________ at the unexpected compliment.",
+          acceptedAnswers: ["blush"],
+        },
+        {
+          ch: "April-1",
+          word: "telltale",
+          koreanMeaning: "숨길 수 없는",
+          correctFill: "telltale",
+          sent: "They examined the child carefully, looking for __________ signs of abuse.",
+        },
+        {
+          ch: "April-1",
+          word: "frightening",
+          koreanMeaning: "무서운",
+          correctFill: "frightening",
+          sent: "Going into hospital can be very __________ for a child.",
+        },
+        {
+          ch: "April-1",
+          word: "collapse",
+          koreanMeaning: "쓰러지다, 무너지다",
+          correctFill: "collapsed",
+          sent: "Thousands of buildings __________ in the earthquake.",
+          acceptedAnswers: ["collapse"],
+        },
+        {
+          ch: "April-1",
+          word: "abandon",
+          koreanMeaning: "버리다, 포기하다",
+          correctFill: "abandon",
+          sent: "We were sinking fast, and the captain gave the order to __________ the ship.",
+        },
+        {
+          ch: "April-1",
+          word: "humiliated",
+          koreanMeaning: "창피당하는",
+          correctFill: "humiliated",
+          sent: "I was __________ because I couldn't answer a simple question.",
+        },
+        {
+          ch: "April-1",
+          word: "dictator",
+          koreanMeaning: "독재자",
+          correctFill: "dictator",
+          sent: "The country is ruled by a ruthless __________.",
+        },
+        {
+          ch: "April-1",
+          word: "relevant",
+          koreanMeaning: "관련 있는, 적절한",
+          correctFill: "relevant",
+          sent: "These comments are not directly __________ to the topic.",
+        },
+        {
+          ch: "April-1",
+          word: "inaccuracy",
+          koreanMeaning: "부정확",
+          correctFill: "inaccuracy",
+          sent: "He was disturbed by the __________ of the answers.",
+        },
+        {
+          ch: "April-1",
+          word: "beat",
+          koreanMeaning: "(게임・시합에서) 이기다",
+          correctFill: "beat",
+          sent: "He __________ me at chess.",
+        },
+        {
+          ch: "April-1",
+          word: "squeeze",
+          koreanMeaning: "v. 쥐다, 짜내다",
+          correctFill: "squeezed",
+          sent: "As she waited to go into the exam, he __________ her hand and wished her good luck.",
+          acceptedAnswers: ["squeeze"],
+        },
+        {
+          ch: "April-1",
+          word: "brilliantly",
+          koreanMeaning: "뛰어나게, 훌륭히",
+          correctFill: "brilliantly",
+          sent: "She is known as a pianist who interprets Chopin __________.",
+        },
+        {
+          ch: "April-1",
+          word: "squirm",
+          koreanMeaning: "꿈틀[꼼지락]대다",
+          correctFill: "squirmed",
+          sent: "Christine __________ uncomfortably in her chair.",
+          acceptedAnswers: ["squirm"],
+        },
+        {
+          ch: "April-1",
+          word: "bearable",
+          koreanMeaning: "참을[견딜] 만한",
+          correctFill: "bearable",
+          sent: "The hotel was the absolute worst, but the good weather made things just __________.",
+        },
+        {
+          ch: "April-1",
+          word: "improper",
+          koreanMeaning: "부적절한",
+          correctFill: "improper",
+          sent: "It is considered __________ to wear such a short skirt to a formal occasion.",
+        },
+
+        // April-2
+        {
+          ch: "April-2",
+          word: "instinct",
+          koreanMeaning: "본능적으로",
+          correctFill: "instinct",
+          sent: "Birds build nests by __________",
+        },
+        {
+          ch: "April-2",
+          word: "clump",
+          koreanMeaning: "무리",
+          correctFill: "clumps",
+          sent: "The roses were planted in __________ across the park.",
+          acceptedAnswers: ["clump"],
+        },
+        {
+          ch: "April-2",
+          word: "earshot",
+          koreanMeaning: "부르면 들리는 거리",
+          correctFill: "earshot",
+          sent: "I don't think you should say anything while the boss is still within __________.",
+        },
+        {
+          ch: "April-2",
+          word: "seep",
+          koreanMeaning: "(물기 등이) 스미다, 배다",
+          correctFill: "seeping",
+          sent: "Poisonous chemicals from the factory are __________ into our soil.",
+          acceptedAnswers: ["seep"],
+        },
+        {
+          ch: "April-2",
+          word: "smirk",
+          koreanMeaning: "히죽히죽[능글맞게] 웃다",
+          correctFill: "smirks",
+          sent: "I don't like the way he winks and __________ at me whenever he sees me.",
+          acceptedAnswers: ["smirk"],
+        },
+        {
+          ch: "April-2",
+          word: "smack",
+          koreanMeaning: "치다, 때리다",
+          correctFill: "smack",
+          sent: "I think it's wrong to __________ young children.",
+        },
+        {
+          ch: "April-2",
+          word: "thud",
+          koreanMeaning: "쿵쿵거리다",
+          correctFill: "thudding",
+          sent: "The kids are __________ around upstairs.",
+          acceptedAnswers: ["thud"],
+        },
+        {
+          ch: "April-2",
+          word: "allowance",
+          koreanMeaning: "용돈; 비용; 허용량",
+          correctFill: "allowance",
+          sent: "He had to pay for the broken window out of his __________.",
+        },
+        {
+          ch: "April-2",
+          word: "berserk",
+          koreanMeaning: "(흥분하여) 펄쩍펄쩍 뛰는",
+          correctFill: "berserk",
+          sent: "My mother will go __________ when she finds out I've ruined her dress.",
+        },
+        {
+          ch: "April-2",
+          word: "scaffolding",
+          koreanMeaning: "<건설> 높은 곳에서 공사를 할 수 있도록 임시로 설치 한 가설물.",
+          correctFill: "scaffolding",
+          sent: "__________ has been erected around the tower and repair work will start next week",
+        },
+        {
+          ch: "April-2",
+          word: "trip",
+          koreanMeaning: "v. 발을 헛디디다",
+          correctFill: "trip",
+          sent: "That cable is dangerous. Someone might __________ over it.",
+        },
+        {
+          ch: "April-2",
+          word: "damp",
+          koreanMeaning: "축축한, 눅눅한",
+          correctFill: "damp",
+          sent: "His back is __________ with sweat.",
+        },
+        {
+          ch: "April-2",
+          word: "skitter",
+          koreanMeaning: "v. 잽싸게 달리다[나아가다]",
+          correctFill: "skittering",
+          sent: "When I lifted the log, there were lots of beetles __________ around under it.",
+          acceptedAnswers: ["skitter"],
+        },
+        {
+          ch: "April-2",
+          word: "limp",
+          koreanMeaning: "절뚝거리다",
+          correctFill: "limped",
+          sent: "He __________ off the field with a foot injury.",
+          acceptedAnswers: ["limp"],
+        },
+        {
+          ch: "April-2",
+          word: "erupt",
+          koreanMeaning: "(화산이) 분출하다",
+          correctFill: "erupted",
+          sent: "Since the volcano last __________, many houses have been built in a dangerous position on its slopes.",
+          acceptedAnswers: ["erupt"],
+        },
+        {
+          ch: "April-2",
+          word: "thorny",
+          koreanMeaning: "가시가 있는",
+          correctFill: "thorny",
+          sent: "Watch out for the __________ bush when you walk along the path.",
+        },
+        {
+          ch: "April-2",
+          word: "levitate",
+          koreanMeaning: "공중에 뜨게 하다",
+          correctFill: "levitate",
+          sent: "She can, apparently, __________ a small ball between her hands",
+        },
+        {
+          ch: "April-2",
+          word: "brittle",
+          koreanMeaning: "잘 부러지는",
+          correctFill: "brittle",
+          sent: "As you get older your bones become increasingly __________.",
+        },
+
+        // May-1
+        {
+          ch: "May-1",
+          word: "determine",
+          koreanMeaning: "확정하다",
+          correctFill: "determined",
+          sent: "Your health is __________ in part by what you eat.",
+          acceptedAnswers: ["determine"],
+        },
+        {
+          ch: "May-1",
+          word: "enthusiasm",
+          koreanMeaning: "열광, 열정",
+          correctFill: "enthusiasm",
+          sent: "I just can't work up any __________ for the whole project.",
+        },
+        {
+          ch: "May-1",
+          word: "spasm",
+          koreanMeaning: "경련, 경련이 나다",
+          correctFill: "spasm",
+          sent: "He felt a painful muscle __________.",
+        },
+        {
+          ch: "May-1",
+          word: "awareness",
+          koreanMeaning: "의식, 관심",
+          correctFill: "awareness",
+          sent: "Environmental __________ has increased dramatically over the past decade.",
+        },
+        {
+          ch: "May-1",
+          word: "blast",
+          koreanMeaning: "폭발",
+          correctFill: "blast",
+          sent: "Three people were injured in the __________.",
+        },
+        {
+          ch: "May-1",
+          word: "precisely",
+          koreanMeaning: "정확하게",
+          correctFill: "precisely",
+          sent: "The fireworks begin at eight o'clock __________.",
+        },
+        {
+          ch: "May-1",
+          word: "predictable",
+          koreanMeaning: "예측할 수 있는",
+          correctFill: "predictable",
+          sent: "The ending of the book was entirely __________.",
+        },
+        {
+          ch: "May-1",
+          word: "procedure",
+          koreanMeaning: "절차",
+          correctFill: "procedure",
+          sent: "You must follow correct __________ at all times.",
+        },
+        {
+          ch: "May-1",
+          word: "radioactive",
+          koreanMeaning: "방사능의",
+          correctFill: "radioactive",
+          sent: "Uranium is a __________ material.",
+        },
+        {
+          ch: "May-1",
+          word: "evenly",
+          koreanMeaning: "고르게",
+          correctFill: "evenly",
+          sent: "Make sure the surface is __________ covered with paint.",
+        },
+        {
+          ch: "May-1",
+          word: "leather",
+          koreanMeaning: "가죽",
+          correctFill: "leather",
+          sent: "The inside of the bag was lined with soft __________.",
+        },
+        {
+          ch: "May-1",
+          word: "comparison",
+          koreanMeaning: "비교",
+          correctFill: "comparison",
+          sent: "In __________ with the French, the British eat far less fish.",
+        },
+        {
+          ch: "May-1",
+          word: "droop",
+          koreanMeaning: "아래로 처지다",
+          correctFill: "drooping",
+          sent: "The flowers were __________ in the heat.",
+          acceptedAnswers: ["droop"],
+        },
+        {
+          ch: "May-1",
+          word: "demonstrate",
+          koreanMeaning: "보여주다",
+          correctFill: "demonstrates",
+          sent: "The study __________ that cigarette advertising encourages people to smoke.",
+          acceptedAnswers: ["demonstrate"],
+        },
+        {
+          ch: "May-1",
+          word: "tremble",
+          koreanMeaning: "떨리다",
+          correctFill: "tremble",
+          sent: "His voice started to __________ and I thought he was going to cry.",
+        },
+        {
+          ch: "May-1",
+          word: "reputation",
+          koreanMeaning: "평판, 명성",
+          correctFill: "reputation",
+          sent: "She has the __________ of being a good doctor.",
+        },
+        {
+          ch: "May-1",
+          word: "swear",
+          koreanMeaning: "욕을 하다",
+          correctFill: "swear",
+          sent: "When the taxi driver started to __________ at him, he walked off.",
+        },
+        {
+          ch: "May-1",
+          word: "comfort",
+          koreanMeaning: "안락함, 위로하다",
+          correctFill: "comfort",
+          sent: "Alan was very reluctant to leave the warmth and __________ of the fire.",
+        },
+        {
+          ch: "May-1",
+          word: "spatter",
+          koreanMeaning: "튀기다",
+          correctFill: "spattered",
+          sent: "Two bikes raced by and __________ mud over our clothes.",
+          acceptedAnswers: ["spatter"],
+        },
+        {
+          ch: "May-1",
+          word: "annoying",
+          koreanMeaning: "짜증스러운",
+          correctFill: "annoying",
+          sent: "It's really __________ when a train is late and there is no explanation.",
+        },
+
+        // May-2
+        {
+          ch: "May-2",
+          word: "mind",
+          koreanMeaning: "상관하다",
+          correctFill: "mind",
+          sent: "I wouldn’t __________ him staying if he helped around the house.",
+        },
+        {
+          ch: "May-2",
+          word: "terrified",
+          koreanMeaning: "무서워하는",
+          correctFill: "terrified",
+          sent: "He huddled in the corner like a __________ child.",
+        },
+        {
+          ch: "May-2",
+          word: "outrageous",
+          koreanMeaning: "충격적인",
+          correctFill: "outrageous",
+          sent: "It's __________ that the poor should pay such high taxes.",
+        },
+        {
+          ch: "May-2",
+          word: "concern",
+          koreanMeaning: "걱정, 배려",
+          correctFill: "Concern",
+          sent: "__________ for the safety of the two missing teenagers is growing.",
+        },
+        {
+          ch: "May-2",
+          word: "rummage",
+          koreanMeaning: "뒤지다",
+          correctFill: "rummaged",
+          sent: "She __________ through all the drawers, looking for a pen.",
+          acceptedAnswers: ["rummage"],
+        },
+        {
+          ch: "May-2",
+          word: "immigrate",
+          koreanMeaning: "이민하다",
+          correctFill: "immigrated",
+          sent: "He __________ with his parents in 1895, and grew up in Long Island.",
+          acceptedAnswers: ["immigrate"],
+        },
+        {
+          ch: "May-2",
+          word: "clasp",
+          koreanMeaning: "움켜쥐다",
+          correctFill: "clasped",
+          sent: "She stood with her hands __________ tightly together.",
+          acceptedAnswers: ["clasp"],
+        },
+        {
+          ch: "May-2",
+          word: "humiliating",
+          koreanMeaning: "굴욕적인",
+          correctFill: "humiliating",
+          sent: "Losing my job was the most __________ thing that ever happened to me.",
+        },
+        {
+          ch: "May-2",
+          word: "vengeance",
+          koreanMeaning: "복수",
+          correctFill: "vengeance",
+          sent: "As he cradled his daughter's lifeless body in his arms, he swore to take __________ on her killers.",
+        },
+        {
+          ch: "May-2",
+          word: "stare",
+          koreanMeaning: "응시하다",
+          correctFill: "stare",
+          sent: "Don't __________ at people like that, it's rude.",
+        },
+        {
+          ch: "May-2",
+          word: "impose",
+          koreanMeaning: "부과하다",
+          correctFill: "imposed",
+          sent: "Very high taxes have recently been __________ on cigarettes.",
+          acceptedAnswers: ["impose"],
+        },
+        {
+          ch: "May-2",
+          word: "bankrupt",
+          koreanMeaning: "파산하다",
+          correctFill: "bankrupt",
+          sent: "He went __________ after only a year in business.",
+        },
+        {
+          ch: "May-2",
+          word: "occupy",
+          koreanMeaning: "차지하다",
+          correctFill: "occupies",
+          sent: "He __________ the house without paying any rent.",
+          acceptedAnswers: ["occupy"],
+        },
+        {
+          ch: "May-2",
+          word: "mop",
+          koreanMeaning: "닦다",
+          correctFill: "mop",
+          sent: "There's milk on the floor over there—could you get a cloth and __________ it up?",
+        },
+        {
+          ch: "May-2",
+          word: "possession",
+          koreanMeaning: "소유",
+          correctFill: "possession",
+          sent: "The house has been in the family's __________ since the 1500s.",
+        },
+        {
+          ch: "May-2",
+          word: "crawl",
+          koreanMeaning: "기다",
+          correctFill: "crawled",
+          sent: "The baby __________ across the floor.",
+          acceptedAnswers: ["crawl"],
+        },
+        {
+          ch: "May-2",
+          word: "suspend",
+          koreanMeaning: "매달다",
+          correctFill: "suspended",
+          sent: "A large light was __________ from the ceiling.",
+          acceptedAnswers: ["suspend"],
+        },
+        {
+          ch: "May-2",
+          word: "revolution",
+          koreanMeaning: "혁명",
+          correctFill: "revolution",
+          sent: "The role of women has changed since the __________.",
+        },
+        {
+          ch: "May-2",
+          word: "graze",
+          koreanMeaning: "풀을 뜯게 하다",
+          correctFill: "grazed",
+          sent: "We __________ our cattle on the rich grass.",
+          acceptedAnswers: ["graze"],
+        },
+
+        // June-1
+        {
+          ch: "June-1",
+          word: "scared",
+          koreanMeaning: "무서워하는, 겁먹은",
+          correctFill: "scared",
+          sent: "He's __________ of spiders.",
+        },
+        {
+          ch: "June-1",
+          word: "nomination",
+          koreanMeaning: "지명, 추천, 임명",
+          correctFill: "nomination",
+          sent: "I didn’t support his __________ as chairman.",
+        },
+        {
+          ch: "June-1",
+          word: "ominous",
+          koreanMeaning: "불길한",
+          correctFill: "ominous",
+          sent: "There was an __________ silence at the other end of the phone.",
+        },
+        {
+          ch: "June-1",
+          word: "shatter",
+          koreanMeaning: "산산이 부서지다",
+          correctFill: "shattered",
+          sent: "The glass __________ into a thousand tiny pieces.",
+          acceptedAnswers: ["shatter"],
+        },
+        {
+          ch: "June-1",
+          word: "float",
+          koreanMeaning: "떠[흘러]가다[떠돌다]",
+          correctFill: "float",
+          sent: "You can __________ very easily on the Dead Sea because it's so salty.",
+        },
+        {
+          ch: "June-1",
+          word: "decline",
+          koreanMeaning: "쇠퇴하다, 하락하다",
+          correctFill: "declined",
+          sent: "The party's popularity has __________ in the opinion polls.",
+          acceptedAnswers: ["decline"],
+        },
+        {
+          ch: "June-1",
+          word: "utensil",
+          koreanMeaning: "(가정에서 사용하는) 도구",
+          correctFill: "utensils",
+          sent: "In the drawer was a selection of kitchen __________— spoons, spatulas and knives.",
+          acceptedAnswers: ["utensil"],
+        },
+        {
+          ch: "June-1",
+          word: "expansion",
+          koreanMeaning: "확대, 확장, 팽창",
+          correctFill: "expansion",
+          sent: "The rapid __________ of cities can cause social and economic problems.",
+        },
+        {
+          ch: "June-1",
+          word: "repetition",
+          koreanMeaning: "반복",
+          correctFill: "repetition",
+          sent: "Good writing avoids unnecessary __________.",
+        },
+        {
+          ch: "June-1",
+          word: "barely",
+          koreanMeaning: "간신히, 가까스로; 거의 ~하지 않는, 간신히 ~하는",
+          correctFill: "barely",
+          sent: "She was very old and __________ able to walk.",
+        },
+        {
+          ch: "June-1",
+          word: "rub",
+          koreanMeaning: "문지르다[비비다]",
+          correctFill: "rub",
+          sent: "You'll have to __________ harder if you want to get it clean.",
+        },
+        {
+          ch: "June-1",
+          word: "split",
+          koreanMeaning: "나뉘다[나누다]",
+          correctFill: "split",
+          sent: "His trousers __________ when he tried to jump the fence.",
+        },
+        {
+          ch: "June-1",
+          word: "crack",
+          koreanMeaning: "깨지다, 부서지다",
+          correctFill: "cracked",
+          sent: "The walls __________ and the roof collapsed in the earthquake.",
+          acceptedAnswers: ["crack"],
+        },
+        {
+          ch: "June-1",
+          word: "grumble",
+          koreanMeaning: "투덜[툴툴]거리다",
+          correctFill: "grumbling",
+          sent: "She spent the evening __________ to me about her job.",
+          acceptedAnswers: ["grumble"],
+        },
+        {
+          ch: "June-1",
+          word: "creak",
+          koreanMeaning: "삐걱거리다",
+          correctFill: "creak",
+          sent: "I heard the floorboards __________ as he crept closer.",
+        },
+        {
+          ch: "June-1",
+          word: "scoop",
+          koreanMeaning: "퍼[떠] 올리다",
+          correctFill: "scooped",
+          sent: "He __________ the sand into a bucket with his hands.",
+          acceptedAnswers: ["scoop"],
+        },
+        {
+          ch: "June-1",
+          word: "pile",
+          koreanMeaning: "많아지다[쌓이다]",
+          correctFill: "piled",
+          sent: "We __________ plenty of logs up next to the fire.",
+          acceptedAnswers: ["pile"],
+        },
+        {
+          ch: "June-1",
+          word: "scrub",
+          koreanMeaning: "문질러 씻다[청소하다]",
+          correctFill: "scrubbed",
+          sent: "He __________ the old saucepan clean, and it looked as good as new.",
+          acceptedAnswers: ["scrub"],
+        },
+        {
+          ch: "June-1",
+          word: "nurture",
+          koreanMeaning: "양육하다[보살피다]",
+          correctFill: "nurture",
+          sent: "She wants to stay at home and __________ her children.",
+        },
+        {
+          ch: "June-1",
+          word: "ridge",
+          koreanMeaning: "산등성이, 산마루",
+          correctFill: "ridge",
+          sent: "We walked along the narrow mountain __________.",
+        },
+
+        // June-2
+        {
+          ch: "June-2",
+          word: "ooze",
+          koreanMeaning: "천천히 흐르다[흘리다]",
+          correctFill: "oozing",
+          sent: "Blood was still __________ out of the wound.",
+          acceptedAnswers: ["ooze"],
+        },
+        {
+          ch: "June-2",
+          word: "entirely",
+          koreanMeaning: "전적으로, 완전히, 전부",
+          correctFill: "entirely",
+          sent: "The city of Napier was __________ rebuilt after an earthquake in 1931.",
+        },
+        {
+          ch: "June-2",
+          word: "swallow",
+          koreanMeaning: "삼키다",
+          correctFill: "swallowed",
+          sent: "He put a grape into his mouth and __________ it whole.",
+          acceptedAnswers: ["swallow"],
+        },
+        {
+          ch: "June-2",
+          word: "guarantee",
+          koreanMeaning: "보장, 굳은 약속",
+          correctFill: "guarantee",
+          sent: "There is no __________ that the discussions will lead to a deal.",
+        },
+        {
+          ch: "June-2",
+          word: "moan",
+          koreanMeaning: "신음하다, 불평하다",
+          correctFill: "moaned",
+          sent: "He __________ with pain before losing consciousness.",
+          acceptedAnswers: ["moan"],
+        },
+        {
+          ch: "June-2",
+          word: "skim",
+          koreanMeaning: "스치듯 하며 지나가다",
+          correctFill: "skimmed",
+          sent: "The birds __________ over the tops of the waves.",
+          acceptedAnswers: ["skim"],
+        },
+        {
+          ch: "June-2",
+          word: "fascinate",
+          koreanMeaning: "매료[매혹]된",
+          correctFill: "fascinated",
+          sent: "I was __________ to hear about his travels in Bhután.",
+          acceptedAnswers: ["fascinate"],
+        },
+        {
+          ch: "June-2",
+          word: "flame",
+          koreanMeaning: "불길, 불꽃",
+          correctFill: "flames",
+          sent: "When the fire engine arrived, the house was already in __________.",
+          acceptedAnswers: ["flame"],
+        },
+        {
+          ch: "June-2",
+          word: "roasting",
+          koreanMeaning: "살이 타는 듯이 더운",
+          correctFill: "roasting",
+          sent: "It was a __________ summer day.",
+        },
+        {
+          ch: "June-2",
+          word: "fade",
+          koreanMeaning: "서서히 사라지다",
+          correctFill: "faded",
+          sent: "Over the years her beauty had __________ a little.",
+          acceptedAnswers: ["fade"],
+        },
+        {
+          ch: "June-2",
+          word: "refugee",
+          koreanMeaning: "난민, 망명자",
+          correctFill: "refugees",
+          sent: "Thousands of __________ fled across the border.",
+          acceptedAnswers: ["refugee"],
+        },
+        {
+          ch: "June-2",
+          word: "stir",
+          koreanMeaning: "휘젓다, 뒤섞다",
+          correctFill: "Stir",
+          sent: "__________ the sauce gently until it begins to boil.",
+        },
+        {
+          ch: "June-2",
+          word: "load",
+          koreanMeaning: "싣다",
+          correctFill: "load",
+          sent: "How long will it take to __________ this sand onto the lorry?",
+        },
+        {
+          ch: "June-2",
+          word: "assign",
+          koreanMeaning: "(일・책임 등을) 맡기다",
+          correctFill: "assign",
+          sent: "It’s his job to __________ tasks to the various members of the team.",
+        },
+        {
+          ch: "June-2",
+          word: "tumble",
+          koreanMeaning: "굴러 떨어지다",
+          correctFill: "tumbled",
+          sent: "She lost her balance and __________ backwards.",
+          acceptedAnswers: ["tumble"],
+        },
+        {
+          ch: "June-2",
+          word: "strategy",
+          koreanMeaning: "계획[전략]",
+          correctFill: "strategy",
+          sent: "The president held an emergency meeting to discuss the military __________ with his defense commanders yesterday.",
+        },
+        {
+          ch: "June-2",
+          word: "hover",
+          koreanMeaning: "(허공을) 맴돌다",
+          correctFill: "hovered",
+          sent: "A hawk __________ in the sky, waiting to swoop down on its prey.",
+          acceptedAnswers: ["hover"],
+        },
+        {
+          ch: "June-2",
+          word: "squelch",
+          koreanMeaning: "질벅거리다",
+          correctFill: "squelched",
+          sent: "He got out of the car and __________ through the mud to open the gate.",
+          acceptedAnswers: ["squelch"],
+        },
+        {
+          ch: "June-2",
+          word: "glow",
+          koreanMeaning: "빛나다, 타다",
+          correctFill: "glowing",
+          sent: "The red tip of his cigarette was __________ in the dark.",
+          acceptedAnswers: ["glow"],
+        },
       ];
 
       const books = {
@@ -2631,12 +4069,21 @@
         },
         wednesdayWars: {
           title: "The Wednesday Wars Vocabulary",
-          rangeHelp: "원하는 월(챕터)을 선택하고 문제 수를 입력하세요.",
+          rangeHelp: "원하는 월(챕터)과 문제 수를 고르세요. 랭킹 기록은 Part 2만 전체 선택하고 모든 문제를 풀면 저장할 수 있습니다.",
           chapterLabel: (ch) => ch,
           quizChapterLabel: (ch) => ch,
           vocabulary: wednesdayWarsVocabulary,
         },
       };
+
+      const part2Months = new Set(["February", "March", "April", "May", "June"]);
+      const wednesdayParts = { 1: new Set(), 2: new Set() };
+      let part2QuestionCount = 0;
+      for (const { ch } of wednesdayWarsVocabulary) {
+        const isPart2 = part2Months.has(ch.split("-")[0]);
+        wednesdayParts[isPart2 ? 2 : 1].add(ch);
+        if (isPart2) part2QuestionCount++;
+      }
 
       let currentBookKey = "wednesdayWars";
       let quizData = [];
@@ -2661,6 +4108,10 @@
         const chapterList = [...new Set(book.vocabulary.map((v) => v.ch))];
         document.getElementById("book-title").innerText = `📖 ${book.title}`;
         document.getElementById("range-help").innerText = book.rangeHelp;
+        document.getElementById("wednesday-parts").classList.toggle(
+          "hidden",
+          currentBookKey !== "wednesdayWars",
+        );
         document.querySelectorAll(".book-tab").forEach((button) => {
           button.classList.toggle(
             "active",
@@ -2699,33 +4150,52 @@
         updateMax();
       }
 
-      function updateMax() {
-        const selected = Array.from(
+      function togglePart(part, checked) {
+        document.querySelectorAll("#chapter-grid input").forEach((input) => {
+          if (wednesdayParts[part].has(input.value)) input.checked = checked;
+        });
+        updateMax();
+      }
+
+      function getSelectedChapters() {
+        return new Set(Array.from(
           document.querySelectorAll("#chapter-grid input:checked"),
-        ).map((i) => i.value);
+          (input) => input.value,
+        ));
+      }
+
+      function updateMax() {
+        const selected = getSelectedChapters();
+        if (currentBookKey === "wednesdayWars") {
+          for (const [part, chapters] of Object.entries(wednesdayParts)) {
+            const selectedCount = Array.from(chapters).filter((ch) => selected.has(ch)).length;
+            const checkbox = document.getElementById(`part${part}-select`);
+            checkbox.checked = selectedCount === chapters.size;
+            checkbox.indeterminate = selectedCount > 0 && !checkbox.checked;
+          }
+        }
         const count = getCurrentBook().vocabulary.filter((v) =>
-          selected.includes(v.ch),
+          selected.has(v.ch),
         ).length;
         document.getElementById("max-count").innerText = count;
-        document.getElementById("question-count").value = count; // 기본값 15 또는 최대값
+        document.getElementById("question-count").value = count;
         updateRecordOption();
       }
 
-      function updateRecordOption() {
-        const selected = document.querySelectorAll(
-          "#chapter-grid input:checked",
-        ).length;
-        const chapterCount = new Set(
-          getCurrentBook().vocabulary.map((v) => v.ch),
-        ).size;
-        const requested = parseInt(
-          document.getElementById("question-count").value,
-          10,
-        );
-        const eligible =
+      function isRankedRange(selected, requested) {
+        return (
           currentBookKey === "wednesdayWars" &&
-          selected === chapterCount &&
-          requested === getCurrentBook().vocabulary.length;
+          requested === part2QuestionCount &&
+          selected.size === wednesdayParts[2].size &&
+          Array.from(wednesdayParts[2]).every((ch) => selected.has(ch))
+        );
+      }
+
+      function updateRecordOption() {
+        const eligible = isRankedRange(
+          getSelectedChapters(),
+          Number(document.getElementById("question-count").value),
+        );
         const option = document.getElementById("record-option");
         const checkbox = document.getElementById("record-score");
 
@@ -2735,28 +4205,21 @@
       }
 
       function startQuiz() {
-        const selected = Array.from(
-          document.querySelectorAll("#chapter-grid input:checked"),
-        ).map((i) => i.value);
-        const max = getCurrentBook().vocabulary.filter((v) =>
-          selected.includes(v.ch),
-        ).length;
-        const requested = parseInt(
-          document.getElementById("question-count").value,
-          10,
+        const selected = getSelectedChapters();
+        const candidates = getCurrentBook().vocabulary.filter((v) =>
+          selected.has(v.ch),
         );
-        if (selected.length === 0) return alert("챕터를 선택하세요!");
-        if (!Number.isFinite(requested) || requested < 1)
-          return alert("문제 수를 1개 이상 입력하세요!");
-        const num = Math.min(requested, max);
+        const requested = Number(document.getElementById("question-count").value);
+        if (selected.size === 0) return alert("챕터를 선택하세요!");
+        if (!Number.isInteger(requested) || requested < 1)
+          return alert("문제 수를 1 이상의 정수로 입력하세요!");
+        const num = Math.min(requested, candidates.length);
 
         shouldRecordCurrentQuiz =
-          recordOptionEligible &&
-          document.getElementById("record-score").checked &&
-          num === getCurrentBook().vocabulary.length;
+          isRankedRange(selected, requested) &&
+          document.getElementById("record-score").checked;
 
-        quizData = getCurrentBook()
-          .vocabulary.filter((v) => selected.includes(v.ch))
+        quizData = candidates
           .sort(() => Math.random() - 0.5)
           .slice(0, num);
         initQuiz();
@@ -2780,9 +4243,11 @@
         }
       }
 
-      function formatDuration(durationMs) {
+      function formatDuration(durationMs, precise = false) {
         const seconds = Math.floor(durationMs / 1000);
-        return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+        const clock = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+        if (!precise) return clock;
+        return `${clock}.${String(durationMs % 1000).padStart(3, "0")}`;
       }
 
       function updateQuizTimer() {
@@ -2932,10 +4397,10 @@
         const duration = document.getElementById("final-duration");
         duration.classList.toggle("hidden", completedDurationMs === null);
         if (completedDurationMs !== null) {
-          duration.innerText = `소요 시간 ${formatDuration(completedDurationMs)}${score === quizData.length ? " · 전부 정답!" : " · Speedrun은 159개 모두 정답일 때만 저장됩니다."}`;
+          duration.innerText = `소요 시간 ${formatDuration(completedDurationMs, true)}${score === quizData.length ? " · 전부 정답!" : ""}`;
         }
 
-        if (shouldRecordCurrentQuiz) submitRankingScore();
+        if (shouldRecordCurrentQuiz && completedDurationMs !== null) submitRankingScore();
 
         const retryBtn = document.getElementById("retry-wrong-btn");
         if (wrongWords.length > 0) {
@@ -2963,19 +4428,14 @@
             body: JSON.stringify({
               score,
               total: quizData.length,
-              ...(completedDurationMs !== null ? { durationMs: completedDurationMs } : {}),
+              durationMs: completedDurationMs,
             }),
           });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || "기록 저장 실패");
           status.innerText = data.improved
             ? "새 최고 기록이 저장되었습니다."
-            : "기존 최고 기록이 더 높아 그대로 유지되었습니다.";
-          if (data.speedrunEligible) {
-            status.innerText += data.speedrunImproved
-              ? " Speedrun 새 최고 기록이 저장되었습니다."
-              : " Speedrun은 기존 최고 기록을 유지했습니다.";
-          }
+            : "기존 최고 기록을 유지했습니다.";
         } catch (error) {
           status.innerText =
             error instanceof Error
@@ -2992,19 +4452,15 @@
         document.getElementById("result-section").classList.add("hidden");
         document.getElementById("ranking-section").classList.remove("hidden");
         document.getElementById("book-title").innerText =
-          "🏆 Wednesday Wars Ranking";
+          "🏆 Wednesday Wars Part 2 Ranking";
         document.querySelectorAll(".book-tab").forEach((button) => {
           button.classList.toggle("active", button.id === "ranking-tab");
         });
 
         const status = document.getElementById("ranking-status");
         const list = document.getElementById("ranking-list");
-        const speedrunStatus = document.getElementById("speedrun-status");
-        const speedrunList = document.getElementById("speedrun-list");
         status.innerText = "기록을 불러오는 중입니다.";
-        speedrunStatus.innerText = "Speedrun 기록을 불러오는 중입니다.";
         list.replaceChildren();
-        speedrunList.replaceChildren();
 
         try {
           const response = await fetch("/api/english-ranking", {
@@ -3013,12 +4469,8 @@
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || "랭킹 불러오기 실패");
 
-          if (data.rankings.length === 0) {
-            status.innerText = "아직 등록된 기록이 없습니다.";
-          } else {
-            status.innerText = "기록 재기를 선택한 사용자의 최고 기록만 표시됩니다.";
-          }
-          data.rankings.forEach((entry) => {
+          status.innerText = data.rankings.length ? "" : "아직 등록된 기록이 없습니다.";
+          const rows = data.rankings.map((entry) => {
             const row = document.createElement("div");
             row.className = `ranking-row rank-${entry.rank}`;
 
@@ -3030,39 +4482,24 @@
             user.className = "ranking-user";
             user.innerText = entry.loginId;
 
-            const scoreCell = document.createElement("span");
+            const scoreCell = document.createElement("div");
             scoreCell.className = "ranking-score";
             scoreCell.innerText = `${entry.score} / ${entry.total}`;
 
-            row.append(badge, user, scoreCell);
-            list.appendChild(row);
-          });
-
-          const speedruns = data.speedruns || [];
-          speedrunStatus.innerText = speedruns.length
-            ? "전체 159문제를 모두 맞힌 사용자의 최고 기록입니다. 시간은 분:초로 표시됩니다."
-            : "아직 등록된 Speedrun 기록이 없습니다. 전체 159문제를 모두 맞혀 보세요!";
-          speedruns.forEach((entry) => {
-            const row = document.createElement("div");
-            row.className = `ranking-row rank-${entry.rank}`;
-            const badge = document.createElement("span");
-            badge.className = "rank-badge";
-            badge.innerText = entry.rank;
-            const user = document.createElement("span");
-            user.className = "ranking-user";
-            user.innerText = entry.loginId;
             const time = document.createElement("span");
-            time.className = "ranking-score";
-            time.innerText = formatDuration(entry.durationMs);
-            row.append(badge, user, time);
-            speedrunList.appendChild(row);
+            time.className = "ranking-duration";
+            time.innerText = formatDuration(entry.durationMs, true);
+            scoreCell.appendChild(time);
+
+            row.append(badge, user, scoreCell);
+            return row;
           });
+          list.replaceChildren(...rows);
         } catch (error) {
           status.innerText =
             error instanceof Error
               ? error.message
               : "랭킹을 불러오지 못했습니다.";
-          speedrunStatus.innerText = "Speedrun 기록을 불러오지 못했습니다.";
         }
       }
 

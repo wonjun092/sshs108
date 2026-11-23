@@ -2,45 +2,29 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { connectDatabase } from "@/lib/db";
 import { EnglishQuizScore } from "@/models/EnglishQuizScore";
-import { parseEnglishQuizRecord, WEDNESDAY_WARS_TOTAL } from "@/lib/english-quiz";
-
-const BOOK = "wednesdayWars" as const;
+import {
+  parseEnglishQuizRecord,
+  WEDNESDAY_WARS_PART2_TOTAL,
+  WEDNESDAY_WARS_RANKING_BOOK,
+} from "@/lib/english-quiz";
 
 export async function GET() {
   await connectDatabase();
 
-  const [scores, speedrunScores] = await Promise.all([
-    EnglishQuizScore.find({ book: BOOK })
-      .sort({ score: -1, achievedAt: 1 })
-      .limit(100)
-      .lean(),
-    EnglishQuizScore.find({
-      book: BOOK,
-      score: WEDNESDAY_WARS_TOTAL,
-      total: WEDNESDAY_WARS_TOTAL,
-      speedrunDurationMs: { $gt: 0 },
-    })
-      .sort({ speedrunDurationMs: 1, speedrunAchievedAt: 1, _id: 1 })
-      .limit(100)
-      .lean(),
-  ]);
+  const scores = await EnglishQuizScore.find({ book: WEDNESDAY_WARS_RANKING_BOOK })
+    .sort({ score: -1, durationMs: 1, achievedAt: 1, _id: 1 })
+    .limit(100)
+    .lean();
 
-  const rankings = scores.map((entry, index) => {
-    return {
-      rank: index + 1,
-      loginId: entry.loginId,
-      score: entry.score,
-      total: entry.total,
-    };
-  });
-
-  const speedruns = speedrunScores.map((entry, index) => ({
+  const rankings = scores.map((entry, index) => ({
     rank: index + 1,
     loginId: entry.loginId,
-    durationMs: entry.speedrunDurationMs,
+    score: entry.score,
+    total: entry.total,
+    durationMs: entry.durationMs,
   }));
 
-  return NextResponse.json({ rankings, speedruns, total: WEDNESDAY_WARS_TOTAL });
+  return NextResponse.json({ rankings, total: WEDNESDAY_WARS_PART2_TOTAL });
 }
 
 export async function POST(request: Request) {
@@ -62,19 +46,20 @@ export async function POST(request: Request) {
   const record = parseEnglishQuizRecord(body);
   if (!record) {
     return NextResponse.json(
-      { error: "Wednesday Wars 전체 범위의 유효한 점수와 시간만 저장할 수 있습니다." },
+      { error: "Wednesday Wars Part 2 전체 193문제의 점수와 시간만 저장할 수 있습니다." },
       { status: 400 },
     );
   }
   const { score, total, durationMs } = record;
 
   await connectDatabase();
-  const identity = { userId: session.userId, book: BOOK };
+  const identity = { userId: session.userId, book: WEDNESDAY_WARS_RANKING_BOOK } as const;
+  const best = { loginId: session.loginId, score, total, durationMs, achievedAt: new Date() };
   let improved = false;
   try {
     const inserted = await EnglishQuizScore.updateOne(
       identity,
-      { $setOnInsert: { ...identity, loginId: session.loginId, score, total, achievedAt: new Date() } },
+      { $setOnInsert: { ...identity, ...best } },
       { upsert: true },
     );
     improved = inserted.upsertedCount > 0;
@@ -84,30 +69,11 @@ export async function POST(request: Request) {
   }
   if (!improved) {
     const updated = await EnglishQuizScore.updateOne(
-      { ...identity, score: { $lt: score } },
-      { $set: { loginId: session.loginId, score, total, achievedAt: new Date() } },
+      { ...identity, $or: [{ score: { $lt: score } }, { score, durationMs: { $gt: durationMs } }] },
+      { $set: best },
     );
     improved = updated.modifiedCount > 0;
   }
 
-  const speedrunEligible = score === WEDNESDAY_WARS_TOTAL && durationMs !== undefined;
-  let speedrunImproved = false;
-  if (speedrunEligible) {
-    // Only replace a missing or slower personal best, including concurrent finishes.
-    const updated = await EnglishQuizScore.updateOne(
-      {
-        userId: session.userId,
-        book: BOOK,
-        $or: [
-          { speedrunDurationMs: { $exists: false } },
-          { speedrunDurationMs: null },
-          { speedrunDurationMs: { $gt: durationMs } },
-        ],
-      },
-      { $set: { speedrunDurationMs: durationMs, speedrunAchievedAt: new Date() } },
-    );
-    speedrunImproved = updated.modifiedCount > 0;
-  }
-
-  return NextResponse.json({ recorded: true, improved, speedrunEligible, speedrunImproved });
+  return NextResponse.json({ recorded: true, improved });
 }

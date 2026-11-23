@@ -1,9 +1,10 @@
-export const WEDNESDAY_WARS_TOTAL = 159;
+export const WEDNESDAY_WARS_RANKING_BOOK = "wednesdayWarsPart2";
+export const WEDNESDAY_WARS_PART2_TOTAL = 193;
 
 export type EnglishQuizRecord = {
   score: number;
   total: number;
-  durationMs?: number;
+  durationMs: number;
 };
 
 export function parseEnglishQuizRecord(body: unknown): EnglishQuizRecord | null {
@@ -13,13 +14,12 @@ export function parseEnglishQuizRecord(body: unknown): EnglishQuizRecord | null 
     typeof score !== "number" ||
     !Number.isInteger(score) ||
     score < 0 ||
-    score > WEDNESDAY_WARS_TOTAL ||
-    total !== WEDNESDAY_WARS_TOTAL ||
-    (durationMs !== undefined &&
-      (typeof durationMs !== "number" ||
-        !Number.isSafeInteger(durationMs) ||
-        durationMs <= 0))
+    score > WEDNESDAY_WARS_PART2_TOTAL ||
+    total !== WEDNESDAY_WARS_PART2_TOTAL ||
+    typeof durationMs !== "number" ||
+    !Number.isSafeInteger(durationMs) ||
+    durationMs <= 0
   ) return null;
 
-  return { score, total, durationMs: durationMs as number | undefined };
+  return { score, total, durationMs };
 }
