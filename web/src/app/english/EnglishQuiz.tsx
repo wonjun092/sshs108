@@ -16,6 +16,7 @@ import styles from "./english.module.css";
 type Run = {
   questions: readonly VocabularyQuestion[];
   startedAt: number | null;
+  showFirstLetter: boolean;
 };
 
 type QuizResult = {
@@ -23,6 +24,7 @@ type QuizResult = {
   total: number;
   wrongQuestions: VocabularyQuestion[];
   durationMs: number | null;
+  showFirstLetter: boolean;
 };
 
 type RankingSave =
@@ -71,6 +73,7 @@ function Setup({
   const chapters = [...new Set(book.vocabulary.map(({ ch }) => ch))];
   const [selected, setSelected] = useState(() => new Set(chapters));
   const [count, setCount] = useState(() => String(book.vocabulary.length));
+  const [showFirstLetter, setShowFirstLetter] = useState(false);
   const [recordScore, setRecordScore] = useState(true);
   const candidates = book.vocabulary.filter(({ ch }) => selected.has(ch));
   const eligible = isRankedRange(bookKey, selected, Number(count));
@@ -108,6 +111,7 @@ function Setup({
     onStart({
       questions: shuffle(candidates).slice(0, requested),
       startedAt: eligible && recordScore ? performance.now() : null,
+      showFirstLetter,
     });
   }
 
@@ -169,6 +173,16 @@ function Setup({
         onChange={(event) => updateCount(selected, event.target.value)}
       />
 
+      <label className={styles.chapterItem}>
+        <input
+          type="checkbox"
+          id="first-letter-hint"
+          checked={showFirstLetter}
+          onChange={(event) => setShowFirstLetter(event.target.checked)}
+        />
+        첫 글자 힌트 켜기
+      </label>
+
       {eligible && (
         <div id="record-option" className={styles.recordOption}>
           <label>
@@ -184,11 +198,8 @@ function Setup({
   );
 }
 
-function QuestionPrompt({ question }: { question: VocabularyQuestion }) {
+function QuestionPrompt({ question, showFirstLetter }: { question: VocabularyQuestion; showFirstLetter: boolean }) {
   const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set());
-  const [showFirstLetter, setShowFirstLetter] = useState(false);
-  const hintedSentence = sentenceWithFirstLetterHint(question);
-  const hasFirstLetterHint = hintedSentence !== question.sent;
   const hints = [
     { buttonId: "definition-toggle", panelId: "display-def", label: "영-영 풀이", text: question.definition?.trim() },
     { buttonId: "korean-meaning-toggle", panelId: "display-korean-meaning", label: "한글 뜻", text: question.koreanMeaning?.trim() },
@@ -204,14 +215,11 @@ function QuestionPrompt({ question }: { question: VocabularyQuestion }) {
 
   return (
     <div className={styles.questionBox}>
-      <div id="display-sent" className={styles.sentence}>{showFirstLetter ? hintedSentence : question.sent}</div>
-      {(hasFirstLetterHint || hints.length > 0) && (
+      <div id="display-sent" className={styles.sentence}>
+        {showFirstLetter ? sentenceWithFirstLetterHint(question) : question.sent}
+      </div>
+      {hints.length > 0 && (
         <div className={styles.hintControls}>
-          {hasFirstLetterHint && (
-            <button type="button" id="first-letter-toggle" className={styles.hintToggle} aria-pressed={showFirstLetter} aria-controls="display-sent" onClick={() => setShowFirstLetter((shown) => !shown)}>
-              첫 글자 힌트
-            </button>
-          )}
           {hints.map(({ buttonId, panelId, label }) => (
             <button type="button" key={buttonId} id={buttonId} className={styles.hintToggle} aria-expanded={open.has(panelId)} aria-controls={panelId} onClick={() => toggle(panelId)}>
               {label}
@@ -244,6 +252,7 @@ function Timer({ startedAt, durationMs }: { startedAt: number; durationMs: numbe
 
 function Question({
   question,
+  showFirstLetter,
   chapter,
   progress,
   answer,
@@ -251,6 +260,7 @@ function Question({
   onNext,
 }: {
   question: VocabularyQuestion;
+  showFirstLetter: boolean;
   chapter: string;
   progress: string;
   answer: boolean | undefined;
@@ -278,7 +288,7 @@ function Question({
         <div id="progress" className={styles.progress}>{progress}</div>
         <div id="display-chap" className={styles.chapterTag}>{chapter}</div>
       </div>
-      <QuestionPrompt question={question} />
+      <QuestionPrompt question={question} showFirstLetter={showFirstLetter} />
       <input
         ref={input}
         type="text"
@@ -320,14 +330,29 @@ function ActiveQuiz({ bookKey, run, onFinish }: { bookKey: BookKey; run: Run; on
     } else if (!finished.current) {
       finished.current = true;
       const wrongQuestions = run.questions.filter((_, answerIndex) => !answers[answerIndex]);
-      onFinish({ score: run.questions.length - wrongQuestions.length, total: run.questions.length, wrongQuestions, durationMs });
+      onFinish({
+        score: run.questions.length - wrongQuestions.length,
+        total: run.questions.length,
+        wrongQuestions,
+        durationMs,
+        showFirstLetter: run.showFirstLetter,
+      });
     }
   }
 
   return (
     <section id="quiz-section" className={styles.card}>
       {run.startedAt !== null && <Timer startedAt={run.startedAt} durationMs={durationMs} />}
-      <Question key={index} question={question} chapter={books[bookKey].quizChapterLabel(question.ch)} progress={`문제 ${index + 1} / ${run.questions.length}`} answer={answers[index]} onAnswer={answer} onNext={next} />
+      <Question
+        key={index}
+        question={question}
+        showFirstLetter={run.showFirstLetter}
+        chapter={books[bookKey].quizChapterLabel(question.ch)}
+        progress={`문제 ${index + 1} / ${run.questions.length}`}
+        answer={answers[index]}
+        onAnswer={answer}
+        onNext={next}
+      />
     </section>
   );
 }
@@ -493,7 +518,15 @@ export default function EnglishQuiz({ isAuthenticated, sidebar }: { isAuthentica
               <GuestRankingForm saving={screen.save.kind === "saving"} onSave={(guestName) => void saveResult(screen.result, guestName)} />
             )}
             {screen.result.wrongQuestions.length > 0 && (
-              <button type="button" id="retry-wrong-btn" className={`${styles.fullWidth} ${styles.retry}`} onClick={() => setScreen({ kind: "quiz", run: { questions: shuffle(screen.result.wrongQuestions), startedAt: null } })}>
+              <button
+                type="button"
+                id="retry-wrong-btn"
+                className={`${styles.fullWidth} ${styles.retry}`}
+                onClick={() => setScreen({
+                  kind: "quiz",
+                  run: { questions: shuffle(screen.result.wrongQuestions), startedAt: null, showFirstLetter: screen.result.showFirstLetter },
+                })}
+              >
                 틀린 문제만 다시 풀기 ({screen.result.wrongQuestions.length}개)
               </button>
             )}
