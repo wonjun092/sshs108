@@ -5,6 +5,9 @@ generateReservedRoutes();
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [{ source: "/legacy/english.html", destination: "/english", permanent: true }];
+  },
 };
 
 export default nextConfig;

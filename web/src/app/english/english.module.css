@@ -1,0 +1,415 @@
+.page {
+  min-height: 100vh;
+  padding-bottom: 50px;
+}
+
+.page main button,
+.page .bookTab {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.page input:is([type="number"], [type="text"]) {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.page :is(button, input):focus-visible {
+  outline: 2px solid #2378a9;
+  outline-offset: 2px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 40px;
+  margin-bottom: 30px;
+  background: #2c3e50;
+  color: white;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.bookSelector,
+.scopeControls,
+.chapterParts,
+.hintControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page .bookTab {
+  padding: 9px 16px;
+  background: rgb(255 255 255 / 12%);
+  border: 1px solid rgb(255 255 255 / 35%);
+}
+
+.bookTab:is(:hover, [aria-pressed="true"]) {
+  background: #3498db;
+  border-color: #3498db;
+}
+
+.page .bookTab:focus-visible {
+  outline-color: white;
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+}
+
+.card {
+  margin: 15px 0;
+  padding: 30px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 15px rgb(0 0 0 / 10%);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+.rangeHelp {
+  color: #666;
+}
+
+.scopeControls {
+  margin-bottom: 15px;
+}
+
+.page .muted {
+  background: #6f8080;
+}
+
+.page .muted:hover {
+  background: #526565;
+}
+
+.chapterParts {
+  gap: 10px 20px;
+  font-weight: bold;
+}
+
+.chapterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fdfdfd;
+}
+
+.chapterItem,
+.recordOption label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.chapterItem {
+  font-size: 0.95em;
+}
+
+.chapterItem input,
+.recordOption input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.maxCount {
+  color: #c0392b;
+}
+
+.recordOption,
+.quizTimer {
+  padding: 14px 16px;
+  border: 1px solid #b9ddf5;
+  border-radius: 8px;
+  background: #eef8ff;
+  color: #234;
+}
+
+.recordOption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+
+.recordOption label {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.recordOption input {
+  width: 18px;
+  height: 18px;
+}
+
+.recordNote,
+.recordStatus,
+.rankingStatus {
+  color: #667;
+  font-size: 0.92em;
+}
+
+.page .startButton,
+.fullWidth {
+  width: 100%;
+}
+
+.page .startButton {
+  margin-top: 15px;
+  font-size: 1.1em;
+}
+
+.quizTimer {
+  position: sticky;
+  top: 12px;
+  z-index: 1;
+  width: fit-content;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+
+.quizInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.progress {
+  color: #2c3e50;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.chapterTag {
+  padding: 5px 12px;
+  border-radius: 20px;
+  color: white;
+  background: #34495e;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.questionBox {
+  margin: 25px 0;
+  padding-left: 20px;
+  border-left: 6px solid #3498db;
+}
+
+.sentence {
+  color: #222;
+  font-size: 1.1em;
+  font-weight: bold;
+  line-height: 1.6;
+}
+
+.hintControls {
+  margin-top: 14px;
+}
+
+.page .hintToggle {
+  padding: 7px 12px;
+  border: 1px solid #3498db;
+  background: transparent;
+  color: #2378a9;
+  font-size: 0.95em;
+}
+
+.page .hintToggle:hover,
+.page .hintToggle[aria-pressed="true"] {
+  background: #eaf6fd;
+}
+
+.definition {
+  margin-top: 12px;
+  color: #555;
+  font-size: 1.15em;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.feedback {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.correct {
+  background: #d4edda;
+  color: #155724;
+}
+
+.incorrect {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.result {
+  text-align: center;
+}
+
+.finalScore {
+  margin: 30px 0;
+  color: #2c3e50;
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+.recordStatus {
+  min-height: 1.4em;
+  margin: -14px 0 18px;
+}
+
+.finalDuration {
+  margin-bottom: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.guestForm {
+  max-width: 380px;
+  margin: 0 auto 20px;
+  text-align: left;
+}
+
+.guestForm label {
+  font-weight: bold;
+}
+
+.guestForm p {
+  margin: 4px 0 0;
+}
+
+.page .retry {
+  margin-bottom: 12px;
+  background: #b0531a;
+}
+
+.page .retry:hover {
+  background: #994811;
+}
+
+.rankingList {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 20px 0 0;
+  list-style: none;
+}
+
+.rankingRow {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid #e6e9ed;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.rankBadge {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #e6ebef;
+  color: #34495e;
+  font-weight: bold;
+}
+
+.rankingRow[data-rank="1"] .rankBadge {
+  background: #ffd700;
+  color: #5b4900;
+}
+
+.rankingRow[data-rank="2"] .rankBadge {
+  background: #c0c0c0;
+  color: #3f4650;
+}
+
+.rankingRow[data-rank="3"] .rankBadge {
+  background: #cd7f32;
+  color: #2c1805;
+}
+
+.rankingUser {
+  overflow-wrap: anywhere;
+  font-weight: bold;
+}
+
+.guestLabel {
+  display: inline-block;
+  margin-left: 6px;
+  color: #667;
+  font-size: 0.8em;
+  font-weight: normal;
+}
+
+.rankingScore {
+  color: #2c3e50;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: right;
+}
+
+.rankingDuration {
+  display: block;
+  margin-top: 4px;
+  color: #667;
+  font-size: 0.85em;
+  font-weight: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 700px) {
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px 24px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .rankingRow {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+  }
+}

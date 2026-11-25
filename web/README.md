@@ -12,7 +12,7 @@ The Flask application remains at the repository root for rollback. The Vercel ap
 - Single and continuous outing applications, cancellation, and Monday–Thursday rules
 - School Google OAuth and Google Sheets outing status/update flow
 - My-page password change
-- English vocabulary quiz and periodic-table quiz using the original standalone HTML/CSS/JavaScript
+- English vocabulary quiz built with React and TypeScript, and periodic-table quiz using the original standalone HTML/CSS/JavaScript
 - Original hamburger sidebar links, external school-meal link, and responsive card styling
 
 ## Local setup

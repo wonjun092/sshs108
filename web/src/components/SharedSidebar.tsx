@@ -7,7 +7,7 @@ export function SharedSidebar({
   role,
   triggerClassName = "hamburger",
 }: {
-  role: "admin" | "teacher" | "student";
+  role: "admin" | "teacher" | "student" | null;
   triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -39,6 +39,7 @@ export function SharedSidebar({
         >
           &times;
         </button>
+        {role === null && <Link href="/login">🔑 로그인</Link>}
         <button
           className={`dropdown-btn ${boardsOpen ? "active" : ""}`}
           onClick={() => setBoardsOpen(!boardsOpen)}

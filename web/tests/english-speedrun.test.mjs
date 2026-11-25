@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { NextResponse } from 'next/server.js';
 import ts from 'typescript';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -20,6 +22,8 @@ function loadTS(file, imports = {}) {
       return imports[name];
     },
     Date,
+    process,
+    URL,
   });
   return exports;
 }
@@ -27,6 +31,9 @@ function loadTS(file, imports = {}) {
 const rules = loadTS('src/lib/english-quiz.ts');
 const { WEDNESDAY_WARS_PART2_TOTAL: total, WEDNESDAY_WARS_RANKING_BOOK: book } = rules;
 const learner = { userId: 'u1', loginId: 'learner' };
+const guestCookieName = 'sshs108_english_guest';
+const apiPath = '/api/english-ranking';
+const apiOrigin = 'http://localhost';
 
 function matches(entry, filter) {
   return Object.entries(filter).every(([field, value]) => {
@@ -40,7 +47,7 @@ function matches(entry, filter) {
   });
 }
 
-function api(existing = [], session = learner) {
+function api(existing = [], session = learner, guestCookie) {
   const records = existing.map(entry => ({ ...entry }));
   const model = {
     find(filter) {
@@ -81,7 +88,11 @@ function api(existing = [], session = learner) {
     },
   };
   const route = loadTS('src/app/api/english-ranking/route.ts', {
-    'next/server': { NextResponse: { json: (body, init) => Response.json(body, init) } },
+    'node:crypto': { randomUUID },
+    'next/server': { NextResponse },
+    'next/headers': { cookies: async () => ({
+      get: name => name === guestCookieName && guestCookie ? { name, value: guestCookie } : undefined,
+    }) },
     '@/lib/auth': { getSession: async () => session },
     '@/lib/db': { connectDatabase: async () => {} },
     '@/models/EnglishQuizScore': { EnglishQuizScore: model },
@@ -90,7 +101,11 @@ function api(existing = [], session = learner) {
   return {
     read: route.GET,
     submit: route.POST,
-    post: body => route.POST({ json: async () => body }),
+    post: (body, origin = apiOrigin, fetchSite) => route.POST(new Request(apiOrigin + apiPath, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin, ...(fetchSite ? { 'Sec-Fetch-Site': fetchSite } : {}) },
+      body: JSON.stringify(body),
+    })),
     records,
   };
 }
@@ -113,13 +128,75 @@ test('a Part 2 result requires an integer score and a positive integer duration'
   for (const body of invalid) assert.equal(rules.parseEnglishQuizRecord(body), null);
 });
 
-test('the ranking API requires a login and rejects invalid or older results', async () => {
-  assert.equal((await api([], null).post({ score: total, total, durationMs: 10 })).status, 401);
+test('the ranking API rejects invalid or older results', async () => {
   const app = api();
   assert.equal((await app.post({ score: total, total: 352, durationMs: 120000 })).status, 400);
   assert.equal((await app.post({ score: 159, total: 159, durationMs: 120000 })).status, 400);
   assert.equal((await app.submit({ json: async () => { throw Error('bad JSON'); } })).status, 400);
   assert.equal(app.records.length, 0);
+});
+
+test('guest records require a valid nickname and the same Part 2 result as signed-in records', async () => {
+  const app = api([], null);
+  const result = { score: 140, total, durationMs: 60000 };
+  const missing = await app.post(result);
+  assert.equal(missing.status, 401);
+  assert.equal((await missing.json()).requiresNickname, true);
+  for (const guestName of [null, 42, ' ', 'X', 'a'.repeat(21), 'user@example.com', '<b>name</b>']) {
+    assert.equal((await app.post({ ...result, guestName })).status, 400);
+  }
+  assert.equal((await app.post({ ...result, total: 352, guestName: 'Star' })).status, 400);
+  assert.equal((await app.post({ ...result, guestName: 'Star' }, 'http://elsewhere.invalid')).status, 403);
+  assert.equal((await app.post({ ...result, guestName: 'Star' }, apiOrigin, 'cross-site')).status, 403);
+  assert.equal(app.records.length, 0);
+});
+
+test('guest nicknames are public while the browser cookie only updates its own best', async () => {
+  const firstBrowser = api([], null);
+  const firstResult = await firstBrowser.post(
+    { score: 140, total, durationMs: 60000, guestName: '  별빛  수달  ' },
+    'https://public-quiz.example',
+    'same-origin',
+  );
+  assert.equal(firstResult.status, 200);
+  assert.deepEqual(await firstResult.json(), { recorded: true, improved: true });
+
+  const cookie = firstResult.cookies.get(guestCookieName);
+  assert.ok(cookie);
+  assert.equal(cookie.httpOnly, true);
+  assert.equal(cookie.sameSite, 'lax');
+  assert.equal(cookie.path, apiPath);
+  assert.equal(firstBrowser.records[0].userId, `guest:${cookie.value}`);
+
+  const returningBrowser = api(firstBrowser.records, null, cookie.value);
+  const best = await returningBrowser.post({ score: 140, total, durationMs: 50000, guestName: '별빛 수달' });
+  assert.deepEqual(await best.json(), { recorded: true, improved: true });
+  const worse = await returningBrowser.post({ score: 139, total, durationMs: 40000, guestName: '별빛 수달' });
+  assert.deepEqual(await worse.json(), { recorded: true, improved: false });
+  assert.equal(returningBrowser.records.length, 1);
+  assert.equal(returningBrowser.records[0].userId, firstBrowser.records[0].userId);
+
+  const secondBrowser = api(returningBrowser.records, null);
+  const secondResult = await secondBrowser.post({ score: 141, total, durationMs: 55000, guestName: '별빛 수달' });
+  assert.equal(secondResult.status, 200);
+  assert.equal(secondBrowser.records.length, 2);
+  assert.notEqual(secondResult.cookies.get(guestCookieName)?.value, cookie.value);
+  assert.notEqual(secondBrowser.records[0].userId, secondBrowser.records[1].userId);
+  const { rankings } = await (await secondBrowser.read()).json();
+  assert.deepEqual(rankings, [
+    { rank: 1, loginId: '별빛 수달', score: 141, total, durationMs: 55000, isGuest: true },
+    { rank: 2, loginId: '별빛 수달', score: 140, total, durationMs: 50000, isGuest: true },
+  ]);
+});
+
+test('the signed-in account takes priority over a guest nickname and cookie', async () => {
+  const app = api([], learner, randomUUID());
+  const response = await app.post({ score: 140, total, durationMs: 60000, guestName: 'Star' });
+  assert.equal(response.status, 200);
+  assert.equal(response.cookies.get(guestCookieName), undefined);
+  assert.equal(app.records[0].userId, learner.userId);
+  const { rankings } = await (await app.read()).json();
+  assert.deepEqual(rankings, [{ rank: 1, loginId: learner.loginId, score: 140, total, durationMs: 60000 }]);
 });
 
 test('a personal best prefers a better score and then a faster run at that score', async () => {
@@ -142,11 +219,11 @@ test('a personal best prefers a better score and then a faster run at that score
 
 test('the leaderboard sorts Part 2 records by score before elapsed time', async () => {
   const app = api([
-    { book, loginId: 'fasterLowerScore', score: 140, total, durationMs: 30000 },
-    { book, loginId: 'slowerEqualScore', score: 141, total, durationMs: 80000 },
-    { book, loginId: 'fasterEqualScore', score: 141, total, durationMs: 70000 },
-    { book: 'wednesdayWars', loginId: 'original', score: 159, total: 159, durationMs: 20000 },
-    { book: 'wednesdayWarsFullYear', loginId: 'fullYear', score: 352, total: 352, durationMs: 10000 },
+    { book, userId: 'u2', loginId: 'fasterLowerScore', score: 140, total, durationMs: 30000 },
+    { book, userId: 'u3', loginId: 'slowerEqualScore', score: 141, total, durationMs: 80000 },
+    { book, userId: 'u4', loginId: 'fasterEqualScore', score: 141, total, durationMs: 70000 },
+    { book: 'wednesdayWars', userId: 'u5', loginId: 'original', score: 159, total: 159, durationMs: 20000 },
+    { book: 'wednesdayWarsFullYear', userId: 'u6', loginId: 'fullYear', score: 352, total: 352, durationMs: 10000 },
   ]);
   const data = await (await app.read()).json();
   assert.equal(data.total, total);
@@ -170,208 +247,70 @@ test('simultaneous results keep the fastest time at the highest score', async ()
   assert.equal(app.records[0].durationMs, 50000);
 });
 
-class Element {
-  constructor() {
-    this.classes = new Set();
-    this.attributes = {};
-    this.listeners = {};
-    this.children = [];
-    this.value = '';
-    this.innerText = '';
-    this.dataset = {};
-    this.classList = {
-      add: name => this.classes.add(name),
-      remove: name => this.classes.delete(name),
-      contains: name => this.classes.has(name),
-      toggle: (name, on) => {
-        if (on ?? !this.classes.has(name)) this.classes.add(name);
-        else this.classes.delete(name);
-      },
-    };
-  }
-
-  set className(value) { this.classes = new Set(value.split(' ')); }
-  get className() { return [...this.classes].join(' '); }
-  set innerHTML(value) {
-    assert.equal(value, '');
-    this.replaceChildren();
-  }
-  setAttribute(key, value) { this.attributes[key] = value; }
-  getAttribute(key) { return this.attributes[key]; }
-  append(...children) { this.children.push(...children); }
-  appendChild(child) { this.append(child); }
-  replaceChildren(...children) { this.children = children; }
-  focus() {}
-  addEventListener(type, listener) { this.listeners[type] = listener; }
-  dispatch(type) { this.listeners[type]?.({ target: this }); }
-}
-
-function quiz() {
-  const html = fs.readFileSync(path.join(root, 'public/legacy/english.html'), 'utf8');
-  const elements = {};
-  for (const tag of html.matchAll(/<[^>]+\bid="([^"]+)"[^>]*>/g)) {
-    const element = elements[tag[1]] = new Element();
-    element.className = tag[0].match(/class="([^"]*)"/)?.[1] || '';
-    const controls = tag[0].match(/aria-controls="([^"]*)"/)?.[1];
-    if (controls) element.setAttribute('aria-controls', controls);
-  }
-
-  const requests = [];
-  const intervals = new Set();
-  let time = 0;
-  const getChapters = () => elements['chapter-grid'].children.map(label => label.children[0]);
-  const context = vm.createContext({
-    document: {
-      getElementById: id => {
-        assert.ok(elements[id], id);
-        return elements[id];
-      },
-      querySelectorAll: selector => {
-        if (selector === '#chapter-grid input') return getChapters();
-        if (selector === '#chapter-grid input:checked') return getChapters().filter(input => input.checked);
-        if (selector === '.book-tab') return [];
-        assert.fail('Unexpected selector ' + selector);
-      },
-      createElement: () => new Element(),
-      createTextNode: text => text,
-    },
-    window: { addEventListener: () => {} },
-    performance: { now: () => time },
-    setInterval: callback => {
-      intervals.add(callback);
-      return callback;
-    },
-    clearInterval: callback => intervals.delete(callback),
-    setTimeout: callback => callback(),
-    fetch: async (url, options) => {
-      requests.push({ url, options });
-      return { ok: true, json: async () => ({ rankings: [], total, recorded: true, improved: true }) };
-    },
-  });
-  const run = code => vm.runInContext(code, context);
-  run(html.match(/<script>([\s\S]*?)<\/script>/)[1]);
-  return {
-    elements,
-    requests,
-    intervals,
-    run,
-    setChapter(chapter, checked) {
-      const input = getChapters().find(input => input.value === chapter);
-      assert.ok(input, chapter);
-      input.checked = checked;
-      input.dispatch('change');
-    },
-    setCount(count) {
-      elements['question-count'].value = String(count);
-      elements['question-count'].dispatch('input');
-    },
-    advance(ms) {
-      time += ms;
-      for (const callback of intervals) callback();
-    },
-    answer(correct) {
-      elements['answer-input'].value = correct ? run('quizData[currentIdx].correctFill') : 'wrong';
-      run('checkAnswer()');
-    },
-  };
-}
-
-test('group selection only enables recording for all of Part 2 and no Part 1 chapters', () => {
-  const app = quiz();
-  const part1 = app.elements['part1-select'];
-  const part2 = app.elements['part2-select'];
-  const recordOption = app.elements['record-option'];
-  const count = () => Number(app.elements['question-count'].value);
-  assert.equal(part1.checked, true);
-  assert.equal(part2.checked, true);
-  assert.equal(count(), 352);
-  assert.equal(recordOption.classList.contains('hidden'), true);
-
-  app.run('togglePart(1, false)');
-  assert.equal(part1.checked, false);
-  assert.equal(part2.checked, true);
-  assert.equal(count(), total);
-  assert.equal(recordOption.classList.contains('hidden'), false);
-
-  app.setCount(total - 1);
-  assert.equal(recordOption.classList.contains('hidden'), true);
-  app.setCount(total + 1);
-  assert.equal(recordOption.classList.contains('hidden'), true);
-  app.setCount(total);
-  assert.equal(recordOption.classList.contains('hidden'), false);
-
-  app.setChapter('February-1', false);
-  assert.equal(part2.checked, false);
-  assert.equal(part2.indeterminate, true);
-  assert.equal(recordOption.classList.contains('hidden'), true);
-  app.setChapter('February-1', true);
-  assert.equal(part2.checked, true);
-  assert.equal(part2.indeterminate, false);
-  assert.equal(recordOption.classList.contains('hidden'), false);
-
-  app.setChapter('January-1', true);
-  assert.equal(part1.indeterminate, true);
-  app.setCount(total);
-  assert.equal(recordOption.classList.contains('hidden'), true);
-
-  app.run('toggleAll(false); togglePart(1, true)');
-  assert.equal(part1.checked, true);
-  assert.equal(part2.checked, false);
-  assert.equal(count(), 159);
-  assert.equal(recordOption.classList.contains('hidden'), true);
-
-  app.run("selectBook('holes')");
-  assert.equal(app.elements['wednesday-parts'].classList.contains('hidden'), true);
-  assert.equal(recordOption.classList.contains('hidden'), true);
-});
-
-test('a scored Part 2 run submits the non-perfect score and frozen time once', async () => {
-  const app = quiz();
-  app.run('togglePart(1, false); startQuiz()');
-  assert.equal(app.elements['quiz-timer'].classList.contains('hidden'), false);
-  for (let i = 0; i < total; i++) {
-    app.advance(1000);
-    app.answer(i !== 0);
-    app.run('checkAnswer()'); // A double click cannot add another point.
-    if (i < total - 1) app.run('nextQuestion()');
-  }
-  assert.equal(app.run('score'), total - 1);
-  assert.equal(app.intervals.size, 0);
-  const finishedTime = app.elements['elapsed-time'].innerText;
-  app.advance(30000);
-  assert.equal(app.elements['elapsed-time'].innerText, finishedTime);
-  app.run('nextQuestion(); nextQuestion()');
-  await new Promise(resolve => setImmediate(resolve));
-  assert.equal(app.requests.length, 1);
-  assert.deepEqual(JSON.parse(app.requests[0].options.body), {
-    score: total - 1, total, durationMs: total * 1000,
+const vocabulary = loadTS('src/app/english/vocabulary.ts');
+const { books, wednesdayParts, isRankedRange, isCorrectAnswer, sentenceWithFirstLetterHint, formatDuration } =
+  loadTS('src/app/english/quiz-rules.ts', {
+    './vocabulary': vocabulary,
+    '@/lib/english-quiz': rules,
   });
 
-  app.run('retryWrong()');
-  assert.equal(app.elements['quiz-timer'].classList.contains('hidden'), true);
-  app.answer(true);
-  app.run('nextQuestion()');
-  assert.equal(app.requests.length, 1);
+test('both book catalogs preserve their original chapters and question counts', () => {
+  assert.equal(books.holes.vocabulary.length, 81);
+  assert.equal(new Set(books.holes.vocabulary.map(question => question.ch)).size, 19);
+  assert.equal(books.holes.chapterLabel('45-46'), 'Ch.45-46');
+  assert.equal(books.holes.quizChapterLabel('45-46'), 'Chapter 45-46');
+
+  const wednesdayWords = books.wednesdayWars.vocabulary;
+  assert.equal(wednesdayWords.length, 352);
+  assert.equal(wednesdayParts[1].size, 10);
+  assert.deepEqual([...wednesdayParts[2]], [
+    'February-1', 'February-2', 'March-1', 'March-2', 'April-1', 'April-2',
+    'May-1', 'May-2', 'June-1', 'June-2',
+  ]);
+  assert.equal(wednesdayWords.filter(question => wednesdayParts[1].has(question.ch)).length, 159);
+  assert.equal(wednesdayWords.filter(question => wednesdayParts[2].has(question.ch)).length, total);
+  assert.equal([...wednesdayParts[1]].some(chapter => wednesdayParts[2].has(chapter)), false);
 });
 
-test('mixed runs and opted-out Part 2 runs are practice, and leaving a scored run clears the timer', async () => {
-  const mixed = quiz();
-  mixed.setCount(total);
-  mixed.run('startQuiz()');
-  assert.equal(mixed.intervals.size, 0);
-  assert.equal(mixed.elements['quiz-timer'].classList.contains('hidden'), true);
+test('ranked quizzes require exactly the Part 2 chapters and every Part 2 question', () => {
+  const part1 = wednesdayParts[1];
+  const part2 = wednesdayParts[2];
+  const mixed = new Set([...part1, ...part2]);
+  const incomplete = new Set([...part2].filter(chapter => chapter !== 'February-1'));
+  const sameSizeWrongChapters = new Set([...incomplete, 'January-1']);
 
-  const optedOut = quiz();
-  optedOut.run('togglePart(1, false)');
-  optedOut.elements['record-score'].checked = false;
-  optedOut.run('startQuiz()');
-  assert.equal(optedOut.intervals.size, 0);
+  assert.equal(isRankedRange('wednesdayWars', part2, total), true);
+  assert.equal(isRankedRange('wednesdayWars', part2, total - 1), false);
+  assert.equal(isRankedRange('wednesdayWars', part2, total + 1), false);
+  assert.equal(isRankedRange('wednesdayWars', part1, 159), false);
+  assert.equal(isRankedRange('wednesdayWars', mixed, total), false);
+  assert.equal(isRankedRange('wednesdayWars', incomplete, total), false);
+  assert.equal(isRankedRange('wednesdayWars', sameSizeWrongChapters, total), false);
+  assert.equal(isRankedRange('holes', part2, total), false);
+});
 
-  const abandoned = quiz();
-  abandoned.run('togglePart(1, false); startQuiz()');
-  abandoned.advance(61000);
-  assert.equal(abandoned.elements['elapsed-time'].innerText, '01:01');
-  await abandoned.run('showRanking()');
-  assert.equal(abandoned.intervals.size, 0);
-  assert.equal(abandoned.requests[0].options.method ?? 'GET', 'GET');
+test('answer checking preserves the original answers, accepted variants, and normalization', () => {
+  const phrase = books.holes.vocabulary.find(question => question.word === 'keep an eye out');
+  const verb = books.wednesdayWars.vocabulary.find(question => question.word === 'suspend');
+  assert.ok(phrase);
+  assert.ok(verb);
+  assert.equal(isCorrectAnswer(phrase, ' kept  AN eye out '), true);
+  assert.equal(isCorrectAnswer(phrase, 'keep an eye out'), true);
+  assert.equal(isCorrectAnswer(phrase, 'keep an eye'), false);
+  assert.equal(isCorrectAnswer(verb, 'SUSPEND'), true);
+  assert.equal(isCorrectAnswer(verb, ''), false);
+  assert.equal(isCorrectAnswer({ ...phrase, correctFill: "'take the eye'" }, '‘take the eye’'), true);
+});
+
+test('the first-letter hint reveals only the initial letter at the first blank', () => {
+  assert.equal(sentenceWithFirstLetterHint({ sent: 'The _____ is _____.', correctFill: 'word' }), 'The w____ is _____.');
+  assert.equal(sentenceWithFirstLetterHint({ sent: '____!', correctFill: '“Élan”' }), 'É___!');
+  assert.equal(sentenceWithFirstLetterHint({ sent: 'No blank.', correctFill: 'word' }), 'No blank.');
+  assert.equal(sentenceWithFirstLetterHint({ sent: '____!', correctFill: '123' }), '____!');
+});
+
+test('ranked results retain millisecond precision while the live clock shows whole seconds', () => {
+  assert.equal(formatDuration(61005), '01:01');
+  assert.equal(formatDuration(61005, true), '01:01.005');
+  assert.equal(formatDuration(0, true), '00:00.000');
 });

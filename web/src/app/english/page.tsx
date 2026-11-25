@@ -1,18 +1,14 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
 import { SharedSidebar } from "@/components/SharedSidebar";
+import { getSession } from "@/lib/auth";
+import EnglishQuiz from "./EnglishQuiz";
 
 export default async function Page() {
-  // const session = await getSession();
-  // if (!session) redirect("/login");
+  const session = await getSession();
 
   return (
-    <div className="standalone-quiz-page">
-      <iframe
-        className="legacy-frame"
-        title="영어 단어 시험"
-        src="/legacy/english.html"
-      />
-    </div>
+    <EnglishQuiz
+      isAuthenticated={session !== null}
+      sidebar={<SharedSidebar role={session?.role ?? null} />}
+    />
   );
 }
